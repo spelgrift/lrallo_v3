@@ -11,6 +11,8 @@ class View {
 			require 'views/' . $name . '.php';
 			require 'views/inc/globalFooter.php';
 		}
+
+		public $adminNav = array();
 }
 
 ?>

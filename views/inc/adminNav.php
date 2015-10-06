@@ -7,6 +7,19 @@
 			<?php endif; ?>
 			<li><a href='<?php echo URL; ?>login/logout/'>Logout</a></li>
 		</ul>
+		<ul class="nav navbar-nav">
+			<?php
+
+				foreach($this->adminNav as $row)
+				{
+					$name = $row['name'];
+					$url = $row['url'];
+
+					echo "<li><a href='" . URL . $url . "'>$name</a></li>";
+				}
+
+				?>
+		</ul>
 	</div>
 </nav>
 

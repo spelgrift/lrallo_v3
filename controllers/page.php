@@ -26,6 +26,10 @@ class Page extends Controller
 		// Add vars to view
 		$this->view->pageTitle = "Edit Page: $this->_pageName";
 		$this->view->pageName = $this->_pageName;
+		$this->view->adminNav = array(array(
+			'url' => $this->_pageURL, 
+			'name' => "View Page",
+		));
 
 		// Render view
 		$this->view->render('page/edit');
@@ -78,6 +82,10 @@ class Page extends Controller
 		// Add vars to view
 		$this->view->pageTitle = $this->_pageTitle;
 		$this->view->pageName = $this->_pageName;
+		$this->view->adminNav = array(array(
+			'url' => $this->_pageURL . "/edit", 
+			'name' => "Edit Page",
+		));
 
 		// display content
 		$this->view->pageContent = $this->_displayContent($this->_pageID);
