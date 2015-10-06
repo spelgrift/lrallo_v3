@@ -6764,10 +6764,6 @@ button.close {
     display: none !important;
   }
 }
-body {
-  background: silver;
-  padding: 20px;
-}
 #header {
   background: gold;
   padding: 20px;

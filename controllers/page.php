@@ -2,21 +2,23 @@
 
 class Page extends Controller
 {
-	// User given URL
+	function __construct()
+	{
+		parent::__construct();
+	}
+
+	// User given URL (Array)
 	private $_URL = null;
+	// If a method is called, this is the index for the method in the URL Array
 	private $_urlKey = null;
 
 	// Page Attributes
 	private $_pageID = null;
 	private $_pageName = null;
+	private $_pageTitle = null;
 	private $_pageURL = null;
 	private $_contentID = null;
-	private $_parentPage = 0;
-
-	function __construct()
-	{
-		parent::__construct();
-	}
+	private $_parentPage = 0;	
 
 	public function edit($arg1 = null, $arg2 = null)
 	{
@@ -74,7 +76,7 @@ class Page extends Controller
 		}
 
 		// Add vars to view
-		$this->view->pageTitle = $this->_pageName;
+		$this->view->pageTitle = $this->_pageTitle;
 		$this->view->pageName = $this->_pageName;
 
 		// display content
@@ -87,7 +89,7 @@ class Page extends Controller
 	}
 
 /**
- *	_parseURL - 	Iterate over url segments testing if there is a method
+ *	_parseURL - Iterate over url segments testing if there is a method
  *					If there is, break the loop and run the method based on current class page attr 
  * 				Methods apply to the parent page
  *
@@ -146,8 +148,8 @@ class Page extends Controller
 	{
 
 		// Add vars to view
-		$this->view->pageTitle = "Home";
-		$this->view->pageName = "Home Page";
+		$this->_pageTitle = "Home";
+		$this->_pageName = "Home Page";
 
 		// display content
 		$this->view->pageContent = $this->_displayContent();
@@ -174,6 +176,7 @@ class Page extends Controller
 
 		$this->_pageID = $result['pageID'];
 		$this->_pageName = $result['name'];
+		$this->_pageTitle = $result['name'];
 		$this->_pageURL = $result['url'];
 		$this->_contentID = $result['contentID'];
 		$this->_parentPage = $result['parentPageID'];
@@ -191,15 +194,11 @@ class Page extends Controller
 		$result = $this->model->getPageContent($pageID); // Returns array of rows from DB
 		// print_r($result);
 
-		// For each content item, set variables and include the view
+		// For each content item, set variables and include the view for the given type
 		// Append to HTML string
 		
 		return $result;
 
 	}
-
-
-
-
 }
 ?>

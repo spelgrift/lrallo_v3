@@ -8,6 +8,8 @@ class Dashboard_Model extends Model {
 	}
 
 
+	// REDO ALL OF THIS!
+
 	function addPage()
 	{
 		$name = $_POST['pageName'];
@@ -61,7 +63,10 @@ class Dashboard_Model extends Model {
 	function deletePage()
 	{
 		$pageID = (int) $_POST['id'];
+		$result = $this->db->select("SELECT contentID FROM page WHERE pageID = :pageID", array(':pageID' => $pageID));
+		$contentID = $result[0]['contentID'];
 		$this->db->delete('page', "`pageID` = $pageID");
+		$this->db->delete('content', "`contentID` = $contentID");
 		// $sth = $this->db->prepare('DELETE FROM page WHERE pageID = "' . $pageID . '"');
 		// $sth->execute();
 	}

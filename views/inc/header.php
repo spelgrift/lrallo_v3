@@ -1,17 +1,42 @@
-<div id='header'>
-	Header <br>
-	<a href='<?php echo URL; ?>'>Home </a>
+<nav class="navbar navbar-default navbar-static-top">
+	<div class="container">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#mainNav">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="<?php echo URL; ?>">Imageman</a>
+		</div>
+		<div class="collapse navbar-collapse" id="mainNav">
+			<ul class="nav navbar-nav navbar-right">
+				<?php
 
-	<?php if (Session::get('loggedIn') == true): ?>
-		<a href='<?php echo URL; ?>dashboard/'>Dashboard</a>
+				foreach($this->nav as $row)
+				{
+					$name = $row['name'];
+					$url = $row['url'];
 
-		<?php if (Session::get('role') == 'owner'): ?>
-			<a href='<?php echo URL; ?>user'>Users</a>
-		<?php endif; ?>
-		<a href='<?php echo URL; ?>login/logout/'>Logout</a>
-	<?php else: ?>
-		<a href='<?php echo URL; ?>login'>Login</a>
-	<?php endif; ?>
-</div>
+					echo "<li><a href='" . URL . $url . "'>$name</a></li>";
+				}
 
-<div id="content">
+				?>
+			</ul>
+		</div>
+	</div>
+</nav>
+
+<div class="container">
+
+<?php 
+	if(Session::get('loggedIn') == true)
+	{
+		require 'views/inc/adminNav.php';
+	}
+?>
+
+
+
+
+

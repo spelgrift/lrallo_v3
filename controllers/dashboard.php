@@ -32,6 +32,18 @@ class Dashboard extends Controller {
 		$this->model->deletePage();
 	}
 
+	public function reloadNav()
+	{
+		$a = $this->globalModel->loadNav();
+		foreach($a as $row)
+		{
+			$name = $row['name'];
+			$url = $row['url'];
+
+			echo "<li><a href='" . URL . $url . "'>$name</a></li>";
+		}
+	}
+
 
 
 }

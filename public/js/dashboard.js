@@ -5,7 +5,7 @@ $(function(){
 		var basePath = data[0];
 		for(var i = 0; i < data[1].length; i++)
 		{
-			$('#pageList').append('<div>' + data[1][i].name + '<a class="delete" rel="' + data[1][i].pageid + '" href="#">Delete</a><a href="' + basePath + data[1][i].url + '" >View</a></div>');
+			$('#pageList').append('<div>' + data[1][i].name + '<a class="delete" rel="' + data[1][i].pageID + '" href="#">Delete</a><a href="' + basePath + data[1][i].url + '" >View</a></div>');
 		}
 
 	}, 'json');
@@ -17,8 +17,9 @@ $(function(){
 		
 		$.post(url, data, function(res){
 			// console.log(res);
-			$('#pageList').append('<div>' + res.name + '<a class="delete" rel="' + res.pageid + '" href="#">Delete</a><a href="' + res.url + '" >View</a></div>');
+			$('#pageList').append('<div>' + res.name + '<a class="delete" rel="' + res.pageID + '" href="#">Delete</a><a href="' + res.url + '" >View</a></div>');
 			$("input[name='pageName'").val("");
+			reloadNav();
 		}, 'json');
 
 		ev.preventDefault();
@@ -29,11 +30,21 @@ $(function(){
 		var thisItem = $(this);
 		var id = $(this).attr('rel');
 
-		// $.post(pageVars.basePath + '/deletePage', {'id': id}, function(res){
-		// 	thisItem.parent().remove();
-		// });
+		if(confirm('Delete this page?'))
+		{
+			$.post(pageVars.basePath + '/deletePage', {'id': id}, function(res){
+				thisItem.parent().remove();
+				reloadNav();
+			});
+		}
 
 		ev.preventDefault();
 	})
+
+	// Reload Nav
+	function reloadNav()
+	{
+		$('#mainNav').children('ul.navbar-nav').load(pageVars.basePath + '/reloadNav')
+	}
 
 });

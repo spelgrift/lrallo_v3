@@ -94,7 +94,8 @@ class Bootstrap
 		{
 			if(!method_exists($this->_controller, $this->_url[1]))
 			{
-				$this->_error();
+				$this->_controller->error();
+				exit;
 			}
 			$params = $this->_url;
 			unset($params[0]); // removing controller
@@ -107,16 +108,6 @@ class Bootstrap
 		{
 			return false;
 		}
-	}
-
-
-
-	private function _error()
-	{
-		require 'controllers/error.php';
-		$this->_controller = new Error();
-		$this->_controller->index();
-		exit;
 	}
 
 }
