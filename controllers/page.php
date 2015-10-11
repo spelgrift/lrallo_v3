@@ -18,18 +18,60 @@ class Page extends Controller
 	private $_pageTitle = null;
 	private $_pageURL = null;
 	private $_contentID = null;
-	private $_parentPage = 0;	
+	private $_parentPage = 0;	// default
 
+/**
+ *	edit - 	Edit a page!
+ *
+ *
+ */
 	public function edit($arg1 = null, $arg2 = null)
 	{
-		// echo "Edit Method! - Optional param: " . $arg1 . " - " . $arg2;
+		Auth::setAccess();
 		// Add vars to view
 		$this->view->pageTitle = "Edit Page: $this->_pageName";
 		$this->view->pageName = $this->_pageName;
-		$this->view->adminNav = array(array(
-			'url' => $this->_pageURL, 
-			'name' => "View Page",
-		));
+		$this->view->js = array('editPage.js');
+		$this->view->adminNav = array(
+			array(
+				'url' => "#", 
+				'name' => "<i class='fa fa-fw fa-arrows-alt'></i> Edit Layout",
+				'id' => "layoutTab",
+				'class' => 'active'
+			),
+			array(
+				'dropdown' => true,
+				'name' => "<i class='fa fa-fw fa-plus'></i> Add Content",
+				'items' => array(
+					array(
+						'url' => '#',
+						'name' => 'Page',
+						'class' => 'addTab',
+						'data-id' => 'page'
+					),
+					array(
+						'url' => '#',
+						'name' => 'Text',
+						'class' => 'addTab',
+						'data-id' => 'text'
+					)
+				)
+			),
+			array(
+				'url' => "#", 
+				'name' => "<i class='fa fa-fw fa-wrench'></i> Settings",
+				'id' => "settingsTab"
+			),
+			array(
+				'url' => URL . $this->_pageURL, 
+				'name' => "<i class='fa fa-fw fa-desktop'></i> View Page"
+			),
+			array(
+				'url' => "#", 
+				'name' => "<i class='fa fa-fw fa-trash'></i>Delete Page",
+				'id' => "deletePage"
+			)
+			);
 
 		// Render view
 		$this->view->render('page/edit');
@@ -82,10 +124,7 @@ class Page extends Controller
 		// Add vars to view
 		$this->view->pageTitle = $this->_pageTitle;
 		$this->view->pageName = $this->_pageName;
-		$this->view->adminNav = array(array(
-			'url' => $this->_pageURL . "/edit", 
-			'name' => "Edit Page",
-		));
+		
 
 		// display content
 		$this->view->pageContent = $this->_displayContent($this->_pageID);
@@ -155,9 +194,15 @@ class Page extends Controller
 	private function _loadHome()
 	{
 
-		// Add vars to view
+		// Set page vars
 		$this->_pageTitle = "Home";
 		$this->_pageName = "Home Page";
+
+		// Set admin nav for homepage
+		$this->view->adminNav = array(array(
+			'url' => URL . "dashboard/edithome", 
+			'name' => "<i class='fa fa-fw fa-sliders'></i>Edit Homepage",
+		));
 
 		// display content
 		$this->view->pageContent = $this->_displayContent();
@@ -182,12 +227,20 @@ class Page extends Controller
 			return false;
 		}
 
+		// Set page vars
 		$this->_pageID = $result['pageID'];
 		$this->_pageName = $result['name'];
 		$this->_pageTitle = $result['name'];
 		$this->_pageURL = $result['url'];
 		$this->_contentID = $result['contentID'];
 		$this->_parentPage = $result['parentPageID'];
+
+		// Set admin nav array
+		$this->view->adminNav = array(array(
+			'url' => URL . $this->_pageURL . "/edit", 
+			'name' => "<i class='fa fa-fw fa-sliders'></i> Edit Page",
+		));
+
 		return true;
 	}
 

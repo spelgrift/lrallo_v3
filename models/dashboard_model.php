@@ -18,6 +18,7 @@ class Dashboard_Model extends Model {
 
 		// Create URL friendly string
 		$url = preg_replace('#[^a-z.0-9_]#i', '_', $name);
+		$url = strtolower($url);
 
 		// Content DB entry - Include parent page if there is one
 		$this->db->insert('content', array(

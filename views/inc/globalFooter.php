@@ -7,7 +7,6 @@
 <script src="<?php echo URL; ?>public/js/bootstrap.min.js"></script>
 
 <!-- Custom JS -->
-<script src="<?php echo URL; ?>public/js/global.js"></script>
 <?php
 	if (isset($this->js)){
 		foreach($this->js as $js){

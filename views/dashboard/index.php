@@ -1,10 +1,7 @@
 <?php require 'views/inc/header.php'; ?>
 
 
-
-Dashboard. Logged in only.
-
-<br>
+<h2>Dashboard</h2>
 <h4>Add Page</h4>
 
 <form id="addPageForm" action="<?php echo URL;?>dashboard/addPage/" method="post">
