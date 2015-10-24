@@ -56,7 +56,7 @@ class Bootstrap
 		require 'controllers/page.php';
 		$this->_controller = new Page();
 		$this->_controller->loadModel('page');
-		$this->_controller->buildPage();
+		$this->_controller->index();
 	}
 
 
@@ -81,7 +81,7 @@ class Bootstrap
 			require 'controllers/page.php';
 			$this->_controller = new Page();
 			$this->_controller->loadModel('page');
-			$this->_controller->buildPage($this->_url);
+			$this->_controller->index($this->_url);
 		}
 	}
 

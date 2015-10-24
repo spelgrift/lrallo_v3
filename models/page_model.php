@@ -2,11 +2,7 @@
 
 class Page_Model extends Model {
 
-	function __construct()
-	{
-		parent::__construct();
-
-	}
+	function __construct(){parent::__construct();}
 
 
 /**
@@ -54,6 +50,74 @@ class Page_Model extends Model {
 			return "Home Page Content";
 		}
 		
+	}
+
+/**
+ *	adminNavArray - Sets admin nav array for all page views
+ *	@param string $pageURL The URL for the view page button 
+ *	@return array 
+ *
+ */
+	public function adminNavArray($view, $pageURL)
+	{
+		switch($view)
+		{
+			case 'index':
+				$adminNav = array(array(
+					'url' => URL . $pageURL . "/edit", 
+					'name' => "<i class='fa fa-fw fa-sliders'></i> Edit Page",
+				));
+				break;
+			case 'home' :
+				$adminNav = array(array(
+					'url' => URL . "dashboard/edithome", 
+					'name' => "<i class='fa fa-fw fa-sliders'></i>Edit Homepage",
+				));
+				break;
+			case 'edit' :
+				$adminNav = array(
+					array(
+						'url' => "#", 
+						'name' => "<i class='fa fa-fw fa-arrows-alt'></i> Edit Layout",
+						'id' => "layoutTab",
+						'class' => 'active'
+					),
+					array(
+						'dropdown' => true,
+						'name' => "<i class='fa fa-fw fa-plus'></i> Add Content",
+						'items' => array(
+							array(
+								'url' => '#',
+								'name' => 'Page',
+								'class' => 'addTab',
+								'data-id' => 'page'
+							),
+							array(
+								'url' => '#',
+								'name' => 'Text',
+								'class' => 'addTab',
+								'data-id' => 'text'
+							)
+						)
+					),
+					array(
+						'url' => "#", 
+						'name' => "<i class='fa fa-fw fa-wrench'></i> Settings",
+						'id' => "settingsTab"
+					),
+					array(
+						'url' => URL . $pageURL, 
+						'name' => "<i class='fa fa-fw fa-desktop'></i> View Page"
+					),
+					array(
+						'url' => "#", 
+						'name' => "<i class='fa fa-fw fa-trash'></i>Delete Page",
+						'id' => "deletePage"
+					)
+				);
+				break;
+		}
+		return $adminNav;
 	}
 
 }

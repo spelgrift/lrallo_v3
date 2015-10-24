@@ -2,10 +2,7 @@
 
 class Page extends Controller
 {
-	function __construct()
-	{
-		parent::__construct();
-	}
+	function __construct(){parent::__construct();}
 
 	// User given URL (Array)
 	private $_URL = null;
@@ -21,71 +18,13 @@ class Page extends Controller
 	private $_parentPage = 0;	// default
 
 /**
- *	edit - 	Edit a page!
- *
- *
- */
-	public function edit($arg1 = null, $arg2 = null)
-	{
-		Auth::setAccess();
-		// Add vars to view
-		$this->view->pageTitle = "Edit Page: $this->_pageName";
-		$this->view->pageName = $this->_pageName;
-		$this->view->js = array('editPage.js');
-		$this->view->adminNav = array(
-			array(
-				'url' => "#", 
-				'name' => "<i class='fa fa-fw fa-arrows-alt'></i> Edit Layout",
-				'id' => "layoutTab",
-				'class' => 'active'
-			),
-			array(
-				'dropdown' => true,
-				'name' => "<i class='fa fa-fw fa-plus'></i> Add Content",
-				'items' => array(
-					array(
-						'url' => '#',
-						'name' => 'Page',
-						'class' => 'addTab',
-						'data-id' => 'page'
-					),
-					array(
-						'url' => '#',
-						'name' => 'Text',
-						'class' => 'addTab',
-						'data-id' => 'text'
-					)
-				)
-			),
-			array(
-				'url' => "#", 
-				'name' => "<i class='fa fa-fw fa-wrench'></i> Settings",
-				'id' => "settingsTab"
-			),
-			array(
-				'url' => URL . $this->_pageURL, 
-				'name' => "<i class='fa fa-fw fa-desktop'></i> View Page"
-			),
-			array(
-				'url' => "#", 
-				'name' => "<i class='fa fa-fw fa-trash'></i>Delete Page",
-				'id' => "deletePage"
-			)
-			);
-
-		// Render view
-		$this->view->render('page/edit');
-
-	}
-
-/**
- *	buildPage - Builds page from DB elements and views.
+ *	index - 		Builds page from DB elements and views.
  *					If method is passed in URL, call it!
  *					Otherwise, load the page
  *
  *
  */
-	public function buildPage($url = array())
+	public function index($url = array())
 	{
 		$this->_URL = $url;
 
@@ -124,15 +63,31 @@ class Page extends Controller
 		// Add vars to view
 		$this->view->pageTitle = $this->_pageTitle;
 		$this->view->pageName = $this->_pageName;
-		
 
-		// display content
-		$this->view->pageContent = $this->_displayContent($this->_pageID);
+		// load content
+		$this->view->pageContent = $this->_loadContent($this->_pageID);
 
-		// Render nav (global model)
-
-		// Render Page with current class page attr			
+		// Render Page 			
 		$this->view->render('page/index');
+	}
+
+/**
+ *	edit - 	Edit a page!
+ *
+ *
+ */
+	public function edit($arg1 = null, $arg2 = null)
+	{
+		Auth::setAccess();
+		// Add vars to view
+		$this->view->pageTitle = "Edit Page: $this->_pageName";
+		$this->view->pageName = $this->_pageName;
+		$this->view->js = array('editPage.js');
+		$this->view->adminNav = $this->model->adminNavArray('edit', $this->_pageURL);
+
+		// Render view
+		$this->view->render('page/edit');
+
 	}
 
 /**
@@ -185,7 +140,6 @@ class Page extends Controller
 		call_user_func_array(array(__CLASS__, $this->_URL[$urlKey]), $params);
 	}
 
-
 /**
  *	_loadHome - 	Sets view vars with homepage info
  *					
@@ -193,19 +147,15 @@ class Page extends Controller
  */
 	private function _loadHome()
 	{
-
 		// Set page vars
 		$this->_pageTitle = "Home";
 		$this->_pageName = "Home Page";
 
 		// Set admin nav for homepage
-		$this->view->adminNav = array(array(
-			'url' => URL . "dashboard/edithome", 
-			'name' => "<i class='fa fa-fw fa-sliders'></i>Edit Homepage",
-		));
+		$this->view->adminNav = $this->model->adminNavArray('home', $this->_pageURL);
 
 		// display content
-		$this->view->pageContent = $this->_displayContent();
+		$this->view->pageContent = $this->_loadContent();
 	}
 
 
@@ -236,10 +186,7 @@ class Page extends Controller
 		$this->_parentPage = $result['parentPageID'];
 
 		// Set admin nav array
-		$this->view->adminNav = array(array(
-			'url' => URL . $this->_pageURL . "/edit", 
-			'name' => "<i class='fa fa-fw fa-sliders'></i> Edit Page",
-		));
+		$this->view->adminNav = $this->model->adminNavArray('index', $this->_pageURL);
 
 		return true;
 	}
@@ -250,7 +197,7 @@ class Page extends Controller
  *							if no ID is given, retrieve and build html for Home content
  *
  */
-	private function _displayContent($pageID = false)
+	private function _loadContent($pageID = false)
 	{
 		$result = $this->model->getPageContent($pageID); // Returns array of rows from DB
 		// print_r($result);

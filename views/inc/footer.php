@@ -23,7 +23,7 @@ else
 		<div class="container">
 			<div class="row">
 				<div class="col-lg-12">
-					&copy; Site Owner 2015 | <?php echo $loginHtml; ?>
+					&copy; Footer | <?php echo $loginHtml; ?>
 				</div>
 			</div>
 		</div>
