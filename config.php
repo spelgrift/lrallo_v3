@@ -12,7 +12,7 @@ define('dbTYPE', 'mysql');
 define('dbHOST', 'localhost');
 define('dbDATABASE', 'mvc');
 define('dbUSER', 'imageman');
-define('dbPASS', 'q1lDwmOb');
+define('dbPASS', 'imageman');
 
 // Hash key for encoding passwords
 define('PASS_HASH_KEY', 'RogerTheDog');
