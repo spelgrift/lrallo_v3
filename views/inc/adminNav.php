@@ -1,5 +1,6 @@
 <nav id="adminNav" class="navbar navbar-inverse">
 	<div class="container-fluid">
+
 		<ul class="nav navbar-nav navbar-right">
 			<li class='dropdown'>
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
@@ -10,9 +11,9 @@
 					<?php endif; ?>
 					<li><a href='<?php echo URL; ?>login/logout/'><i class="fa fa-sign-out"></i> Logout</a></li>
 				</ul>
-			</li>
-			
+			</li>			
 		</ul>
+
 		<ul class="nav navbar-nav">
 			<?php
 
@@ -39,12 +40,22 @@
 					}
 					else
 					{
-						$name = $row['name'];
-						$url = $row['url'];
-						$id = isset($row['id']) ? "id='" . $row['id'] ."'" : "";
-						$class = isset($row['class']) ? "class='" . $row['class'] ."'" : "";
+						if(isset($row['url']))
+						{
+							$name = $row['name'];
+							$url = $row['url'];
+							$id = isset($row['id']) ? "id='" . $row['id'] ."'" : "";
+							$class = isset($row['class']) ? "class='" . $row['class'] ."'" : "";
 
-						echo "<li><a $id $class href='$url'>$name</a></li>";
+							echo "<li><a $id $class href='$url'>$name</a></li>";
+						}
+						else
+						{
+							$name = $row['name'];
+
+							echo "<p class='navbar-text'><strong>$name</strong>" . $this->pageName . "</p>";
+						}
+						
 					}
 				}
 

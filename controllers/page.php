@@ -15,7 +15,8 @@ class Page extends Controller
 	private $_pageTitle = null;
 	private $_pageURL = null;
 	private $_contentID = null;
-	private $_parentPage = 0;	// default
+	private $_parentPageID = 0;	// default
+	private $_parentPageURL = null;
 
 /**
  *	index - 		Builds page from DB elements and views.
@@ -76,7 +77,7 @@ class Page extends Controller
  *
  *
  */
-	public function edit($arg1 = null, $arg2 = null)
+	public function edit()
 	{
 		Auth::setAccess();
 		// Add vars to view
@@ -87,7 +88,11 @@ class Page extends Controller
 
 		// Render view
 		$this->view->render('page/edit');
+	}
 
+	public function addPage()
+	{
+		$this->model->addPage($this->_pageID);
 	}
 
 /**
@@ -181,9 +186,14 @@ class Page extends Controller
 		$this->_pageID = $result['pageID'];
 		$this->_pageName = $result['name'];
 		$this->_pageTitle = $result['name'];
-		$this->_pageURL = $result['url'];
 		$this->_contentID = $result['contentID'];
-		$this->_parentPage = $result['parentPageID'];
+		$this->_parentPageID = $result['parentPageID'];
+
+		if($this->_parentPageID == 0) {
+			$this->_pageURL = $result['url'];
+		} else {
+			$this->_pageURL = $this->_pageURL . "/" . $result['url'];
+		}
 
 		// Set admin nav array
 		$this->view->adminNav = $this->model->adminNavArray('index', $this->_pageURL);

@@ -10,7 +10,6 @@ class Bootstrap
 	 */
 	function __construct(){}
 
-
 	/**
 	 *  init - Starts the bootstrap
 	 *	imageman.com/								load page controller - hit db - render frontpage
@@ -35,7 +34,6 @@ class Bootstrap
 		$this->_loadController();
 	}
 
-
 	/**
 	 * Fetches the $_GET from the URL
 	 */
@@ -47,7 +45,6 @@ class Bootstrap
 		$this->_url = explode( '/', $url );
 	}
 
-
 	/**
 	 *  Loads the default controller if no URL entered
 	 */
@@ -58,7 +55,6 @@ class Bootstrap
 		$this->_controller->loadModel('page');
 		$this->_controller->index();
 	}
-
 
 	/**
 	 *  Loads the given controller if one exists and calls a method if necessary, otherwise loads a page and passes the URL

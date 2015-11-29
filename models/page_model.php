@@ -4,6 +4,42 @@ class Page_Model extends Model {
 
 	function __construct(){parent::__construct();}
 
+	public function addPage($parentPageID)
+	{
+		$name = $_POST['name'];
+
+		// Validate length
+		if($name == ""){
+			echo json_encode("noName");
+			return false;
+		}
+		// Create URL friendly string
+		$url = preg_replace('#[^a-z.0-9_]#i', '_', $name);
+		$url = strtolower($url);
+
+		// Make sure name/URL is not taken
+		$query = "SELECT * FROM content WHERE url = :url";
+		if($result = $this->db->select($query, array(':url' => $url))){
+			echo json_encode("nameExists");
+			return false;
+		}
+
+		// Content DB entry
+		$this->db->insert('content', array(
+			'type' => 'page',
+			'url' => $url,
+			'parentPageID' => $parentPageID
+		));
+
+		// Page DB entry
+		$this->db->insert('page', array(
+			'name' => $name,
+			'contentid' => $this->db->lastInsertId()
+		));
+
+		echo json_encode("success");
+
+	}
 
 /**
  *	getPageInfo - 
@@ -77,6 +113,9 @@ class Page_Model extends Model {
 			case 'edit' :
 				$adminNav = array(
 					array(
+						'name' => 'Edit: '
+					),
+					array(
 						'url' => "#", 
 						'name' => "<i class='fa fa-fw fa-arrows-alt'></i> Edit Layout",
 						'id' => "layoutTab",
@@ -88,7 +127,7 @@ class Page_Model extends Model {
 						'items' => array(
 							array(
 								'url' => '#',
-								'name' => 'Page',
+								'name' => 'Subpage',
 								'class' => 'addTab',
 								'data-id' => 'page'
 							),
@@ -107,7 +146,8 @@ class Page_Model extends Model {
 					),
 					array(
 						'url' => URL . $pageURL, 
-						'name' => "<i class='fa fa-fw fa-desktop'></i> View Page"
+						'name' => "<i class='fa fa-fw fa-desktop'></i> View Page",
+						'id' => "viewTab"
 					),
 					array(
 						'url' => "#", 

@@ -3,6 +3,7 @@
 class Image
 {
 	/**
+	 * fitImage 
 	 * @param string $sourceImg 	The path to the image to fit
 	 * @param string $destImg 		The path where the resized image will be saved
 	 * @param int $maxW 				Max width
@@ -27,6 +28,5 @@ class Image
 		// Destroys Imagick object, freeing allocated resources in the process
 		$image->destroy();
 	}
-
 }
 ?>

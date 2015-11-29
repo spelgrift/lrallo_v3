@@ -1,15 +1,11 @@
-<?php require 'views/inc/header.php'; ?>
-
-<div id="addContentModal" class="modal fade" tabindex="-1" role="dialog">
-	<div class="modal-dialog">
-		<div class="modal-content">
-		</div>
-	</div>
-</div>
+<?php 
+require 'views/inc/header.php'; 
+require 'views/inc/addContentForms/addPage.php';
+require 'views/inc/addContentForms/addText.php';
+?>
 
 
-<h2>Edit: <?php echo $this->pageName; ?></h2>
 <!-- <pre>
-<?php print_r($this) ?>
+<?php //print_r($this) ?>
 </pre> -->
 <?php require 'views/inc/footer.php'; ?>
