@@ -1,5 +1,4 @@
 var addContent = (function(){
-
 	/**
 	 * 
 	 * CACHE DOM
@@ -47,7 +46,7 @@ var addContent = (function(){
 			$pageMsg.html("<p class='text-danger'>You must enter a name!</p>");
 			$pageNameInput.focus();
 			clearMsg($pageMsg);
-			return false
+			return false;
 		}
 		// Check if taken here?
 
@@ -61,13 +60,13 @@ var addContent = (function(){
 					$pageMsg.html("<p class='text-danger'>You must enter a name!</p>");
 					$pageNameInput.focus();
 					clearMsg($pageMsg);
-					return false
+					return false;
 				}
 				if(data == "nameExists") {
 					$pageMsg.html("<p class='text-danger'>A page with that name already exists.</p>");
 					$pageNameInput.focus();
 					clearMsg($pageMsg);
-					return false
+					return false;
 				}
 				if(data == "success") {
 					$pageNameInput.val("");

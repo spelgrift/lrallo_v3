@@ -83,7 +83,7 @@ class Page extends Controller
 		// Add vars to view
 		$this->view->pageTitle = "Edit Page: $this->_pageName";
 		$this->view->pageName = $this->_pageName;
-		$this->view->js = array('editPage.js');
+		$this->view->js = array('addContent.js');
 		$this->view->adminNav = $this->model->adminNavArray('edit', $this->_pageURL);
 
 		// Render view
@@ -92,13 +92,14 @@ class Page extends Controller
 
 	public function addPage()
 	{
+		Auth::setAccess();
 		$this->model->addPage($this->_pageID);
 	}
 
 /**
- *	_parseURL - Iterate over url segments testing if there is a method
- *					If there is, break the loop and run the method based on current class page attr 
- * 				Methods apply to the parent page
+ *	_parseURL - Iterate over url segments, loading each page if it exists,
+ *					or testing if there is a method. If there is, break the 
+ *					loop and run the method based on the currently loaded page.
  *
  */
 	private function _parseURL($url)

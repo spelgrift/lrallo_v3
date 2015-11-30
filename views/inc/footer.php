@@ -6,7 +6,7 @@ if(Session::get('loggedIn') == true)
 }
 else
 {
-	$loginHtml = "<a href='" . URL . "login'>Login</a>";
+	$loginHtml = "<a id='login' href='" . URL . "login'>Login</a>";
 }
 
 ?>

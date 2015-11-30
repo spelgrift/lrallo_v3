@@ -17,13 +17,13 @@ class Auth
 			$role = $_SESSION['role'];
 			if($logged == false || $role != $clearance){
 				session_destroy();
-				header('location:'. URL . 'login');
+				header('location:'. URL);
 				exit;
 			}
 		} else {
 			if($logged == false){
 				session_destroy();
-				header('location:'. URL . 'login');
+				header('location:'. URL);
 				exit;
 			}
 		}

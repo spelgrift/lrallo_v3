@@ -33,6 +33,8 @@
 	if(Session::get('loggedIn') == true)
 	{
 		require 'views/inc/adminNav.php';
+	} else {
+		require 'views/inc/loginForm.php';
 	}
 ?>
 

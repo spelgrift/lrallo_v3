@@ -2,11 +2,7 @@
 
 class Login_Model extends Model {
 
-	function __construct(){
-		parent::__construct();
-
-	}
-
+	function __construct(){parent::__construct();}
 
 	public function run(){
 		$login = $_POST['login'];
@@ -19,11 +15,12 @@ class Login_Model extends Model {
 			Session::set('userid', $data[0]['userid']);
 			Session::set('role', $data[0]['role']);
 			Session::set('loggedIn', true);
-			header('location:'. URL . 'dashboard');
+			// header('location:'. URL . 'dashboard');
+			echo json_encode('success');
 		} else {
-			header('location:'. URL . 'login');
+			echo json_encode('error');
+			// header('location:'. URL . 'login');
 		}
-
 	}
 }
 
