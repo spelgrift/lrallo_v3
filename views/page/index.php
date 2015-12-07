@@ -1,9 +1,12 @@
 <?php require 'views/inc/header.php'; ?>
 
-
-<h2><?php echo $this->pageName; ?></h2>
-
-<?php echo $this->pageContent; ?>
-
+<div class='row'>
+<?php
+foreach($this->pageContent as $item)
+{
+	$this->renderContent($item);
+}
+?>
+</div>
 
 <?php require 'views/inc/footer.php'; ?>

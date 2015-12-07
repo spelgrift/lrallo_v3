@@ -85,6 +85,7 @@ class Page extends Controller
 		$this->view->pageName = $this->_pageName;
 		$this->view->js = array('addContent.js');
 		$this->view->adminNav = $this->model->adminNavArray('edit', $this->_pageURL);
+		$this->view->pageContent = $this->_loadContent($this->_pageID);
 
 		// Render view
 		$this->view->render('page/edit');
@@ -94,6 +95,12 @@ class Page extends Controller
 	{
 		Auth::setAccess();
 		$this->model->addPage($this->_pageID);
+	}
+
+	public function addText()
+	{
+		Auth::setAccess();
+		$this->model->addText($this->_pageID);
 	}
 
 /**
@@ -203,9 +210,8 @@ class Page extends Controller
 	}
 
 /**
- *	displayContent - 	Hit DB and retrieve content associated with this page.
- *							THIS COMPILES CONTENT DISPLAY HTML
- *							if no ID is given, retrieve and build html for Home content
+ *	loadContent - 	Hit DB and retrieve content associated with this page.
+ *						If not pageID given, load content for home page
  *
  */
 	private function _loadContent($pageID = false)

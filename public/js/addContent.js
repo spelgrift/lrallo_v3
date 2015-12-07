@@ -17,19 +17,32 @@ var addContent = (function(){
 
 	// Add Text
 	var $addTextModal = $('#addTextModal');
+	var $addTextArea = $('#newTextArea');
+	var $submitText = $('button#submitNewText');
+	var $textMsg = $('#textMsg');
 
 	/**
 	 * 
 	 * BIND EVENTS
 	 * 
 	 */
+
+	// Display modal based on which type is clicked
 	$addTab.on('click', function(ev) {
 		selectModal($(this).attr('data-id'));
 		ev.preventDefault();
 	});
 
+	// Submit Page
 	$submitPage.on('click', function(ev) {
 		submitPage();
+		ev.preventDefault();
+	});
+
+	// Submit Text
+
+	$submitText.on('click', function(ev) {
+		submitText();
 		ev.preventDefault();
 	});
 
@@ -55,26 +68,52 @@ var addContent = (function(){
 			type: 'POST',
 			url: pageURL + '/addPage',
 			data: { name : pageName },
+			dataType: 'json',
 			success: function( data ) {
-				if(data == "noName") {
-					$pageMsg.html("<p class='text-danger'>You must enter a name!</p>");
-					$pageNameInput.focus();
-					clearMsg($pageMsg);
-					return false;
-				}
-				if(data == "nameExists") {
-					$pageMsg.html("<p class='text-danger'>A page with that name already exists.</p>");
-					$pageNameInput.focus();
-					clearMsg($pageMsg);
-					return false;
-				}
-				if(data == "success") {
+				if(!data.error) {
+					// Success
 					$pageNameInput.val("");
 					$addPageModal.modal('hide');
 					// events.js - refresh content, etc.
+				} else {
+					// Error
+					$pageMsg.html("<p class='text-danger'>"+data.error_msg+"</p>");
+					$pageNameInput.focus();
+					clearMsg($pageMsg);
 				}
-			},
-			dataType: 'json'
+			}
+		});
+	}
+
+	function submitText() {
+		// Get user input
+		var newText = $addTextArea.val();
+		// Validate
+		if(newText.length < 1) {
+			$textMsg.html("<p class='text-danger'>Please enter some text!</p>");
+			$addTextArea.focus();
+			clearMsg($textMsg);
+			return false;
+		}
+		// Post to server
+		$.ajax({
+			type: 'POST',
+			url: pageURL + '/addText',
+			data: { text : newText },
+			dataType: 'json',
+			success: function( data ) {
+				if(!data.error) {
+					// Success
+					$addTextArea.val('');
+					$addTextModal.modal('hide');
+					// events.js - refresh content, etc.
+				} else {
+					// Error
+					$textMsg.html("<p class='text-danger'>"+data.error_msg+"</p>");
+					$addTextArea.focus();
+					clearMsg($textMsg);
+				}
+			}
 		});
 	}
 

@@ -4,13 +4,22 @@ class Page_Model extends Model {
 
 	function __construct(){parent::__construct();}
 
+/**
+ *
+ *	addPage - Adds subpage!
+ *
+ */
 	public function addPage($parentPageID)
 	{
 		$name = $_POST['name'];
 
 		// Validate length
 		if($name == ""){
-			echo json_encode("noName");
+			$results = array(
+				'error' => true,
+				'error_msg' => 'You must enter a name!'
+			);
+			echo json_encode($results);
 			return false;
 		}
 		// Create URL friendly string
@@ -20,7 +29,11 @@ class Page_Model extends Model {
 		// Make sure name/URL is not taken
 		$query = "SELECT * FROM content WHERE url = :url";
 		if($result = $this->db->select($query, array(':url' => $url))){
-			echo json_encode("nameExists");
+			$results = array(
+				'error' => true,
+				'error_msg' => 'A page with that name already exists.'
+			);
+			echo json_encode($results);
 			return false;
 		}
 
@@ -37,8 +50,46 @@ class Page_Model extends Model {
 			'contentid' => $this->db->lastInsertId()
 		));
 
-		echo json_encode("success");
+		$results = array('error' => false);
+		echo json_encode($results);
+	}
 
+/**
+ *
+ *	addText - Adds a text block to the page!
+ *
+ */
+	public function addText($parentPageID)
+	{
+		$text = $_POST['text'];
+
+		// Validate length
+		if($text == ""){
+			$results = array(
+				'error' => true,
+				'error_msg' => 'Please enter some text!'
+			);
+			echo json_encode($results);
+			return false;
+		}
+
+		// Advance position of existing content
+		$this->_advanceContentPositions($parentPageID);
+
+		// Content DB entry
+		$this->db->insert('content', array(
+			'type' => 'text',
+			'parentPageID' => $parentPageID
+		));
+
+		// Text DB entry
+		$this->db->insert('text', array(
+			'text' => $text,
+			'contentid' => $this->db->lastInsertId()
+		));
+
+		$results = array('error' => false);
+		echo json_encode($results);
 	}
 
 /**
@@ -78,18 +129,32 @@ class Page_Model extends Model {
 	{
 		if($pageid)
 		{
-			// SELECT * FROM content WHERE page = $pageid
-			return "Content for page $pageid";
+			$query = "SELECT contentID, type, position FROM content WHERE parentPageID = :parentPageID AND trashed = 0";
+			if($result = $this->db->select($query, array(':parentPageID' => $pageid)))
+			{
+				foreach($result as $key => $row)
+				{
+					if($a = $this->db->select("SELECT * FROM ".$row['type']." WHERE contentID = ".$row['contentID']))
+					{
+						foreach($a[0] as $typeKey => $value)
+						{
+							$result[$key][$typeKey] = $value;
+						}
+					}
+
+				}
+				return $result;
+			}
 		} 
 		else 
 		{
-			return "Home Page Content";
+			return array();
 		}
 		
 	}
 
 /**
- *	adminNavArray - Sets admin nav array for all page views
+ *	adminNavArray - Sets admin nav array for all given page view
  *	@param string $pageURL The URL for the view page button 
  *	@return array 
  *
@@ -160,6 +225,22 @@ class Page_Model extends Model {
 		return $adminNav;
 	}
 
-}
+/*
+ *
+ * UTILITY FUNCTIONS
+ *
+ */
 
+	private function _advanceContentPositions($parentPageID = 0)
+	{
+		if ($result = $this->db->select("SELECT position, contentID FROM content WHERE parentPageID = '".$parentPageID."'"))
+		{
+			foreach($result as $row)
+			{
+				$postData = array('position' => $row['position'] + 1);
+				$this->db->update('content', $postData, "`contentID` = ".$row['contentID']);
+			}
+		}
+	}
+}
 ?>
