@@ -36,6 +36,18 @@
 	} else {
 		require 'views/inc/loginForm.php';
 	}
+
+
+	if(isset($this->templates)){
+		foreach($this->templates as $template)
+		{
+			$templateID = $template['templateID'];
+			echo "<script type='text/template' id='$templateID'>";
+			$this->renderContent($template, true);
+			echo "</script>";
+		}
+	}
+
 ?>
 
 

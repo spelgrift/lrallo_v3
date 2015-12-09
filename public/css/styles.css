@@ -6776,11 +6776,6 @@ button.close {
   background: green;
   padding: 20px;
 }
-.contentItem {
-  border: 1px dashed #333;
-  min-height: 100px;
-  margin-bottom: 10px;
-}
 #pageList a {
   padding: 10px;
 }
@@ -6800,4 +6795,38 @@ button.close {
 }
 .inverse-dropdown > .divider {
   background-color: #000;
+}
+.contentItem {
+  border: 1px dashed #333;
+  min-height: 100px;
+  margin-bottom: 10px;
+}
+.adminContentControls {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 10;
+}
+.adminContentControls ul.contentControlMenu {
+  position: absolute;
+  top: 0;
+  right: -15px;
+  background-color: #fff;
+  list-style: none;
+  padding-left: 0;
+  display: none;
+}
+.adminContentControls ul.contentControlMenu li {
+  display: inline-block;
+  padding: 5px 10px;
+  color: #000;
+}
+.adminContentControls ul.contentControlMenu li a {
+  color: #777;
+}
+.adminContentControls ul.contentControlMenu li a:hover {
+  color: #000;
+}
+.adminContentControls ul.contentControlMenu li.handle {
+  cursor: move;
 }

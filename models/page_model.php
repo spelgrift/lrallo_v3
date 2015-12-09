@@ -81,14 +81,23 @@ class Page_Model extends Model {
 			'type' => 'text',
 			'parentPageID' => $parentPageID
 		));
+		$contentID = $this->db->lastInsertId();
 
 		// Text DB entry
 		$this->db->insert('text', array(
 			'text' => $text,
-			'contentid' => $this->db->lastInsertId()
+			'contentid' => $contentID
 		));
+		$textID = $this->db->lastInsertId();
 
-		$results = array('error' => false);
+
+		$results = array(
+			'error' => false,
+			'results' => array(
+				'contentID' => $contentID,
+				'textID' => $textID
+			)
+		);
 		echo json_encode($results);
 	}
 
@@ -122,14 +131,14 @@ class Page_Model extends Model {
 /**
  *	getPageContent
  *	@param string $pageid 
- *	@return mixed
+ *	@return array
  *
  */
 	public function getPageContent($pageid)
 	{
 		if($pageid)
 		{
-			$query = "SELECT contentID, type, position FROM content WHERE parentPageID = :parentPageID AND trashed = 0";
+			$query = "SELECT contentID, type, position FROM content WHERE parentPageID = :parentPageID AND trashed = 0 ORDER BY position ASC";
 			if($result = $this->db->select($query, array(':parentPageID' => $pageid)))
 			{
 				foreach($result as $key => $row)
@@ -145,12 +154,36 @@ class Page_Model extends Model {
 				}
 				return $result;
 			}
+			else
+			{
+				return array();
+			}
 		} 
 		else 
 		{
 			return array();
 		}
 		
+	}
+
+/**
+ *	buildTemplates - Populate array with mustache tags
+ *	@return array
+ *
+ */
+	public function buildTemplates()
+	{
+		$returnArray = array(
+			array(
+				'templateID' => 'textTemplate',
+				'type' => 'text',
+				'contentID' => "{{contentID}}",
+				'textID' => "{{textID}}",
+				'text' => "{{text}}"
+			)
+		);
+
+		return $returnArray;
 	}
 
 /**

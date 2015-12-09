@@ -83,9 +83,10 @@ class Page extends Controller
 		// Add vars to view
 		$this->view->pageTitle = "Edit Page: $this->_pageName";
 		$this->view->pageName = $this->_pageName;
-		$this->view->js = array('addContent.js');
+		$this->view->js = array('mustache.min.js','addContent.js', 'contentControls.js');
 		$this->view->adminNav = $this->model->adminNavArray('edit', $this->_pageURL);
 		$this->view->pageContent = $this->_loadContent($this->_pageID);
+		$this->view->templates = $this->model->buildTemplates();
 
 		// Render view
 		$this->view->render('page/edit');
@@ -217,13 +218,7 @@ class Page extends Controller
 	private function _loadContent($pageID = false)
 	{
 		$result = $this->model->getPageContent($pageID); // Returns array of rows from DB
-		// print_r($result);
-
-		// For each content item, set variables and include the view for the given type
-		// Append to HTML string
-		
 		return $result;
-
 	}
 }
 ?>

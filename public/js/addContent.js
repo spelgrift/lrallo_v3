@@ -4,6 +4,7 @@ var addContent = (function(){
 	 * CACHE DOM
 	 * 
 	 */
+	var $contentArea = $('#contentArea');
 	var $addTab = $('a.addTab');
 	var pageURL = $('a#viewTab').attr('href');
 
@@ -20,6 +21,7 @@ var addContent = (function(){
 	var $addTextArea = $('#newTextArea');
 	var $submitText = $('button#submitNewText');
 	var $textMsg = $('#textMsg');
+	var textTemplate = $('#textTemplate').html();
 
 	/**
 	 * 
@@ -106,6 +108,13 @@ var addContent = (function(){
 					// Success
 					$addTextArea.val('');
 					$addTextModal.modal('hide');
+					var newTextObject = {
+						contentID : data.results.contentID,
+						textID : data.results.textID,
+						text : newText
+					};
+					$contentArea.prepend(Mustache.render(textTemplate, newTextObject));
+
 					// events.js - refresh content, etc.
 				} else {
 					// Error
