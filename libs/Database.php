@@ -94,6 +94,11 @@ class Database extends PDO {
 		}
 
 		$sth->execute();
+		if ($sth->rowCount() > 0){
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 }

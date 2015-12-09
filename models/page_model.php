@@ -101,6 +101,19 @@ class Page_Model extends Model {
 		echo json_encode($results);
 	}
 
+	public function trashContent($contentID)
+	{
+		if($this->db->update('content', array('trashed' => 1), "`contentID` = " . $contentID))
+		{
+			echo json_encode(array('error' => false));
+		}
+		else
+		{
+			echo json_encode(array('error' => true));
+		}
+		
+	}
+
 /**
  *	getPageInfo - 
  *	@param string $url The page url
@@ -179,7 +192,7 @@ class Page_Model extends Model {
 				'type' => 'text',
 				'contentID' => "{{contentID}}",
 				'textID' => "{{textID}}",
-				'text' => "{{text}}"
+				'text' => "{{&text}}"
 			)
 		);
 

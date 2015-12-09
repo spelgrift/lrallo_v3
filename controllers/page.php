@@ -104,6 +104,14 @@ class Page extends Controller
 		$this->model->addText($this->_pageID);
 	}
 
+	public function trashContent($contentID)
+	{
+		if($_SERVER['REQUEST_METHOD'] == "DELETE")
+		{
+			$this->model->trashContent($contentID);
+		}
+	}
+
 /**
  *	_parseURL - Iterate over url segments, loading each page if it exists,
  *					or testing if there is a method. If there is, break the 
