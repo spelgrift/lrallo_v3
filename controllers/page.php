@@ -27,6 +27,11 @@ class Page extends Controller
  */
 	public function index($url = array())
 	{
+		// Instantiate content model
+		$this->loadModel('content', false);
+		$this->contentModel = new Content_Model();
+
+		// Set URL
 		$this->_URL = $url;
 
 		// If URL is empty, load home page
@@ -61,13 +66,6 @@ class Page extends Controller
 			}
 		}
 
-		// Add vars to view
-		$this->view->pageTitle = $this->_pageTitle;
-		$this->view->pageName = $this->_pageName;
-
-		// load content
-		$this->view->pageContent = $this->_loadContent($this->_pageID);
-
 		// Render Page 			
 		$this->view->render('page/index');
 	}
@@ -85,8 +83,8 @@ class Page extends Controller
 		$this->view->pageName = $this->_pageName;
 		$this->view->js = array('mustache.min.js','addContent.js', 'contentControls.js');
 		$this->view->adminNav = $this->model->adminNavArray('edit', $this->_pageURL);
-		$this->view->pageContent = $this->_loadContent($this->_pageID);
-		$this->view->templates = $this->model->buildTemplates();
+		$this->view->pageContent = $this->contentModel->getPageContent($this->_pageID);
+		$this->view->templates = $this->contentModel->buildTemplates();
 
 		// Render view
 		$this->view->render('page/edit');
@@ -95,20 +93,20 @@ class Page extends Controller
 	public function addPage()
 	{
 		Auth::setAccess();
-		$this->model->addPage($this->_pageID);
+		$this->contentModel->addPage($this->_pageID);
 	}
 
 	public function addText()
 	{
 		Auth::setAccess();
-		$this->model->addText($this->_pageID);
+		$this->contentModel->addText($this->_pageID);
 	}
 
 	public function trashContent($contentID)
 	{
 		if($_SERVER['REQUEST_METHOD'] == "DELETE")
 		{
-			$this->model->trashContent($contentID);
+			$this->contentModel->trashContent($contentID);
 		}
 	}
 
@@ -151,7 +149,7 @@ class Page extends Controller
 	}
 
 /**
- *	_callControllerMethod - 	Call method from URL
+ *	_callControllerMethod - Call method from URL
  *
  */
 	private function _callControllerMethod($urlKey)
@@ -163,7 +161,7 @@ class Page extends Controller
 	}
 
 /**
- *	_loadHome - 	Sets view vars with homepage info
+ *	_loadHome - Sets view vars with homepage info
  *					
  *
  */
@@ -176,8 +174,12 @@ class Page extends Controller
 		// Set admin nav for homepage
 		$this->view->adminNav = $this->model->adminNavArray('home', $this->_pageURL);
 
-		// display content
-		$this->view->pageContent = $this->_loadContent();
+		// Add vars to view
+		$this->view->pageTitle = $this->_pageTitle;
+		$this->view->pageName = $this->_pageName;
+
+		// load content
+		$this->view->pageContent = $this->contentModel->getPageContent();
 	}
 
 
@@ -215,18 +217,16 @@ class Page extends Controller
 		// Set admin nav array
 		$this->view->adminNav = $this->model->adminNavArray('index', $this->_pageURL);
 
+		// Add vars to view
+		$this->view->pageTitle = $this->_pageTitle;
+		$this->view->pageName = $this->_pageName;
+
+		// load content
+		$this->view->pageContent = $this->contentModel->getPageContent($this->_pageID);
+
 		return true;
 	}
 
-/**
- *	loadContent - 	Hit DB and retrieve content associated with this page.
- *						If not pageID given, load content for home page
- *
- */
-	private function _loadContent($pageID = false)
-	{
-		$result = $this->model->getPageContent($pageID); // Returns array of rows from DB
-		return $result;
-	}
+
 }
 ?>

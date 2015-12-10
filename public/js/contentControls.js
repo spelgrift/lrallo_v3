@@ -2,7 +2,13 @@ var contentControls = (function() {
 	var $contentArea = $('#contentArea');
 	var pageURL = $('a#viewTab').attr('href');
 
-	// Show/hide controls on mouseover
+/*
+ *
+ * BIND EVENTS
+ *
+ */
+
+	 // Show/hide controls on mouseover
 	$contentArea.on({
 		mouseenter: function() {
 			$(this).children('.adminContentControls').children('ul:first').stop(false,true).fadeIn('fast');
@@ -11,12 +17,6 @@ var contentControls = (function() {
     		$(this).children('.adminContentControls').children('ul:first').stop(false,true).fadeOut('fast');
 		}          
 	}, '.contentItem');
-
-	/*
-	 *
-	 * BIND EVENTS
-	 *
-	 */
 
 	// Trash Content
 	$contentArea.on('click', 'a.trashContent', function(ev) {
@@ -31,11 +31,12 @@ var contentControls = (function() {
 		}
 	});
 
-	/*
-	 *
-	 * FUNCTIONS
-	 *
-	 */
+/*
+ *
+ * FUNCTIONS
+ *
+ */
+ 
 	function trashContent(thisItem, contentID) {
 		$.ajax({
 			type: 'DELETE',
