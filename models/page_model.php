@@ -61,12 +61,14 @@ class Page_Model extends Model {
 					array(
 						'url' => "#", 
 						'name' => "<i class='fa fa-fw fa-arrows-alt'></i> Edit Layout",
-						'id' => "layoutTab",
-						'class' => 'active'
+						'data-tab' => 'contentArea',
+						'class' => ' adminTab active'
 					),
 					array(
 						'dropdown' => true,
 						'name' => "<i class='fa fa-fw fa-plus'></i> Add Content",
+						'class' => 'adminTab',
+						'data-tab' => 'contentArea',
 						'items' => array(
 							array(
 								'url' => '#',
@@ -85,7 +87,8 @@ class Page_Model extends Model {
 					array(
 						'url' => "#", 
 						'name' => "<i class='fa fa-fw fa-wrench'></i> Settings",
-						'id' => "settingsTab"
+						'class' => 'adminTab',
+						'data-tab' => 'pageSettings'
 					),
 					array(
 						'url' => URL . $pageURL, 

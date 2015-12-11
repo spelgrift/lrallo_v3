@@ -21,8 +21,11 @@
 				{
 					if(isset($row['dropdown']))
 					{
+						$dataTab = isset($row['data-tab']) ? "data-tab='" . $row['data-tab'] ."'" : "";
+						$class = isset($row['class']) ? "class='dropdown-toggle " . $row['class'] ."'" : "class='dropdown-toggle'";
+
 						echo "<li class='dropdown'>";
-						echo "<a href='#' class='dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true' aria-expanded='false'>" . $row['name'] . "</a>";
+						echo "<a href='#' $class $dataTab data-toggle='dropdown' role='button' aria-haspopup='true' aria-expanded='false'>" . $row['name'] . "</a>";
 						echo "<ul class='dropdown-menu inverse-dropdown'>";
 
 						foreach($row['items'] as $row)
@@ -46,8 +49,9 @@
 							$url = $row['url'];
 							$id = isset($row['id']) ? "id='" . $row['id'] ."'" : "";
 							$class = isset($row['class']) ? "class='" . $row['class'] ."'" : "";
+							$dataTab = isset($row['data-tab']) ? "data-tab='" . $row['data-tab'] ."'" : "";
 
-							echo "<li><a $id $class href='$url'>$name</a></li>";
+							echo "<li><a $id $class $dataTab href='$url'>$name</a></li>";
 						}
 						else
 						{
@@ -58,8 +62,7 @@
 						
 					}
 				}
-
-				?>
+			?>
 		</ul>
 	</div>
 </nav>

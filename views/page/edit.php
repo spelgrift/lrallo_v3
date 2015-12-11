@@ -10,12 +10,18 @@ require 'views/inc/addContentForms/addText.php';
 	// print_r($this->templates);
 ?>
 </pre> -->
-<div class='row' id='contentArea'>
+<div class='row tabPanel active' id='contentArea'>
 <?php
 foreach($this->pageContent as $item)
 {
 	$this->renderContent($item, true);
 }
 ?>
+</div>
+
+<div class='row tabPanel' id='pageSettings'>
+	<div class='col-sm-12'>
+		<h3>Page Settings</h3>
+	</div>
 </div>
 <?php require 'views/inc/footer.php'; ?>

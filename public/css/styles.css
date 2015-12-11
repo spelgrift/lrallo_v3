@@ -6782,6 +6782,10 @@ button.close {
 #adminNav i.fa {
   padding-right: 5px;
 }
+#adminNav > div > ul > li > a.active {
+  color: #fff;
+  cursor: text;
+}
 .inverse-dropdown {
   background-color: #222;
   border-color: #080808;
@@ -6795,6 +6799,12 @@ button.close {
 }
 .inverse-dropdown > .divider {
   background-color: #000;
+}
+.row.tabPanel {
+  display: none;
+}
+.row.tabPanel.active {
+  display: block;
 }
 .contentItem {
   border: 1px dashed #333;

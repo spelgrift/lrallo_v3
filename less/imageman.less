@@ -14,8 +14,10 @@
 		padding-right:5px;
 	}
 
-
-
+  &>div>ul>li>a.active {
+    color:#fff;
+    cursor: text;
+  }
 
 }
 
@@ -32,6 +34,16 @@
   &>.divider {
     background-color: #000;
   }
+}
+
+// Admin Nav Tabs & Panels
+
+.row.tabPanel {
+  display: none;
+}
+
+.row.tabPanel.active {
+  display:block;
 }
 
 // CONTENT

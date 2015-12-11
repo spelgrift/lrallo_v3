@@ -81,7 +81,7 @@ class Page extends Controller
 		// Add vars to view
 		$this->view->pageTitle = "Edit Page: $this->_pageName";
 		$this->view->pageName = $this->_pageName;
-		$this->view->js = array('mustache.min.js','addContent.js', 'contentControls.js');
+		$this->view->js = array('mustache.min.js', 'adminNav.js', 'addContent.js', 'contentControls.js');
 		$this->view->adminNav = $this->model->adminNavArray('edit', $this->_pageURL);
 		$this->view->pageContent = $this->contentModel->getPageContent($this->_pageID);
 		$this->view->templates = $this->contentModel->buildTemplates();
