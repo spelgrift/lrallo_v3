@@ -6810,33 +6810,32 @@ button.close {
   border: 1px dashed #333;
   min-height: 100px;
   margin-bottom: 10px;
-}
-.adminContentControls {
-  width: 100%;
-  height: 100%;
   position: relative;
-  z-index: 10;
 }
-.adminContentControls ul.contentControlMenu {
+.contentItem ul.contentControlMenu {
   position: absolute;
   top: 0;
-  right: -15px;
+  right: 0;
   background-color: #fff;
   list-style: none;
   padding-left: 0;
   display: none;
 }
-.adminContentControls ul.contentControlMenu li {
+.contentItem ul.contentControlMenu li {
   display: inline-block;
   padding: 5px 10px;
   color: #000;
 }
-.adminContentControls ul.contentControlMenu li a {
+.contentItem ul.contentControlMenu li a {
   color: #777;
 }
-.adminContentControls ul.contentControlMenu li a:hover {
+.contentItem ul.contentControlMenu li a:hover {
   color: #000;
 }
-.adminContentControls ul.contentControlMenu li.handle {
+.contentItem ul.contentControlMenu li.handle {
   cursor: move;
+}
+.contentItem .resizeContentControls {
+  display: none;
+  padding: 10px;
 }

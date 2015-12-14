@@ -95,11 +95,11 @@ class Page_Model extends Model {
 						'name' => "<i class='fa fa-fw fa-desktop'></i> View Page",
 						'id' => "viewTab"
 					),
-					array(
-						'url' => "#", 
-						'name' => "<i class='fa fa-fw fa-trash'></i>Delete Page",
-						'id' => "deletePage"
-					)
+					// array(
+					// 	'url' => "#", 
+					// 	'name' => "<i class='fa fa-fw fa-trash'></i>Delete Page",
+					// 	'id' => "deletePage"
+					// )
 				);
 				break;
 		}

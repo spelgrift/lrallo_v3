@@ -20,7 +20,7 @@ class Content_Model extends Model {
 	{
 		if($pageid) // PageID passed, get content for that page
 		{
-			$query = "SELECT contentID, type, position FROM content WHERE parentPageID = :parentPageID AND trashed = 0 ORDER BY position ASC";
+			$query = "SELECT contentID, type, position, xsWidth, smWidth, mdWidth, lgWidth, xsOffset, smOffset, mdOffset, lgOffset FROM content WHERE parentPageID = :parentPageID AND trashed = 0 ORDER BY position ASC";
 			if($result = $this->db->select($query, array(':parentPageID' => $pageid)))
 			{
 				foreach($result as $key => $row)
