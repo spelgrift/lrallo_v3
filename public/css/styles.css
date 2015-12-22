@@ -6839,3 +6839,13 @@ button.close {
   display: none;
   padding: 10px;
 }
+.contentItem .resizeContentControls .btn-group {
+  margin-bottom: 5px;
+}
+.contentItem .resizeContentControls select.form-control {
+  width: auto;
+  margin: 0 auto;
+}
+.contentItem .resizeContentControls p {
+  font-size: .8em;
+}

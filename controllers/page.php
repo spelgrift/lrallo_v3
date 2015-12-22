@@ -90,6 +90,12 @@ class Page extends Controller
 		$this->view->render('page/edit');
 	}
 
+	public function saveResize($contentID)
+	{
+		Auth::setAccess();
+		$this->contentModel->saveResize($contentID);
+	}
+
 	public function addPage()
 	{
 		Auth::setAccess();

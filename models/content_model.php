@@ -20,7 +20,7 @@ class Content_Model extends Model {
 	{
 		if($pageid) // PageID passed, get content for that page
 		{
-			$query = "SELECT contentID, type, position, xsWidth, smWidth, mdWidth, lgWidth, xsOffset, smOffset, mdOffset, lgOffset FROM content WHERE parentPageID = :parentPageID AND trashed = 0 ORDER BY position ASC";
+			$query = "SELECT contentID, type, position, bootstrap FROM content WHERE parentPageID = :parentPageID AND trashed = 0 ORDER BY position ASC";
 			if($result = $this->db->select($query, array(':parentPageID' => $pageid)))
 			{
 				foreach($result as $key => $row)
@@ -58,6 +58,7 @@ class Content_Model extends Model {
 				'templateID' => 'textTemplate',
 				'type' => 'text',
 				'contentID' => "{{contentID}}",
+				'bootstrap' => 'col-sm-12',
 				'textID' => "{{textID}}",
 				'text' => "{{&text}}"
 			)
@@ -76,6 +77,18 @@ class Content_Model extends Model {
 		{
 			echo json_encode(array('error' => true));
 		}		
+	}
+
+	public function saveResize($contentID)
+	{
+		if($this->db->update('content', array('bootstrap' => $_POST['classes']), "`contentID` = " . $contentID))
+		{
+			echo json_encode(array('error' => false));
+		}
+		else
+		{
+			echo json_encode(array('error' => true));
+		}
 	}
 
 /*
