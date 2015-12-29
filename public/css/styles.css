@@ -6808,6 +6808,7 @@ button.close {
 }
 .contentItem {
   border: 1px dashed #333;
+  background-color: white;
   min-height: 100px;
   margin-bottom: 10px;
   position: relative;

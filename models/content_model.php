@@ -9,6 +9,22 @@ class Content_Model extends Model {
  * GENERAL FUNCTIONS - FOR ALL CONTENT TYPES
  *
  */
+	
+	/**
+	 *	sortContent
+	 *
+	 */
+	public function sortContent()
+	{
+		if(isset($_POST['listItem']))
+		{
+			foreach($_POST['listItem'] as $position => $ID)
+			{
+				$this->db->update('content', array('position' => $position), "`contentID` = " . $ID);
+			}
+		}
+	}
+
 
 	/**
 	 *	getPageContent
@@ -49,11 +65,10 @@ class Content_Model extends Model {
 	/**
 	 *	buildTemplates - Populate array with mustache tags
 	 *	@return array
-	 *
 	 */
 	public function buildTemplates()
 	{
-		$returnArray = array(
+		return array(
 			array(
 				'templateID' => 'textTemplate',
 				'type' => 'text',
@@ -63,8 +78,6 @@ class Content_Model extends Model {
 				'text' => "{{&text}}"
 			)
 		);
-
-		return $returnArray;
 	}
 
 	public function trashContent($contentID)
@@ -93,7 +106,7 @@ class Content_Model extends Model {
 
 /*
  *
- * PAGE FUNCTIONS
+ * PAGE TYPE FUNCTIONS
  *
  */
 
@@ -146,7 +159,7 @@ class Content_Model extends Model {
 
 /**
  *
- *	TEXT FUNCTIONS
+ *	TEXT TYPE FUNCTIONS
  *
  */
 
@@ -210,7 +223,6 @@ class Content_Model extends Model {
 			}
 		}
 	}
-
 }
 
 ?>

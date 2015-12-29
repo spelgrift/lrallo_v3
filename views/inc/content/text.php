@@ -1,4 +1,12 @@
-<div class='<?php echo $class; ?>'>
+<?php
+if($adminControls){
+	$attr = "class='$class' id='$id'";
+} else {
+	$attr = "class='$class'";
+}
+?>
+
+<div <?php echo $attr; ?>>
 <?php 
 if($adminControls) {
 	require 'views/inc/content/adminControls/textControls.php';

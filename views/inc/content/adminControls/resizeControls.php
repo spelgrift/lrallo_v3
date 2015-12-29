@@ -10,7 +10,7 @@
 				<i class="fa fa-plus fa-fw"></i>
 			</button>
 
-			<button type='button' class='btn btn-sm btn-default resetCurrent' title='Reset for current screen size'>
+			<button type='button' class='btn btn-sm btn-default resetBlock' title='Reset block'>
 				<i class="fa fa-undo fa-fw"></i>
 			</button>
 

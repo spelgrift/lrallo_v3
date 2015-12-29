@@ -15,6 +15,7 @@ class View {
 		public function renderContent($contentObject = array(), $adminControls = false)
 		{
 			$class = "contentItem ".$contentObject['bootstrap'];
+			$id = "listItem_".$contentObject['contentID'];
 
 			switch($contentObject['type'])
 			{
