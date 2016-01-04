@@ -29,6 +29,17 @@ var contentControls = (function() {
 		}
 	});
 
+	// Delete Spacer
+	$contentArea.on('click', 'a.deleteSpacer', function(ev) {
+		ev.preventDefault();
+		var contentID = $(this).closest('.spacerControls').attr('id'),
+		$thisItem = $(this).closest('.contentItem');
+
+		if(confirm('Are you sure you want to delete this spacer?')){
+			deleteSpacer($thisItem, contentID);
+		}
+	})
+
 	// Content Sortable
 	$contentArea.sortable({
 		handle : '.handle',
@@ -50,13 +61,28 @@ var contentControls = (function() {
  			success: function(){
  				// console.log("sorted!");
  			}
- 		})
+ 		});
  	}
 
 	function trashContent(thisItem, contentID) {
 		$.ajax({
 			type: 'DELETE',
 			url: pageURL + '/trashContent/' + contentID,
+			dataType: 'json',
+			success: function(data) {
+				if(!data.error) {
+					thisItem.fadeOut(300, function() {
+						$(this).remove();
+					});
+				}
+			}
+		});
+	}
+
+	function deleteSpacer(thisItem, contentID) {
+		$.ajax({
+			type: 'DELETE',
+			url: pageURL + '/deleteSpacer/' + contentID,
 			dataType: 'json',
 			success: function(data) {
 				if(!data.error) {

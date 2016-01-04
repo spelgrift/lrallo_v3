@@ -57,7 +57,7 @@
 						{
 							$name = $row['name'];
 
-							echo "<p class='navbar-text'><strong>$name</strong>" . $this->pageName . "</p>";
+							echo "<p class='navbar-text'><strong>$name</strong>" . $this->pageAttr['name'] . "</p>";
 						}
 						
 					}

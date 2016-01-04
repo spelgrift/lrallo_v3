@@ -5,7 +5,8 @@ var contentResize = (function() {
 
 	// Config
 	var minColWidth = 3,
-	defaultClasses = 'contentItem col-sm-12';
+	defaultClasses = 'contentItem editContent col-xs-12',
+	resizeControlsHeight = '171px';
 
 	getScreenSize();
 
@@ -33,109 +34,90 @@ var contentResize = (function() {
  *
  */
 
-	function initResize(thisItem) {
+	function initResize($thisItem) {
 		// Cache DOM for this block
-		var $thisItem = thisItem,
-		startingHeight = $thisItem.css("height"),
-		$thisContent = $thisItem.find('.content'),
+		var $thisContent = $thisItem.find('.content'),
 		$thisControls = $thisItem.find('ul.contentControlMenu'),
 		$thisResizeControls = $thisItem.find('.resizeContentControls'),
 		targetSize = $thisItem.find('select.targetSize').val(),
-		targetWidthClass,
-		targetOffsetClass,
-		targetWidth,
-		targetOffset,
+		target,
 		startingClasses = getClassArray($thisItem),
 		controlHtml = $thisControls.html(),
 		contentID = $thisControls.attr('id');
 
-		$thisItem.css('min-height', startingHeight);
+		$thisItem.css('min-height', resizeControlsHeight);
 		updateScreenSizeUI();
 
-		// Show resize controls
-		$thisContent.hide();
+		// Show resize controls and hide content but maintain space on the page
+		$thisContent.css('visibility', 'hidden');
 		$thisResizeControls.show();
 		$thisControls.html('');
 
-		// Remove contentItem class
-		var classList = $.grep(startingClasses, function(a) {
- 			return a !== "contentItem";
- 		});
+		target = buildTarget($thisItem, targetSize);
 
-		// Get target classes for current target size
-		targetWidthClass = getTargetClass(classList, targetSize, 'width');
-		targetOffsetClass = getTargetClass(classList, targetSize, 'offset');
-
-		// Get current width and offset (int) for target size
-		targetWidth = getTarget(targetWidthClass, 'width');
-		targetOffset = getTarget(targetOffsetClass, 'offset');
-
-		// On target size change, update target classes and values
+		// On target size change, update target object with classes and values
 		$thisItem.on('change', '.targetSize', function() {
 			targetSize = $(this).val();
-			targetWidthClass = getTargetClass(classList, targetSize, 'width');
-			targetOffsetClass = getTargetClass(classList, targetSize, 'offset');
-			targetWidth = getTarget(targetWidthClass, 'width');
-			targetOffset = getTarget(targetOffsetClass, 'offset');
+			target = buildTarget($thisItem, targetSize);
 		});
 
 		// Increase Width
 		$thisItem.on('click', '.increaseWidth', function() {
 			var newClass, newWidth;
-			if(targetWidth + targetOffset < 12){
-				newWidth = targetWidth + 1;
+			if(target.width + target.offset < 12){
+				newWidth = target.width + 1;
 				newClass = "col-"+targetSize+"-"+newWidth.toString();
-				if(targetWidthClass.length > 0) {
-					$thisItem.removeClass(targetWidthClass);
+				if(target.widthClass.length > 0) {
+					$thisItem.removeClass(target.widthClass);
 				}
 				$thisItem.addClass(newClass);
-				targetWidth = newWidth;
-				targetWidthClass = newClass;
+				target.width = newWidth;
+				target.widthClass = newClass;
 			}
 		});
 
 		// Decrease Width
 		$thisItem.on('click', '.decreaseWidth', function() {
 			var newClass, newWidth;
-			if(targetWidth > minColWidth){
-				newWidth = targetWidth - 1;
+			if(target.width > minColWidth){
+				newWidth = target.width - 1;
 				newClass = "col-"+targetSize+"-"+newWidth.toString();
-				if(targetWidthClass.length > 0) {
-					$thisItem.removeClass(targetWidthClass);
+				if(target.widthClass.length > 0) {
+					$thisItem.removeClass(target.widthClass);
 				}
 				$thisItem.addClass(newClass);
-				targetWidth = newWidth;
-				targetWidthClass = newClass;
+				target.width = newWidth;
+				target.widthClass = newClass;
 			}
 		});
 
 		// Increase Offset
 		$thisItem.on('click', '.increaseOffset', function() {
 			var newClass, newOffset;
-			if(targetOffset + targetWidth < 12){
-				newOffset = targetOffset + 1;
+			if(target.offset + target.width < 12){
+				newOffset = target.offset + 1;
 				newClass = "col-"+targetSize+"-offset-"+newOffset.toString();
-				if(targetOffsetClass.length > 0) {
-					$thisItem.removeClass(targetOffsetClass);
+				if(target.offsetClass.length > 0) {
+					$thisItem.removeClass(target.offsetClass);
 				}
 				$thisItem.addClass(newClass);
-				targetOffset = newOffset;
-				targetOffsetClass = newClass;
+				target.offset = newOffset;
+				target.offsetClass = newClass;
 			}
 		});
 
 		// Decrease Offset
 		$thisItem.on('click', '.decreaseOffset', function() {
 			var newClass, newOffset;
-			if(targetOffset > 0){
-				newOffset = targetOffset - 1;
+			if(target.offset > 0){
+				newOffset = target.offset - 1;
 				newClass = "col-"+targetSize+"-offset-"+newOffset.toString();
-				if(targetOffsetClass.length > 0) {
-					$thisItem.removeClass(targetOffsetClass);
+				if(target.offsetClass.length > 0) {
+					$thisItem.removeClass(target.offsetClass);
 				}
 				$thisItem.addClass(newClass);
-				targetOffset = newOffset;
-				targetOffsetClass = newClass;
+				target.offset = newOffset;
+				target.offsetClass = newClass;
 			}
 		});
 
@@ -143,10 +125,7 @@ var contentResize = (function() {
 		$thisItem.on('click', '.resetBlock', function() {
 			$thisItem.removeClass().addClass(defaultClasses);
 			targetSize = $thisItem.find('select.targetSize').val();
-			targetWidthClass = getTargetClass(classList, targetSize, 'width');
-			targetOffsetClass = getTargetClass(classList, targetSize, 'offset');
-			targetWidth = getTarget(targetWidthClass, 'width');
-			targetOffset = getTarget(targetOffsetClass, 'offset');
+			target = buildTarget($thisItem, targetSize);
 		})
 
 		// Save button
@@ -158,6 +137,144 @@ var contentResize = (function() {
 		$thisItem.on('click', '.cancelResize', function() {
 			cancelResize($thisItem, controlHtml, startingClasses);
 		});
+	}
+
+	function saveResize(thisItem, contentID, controlHtml) {
+		var classes = $.grep(getClassArray(thisItem), function(a) {
+ 			return (a !== "contentItem" && a !== "editContent");
+ 		}).join(" ");
+ 		$.ajax({
+			type: 'POST',
+			url: pageURL + '/saveResize/' + contentID,
+			data: { classes : classes },
+			dataType: 'json',
+			success: function(data) {
+				if(!data.error) {
+					thisItem.find('.resizeContentControls').hide();
+					// thisItem.find('.content').show();
+					thisItem.find('.content').css('visibility', '');
+					thisItem.find('ul.contentControlMenu').html(controlHtml);
+					thisItem.css('min-height', '');
+				}
+			}
+		});
+
+	}
+
+	function cancelResize(thisItem, controlHtml, startingClasses) {
+		thisItem.removeClass().addClass(startingClasses.join(" "));
+		thisItem.find('.resizeContentControls').hide();
+		thisItem.find('.content').css('visibility', '');
+		thisItem.find('ul.contentControlMenu').html(controlHtml);
+		thisItem.css('min-height', '');
+	}
+
+/*
+ *
+ * UTILITY FUNCTIONS
+ *
+ */
+
+ 	function getClassArray(selector) {
+ 		return selector.attr('class').split(/\s+/);
+ 	}
+
+ 	function buildTarget($thisItem, targetSize) {
+		var target = {},
+		classList = $.grep(getClassArray($thisItem), function(a) {
+			return (a !== "contentItem" && a !== "editContent");
+		});
+
+		// Get target classes for current target size
+		target.widthClass = getTargetClass(classList, targetSize, 'width');
+		target.offsetClass = getTargetClass(classList, targetSize, 'offset');
+
+		// Get current width and offset (int) for target size
+		// If no class yet, get width/offset of the next size down until target is found. This is messy :(
+		if(target.widthClass.length > 0) {
+			target.width = getTarget(target.widthClass, 'width');
+		} else {
+			var testWidthClass, testSize;
+			switch(targetSize) {
+				case "lg":
+					testSize = "md";
+					testWidthClass = getTargetClass(classList, testSize, 'width');
+					if(testWidthClass.length == 0) {
+						testSize = "sm";
+						testWidthClass = getTargetClass(classList, testSize, 'width');
+						if(testWidthClass.length == 0) {
+							testSize = "xs";
+							testWidthClass = getTargetClass(classList, testSize, 'width');
+							break;
+						} else {
+							break;
+						}
+					} else {
+						break;
+					}
+				case "md":
+					testSize = "sm";
+					testWidthClass = getTargetClass(classList, testSize, 'width');
+					if(testWidthClass.length == 0) {
+						testSize = "xs";
+						testWidthClass = getTargetClass(classList, testSize, 'width');
+						break;
+					} else {
+						break;
+					}
+				case "sm":
+					testSize = "xs";
+					testWidthClass = getTargetClass(classList, testSize, 'width');
+					break;
+			}
+			target.width = getTarget(testWidthClass, 'width');
+		}
+
+		if(target.offsetClass.length > 0) {
+			target.offset = getTarget(target.offsetClass, 'offset');
+		} else {
+			var testOffsetClass, testSize;
+			switch(targetSize) {
+				case "lg":
+					testSize = "md";
+					testOffsetClass = getTargetClass(classList, testSize, 'offset');
+					if(testOffsetClass.length == 0) {
+						testSize = "sm";
+						testOffsetClass = getTargetClass(classList, testSize, 'offset');
+						if(testOffsetClass.length == 0) {
+							testSize = "xs";
+							testOffsetClass = getTargetClass(classList, testSize, 'offset');
+							break;
+						} else {
+							break;
+						}
+					} else {
+						break;
+					}
+				case "md":
+					testSize = "sm";
+					testOffsetClass = getTargetClass(classList, testSize, 'offset');
+					if(testOffsetClass.length == 0) {
+						testSize = "xs";
+						testOffsetClass = getTargetClass(classList, testSize, 'offset');
+						break;
+					} else {
+						break;
+					}
+				case "sm":
+					testSize = "xs";
+					testOffsetClass = getTargetClass(classList, testSize, 'offset');
+					break;
+				case "xs":
+					testOffsetClass = target.offsetClass;
+					break;
+			}
+			target.offset = getTarget(testOffsetClass, 'offset');
+		}
+
+		// console.log(target);
+
+		return target;
 	}
 
 	function getTargetClass(classList, targetSize, type) {
@@ -182,45 +299,6 @@ var contentResize = (function() {
 		}
 		return Number(targetClass.match(/\d+/)[0]);
 	}
-
-	function saveResize(thisItem, contentID, controlHtml) {
-		var classes = $.grep(getClassArray(thisItem), function(a) {
- 			return a !== "contentItem";
- 		}).join(" ");
- 		$.ajax({
-			type: 'POST',
-			url: pageURL + '/saveResize/' + contentID,
-			data: { classes : classes },
-			dataType: 'json',
-			success: function(data) {
-				if(!data.error) {
-					thisItem.find('.resizeContentControls').hide();
-					thisItem.find('.content').show();
-					thisItem.find('ul.contentControlMenu').html(controlHtml);
-					thisItem.css('min-height', '');
-				}
-			}
-		});
-
-	}
-
-	function cancelResize(thisItem, controlHtml, startingClasses) {
-		thisItem.removeClass().addClass(startingClasses.join(" "));
-		thisItem.find('.resizeContentControls').hide();
-		thisItem.find('.content').show();
-		thisItem.find('ul.contentControlMenu').html(controlHtml);
-		thisItem.css('min-height', '');
-	}
-
-/*
- *
- * UTILITY FUNCTIONS
- *
- */
-
- 	function getClassArray(selector) {
- 		return selector.attr('class').split(/\s+/);
- 	}
 
  	function getScreenSize() {
  		var currentWidth = window.innerWidth;

@@ -11,22 +11,6 @@ class Content_Model extends Model {
  */
 	
 	/**
-	 *	sortContent
-	 *
-	 */
-	public function sortContent()
-	{
-		if(isset($_POST['listItem']))
-		{
-			foreach($_POST['listItem'] as $position => $ID)
-			{
-				$this->db->update('content', array('position' => $position), "`contentID` = " . $ID);
-			}
-		}
-	}
-
-
-	/**
 	 *	getPageContent
 	 *	@param string $pageid 
 	 *	@return array
@@ -73,9 +57,15 @@ class Content_Model extends Model {
 				'templateID' => 'textTemplate',
 				'type' => 'text',
 				'contentID' => "{{contentID}}",
-				'bootstrap' => 'col-sm-12',
+				'bootstrap' => 'col-xs-12',
 				'textID' => "{{textID}}",
 				'text' => "{{&text}}"
+			),
+			array(
+				'templateID' => 'spacerTemplate',
+				'type' => 'spacer',
+				'contentID' => "{{contentID}}",
+				'bootstrap' => 'col-xs-12'
 			)
 		);
 	}
@@ -92,16 +82,27 @@ class Content_Model extends Model {
 		}		
 	}
 
+	public function deleteContent($contentID)
+	{
+		$this->db->delete('content', "`contentID` = $contentID");
+		echo json_encode(array('error' => false));
+	}
+
+	public function sortContent()
+	{
+		if(isset($_POST['listItem']))
+		{
+			foreach($_POST['listItem'] as $position => $ID)
+			{
+				$this->db->update('content', array('position' => $position), "`contentID` = " . $ID);
+			}
+		}
+	}
+
 	public function saveResize($contentID)
 	{
-		if($this->db->update('content', array('bootstrap' => $_POST['classes']), "`contentID` = " . $contentID))
-		{
-			echo json_encode(array('error' => false));
-		}
-		else
-		{
-			echo json_encode(array('error' => true));
-		}
+		$this->db->update('content', array('bootstrap' => $_POST['classes']), "`contentID` = " . $contentID);
+		echo json_encode(array('error' => false));
 	}
 
 /*
@@ -202,6 +203,33 @@ class Content_Model extends Model {
 				'contentID' => $contentID,
 				'textID' => $textID
 			)
+		);
+		echo json_encode($results);
+	}
+
+/**
+ *
+ *	SPACER TYPE FUNCTIONS
+ *
+ */
+	
+	// Add Spacer
+
+	public function addSpacer($parentPageID)
+	{
+		// Advance positions of existing content
+		$this->_advanceContentPositions($parentPageID);
+
+		// Content DB entry
+		$this->db->insert('content', array(
+			'type' => 'spacer',
+			'parentPageID' => $parentPageID
+		));
+		$contentID = $this->db->lastInsertId();
+
+		$results = array(
+			'error' => false,
+			'results' => array('contentID' => $contentID)
 		);
 		echo json_encode($results);
 	}

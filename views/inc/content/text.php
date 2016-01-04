@@ -1,6 +1,6 @@
 <?php
 if($adminControls){
-	$attr = "class='$class' id='$id'";
+	$attr = "class='$class editContent' id='$id'";
 } else {
 	$attr = "class='$class'";
 }

@@ -81,6 +81,12 @@ class Page_Model extends Model {
 								'name' => 'Text',
 								'class' => 'addTab',
 								'data-id' => 'text'
+							),
+							array(
+								'url' => '#',
+								'name' => 'Spacer',
+								'class' => 'addTab',
+								'data-id' => 'spacer'
 							)
 						)
 					),
@@ -104,6 +110,46 @@ class Page_Model extends Model {
 				break;
 		}
 		return $adminNav;
+	}
+
+/**
+ *	listPages - Builds array of all existing, non-trashed pages with subpages as sub-arrays
+ *	@return array 
+ *
+ */
+	public function listPages()
+	{
+		return $this->_getPageArrayRecursive("0");
+	}
+
+	private function _getPageArrayRecursive($parentPageID)
+	{
+		$returnArray = array();
+
+			if($result = $this->db->select("SELECT contentID, url, parentPageID FROM content WHERE type = 'page' AND trashed = '0' AND parentPageID = $parentPageID"))
+			{
+				foreach($result as $row)
+				{
+					$pageArray = array(
+						'contentID' => $row['contentID'],
+						'url' => $row['url'],
+						'parentPageID' => $row['parentPageID']
+					);
+					if($result = $this->db->select("SELECT pageID, name FROM page WHERE contentID = '".$row['contentID']."'"))
+					{
+						foreach($result as $row)
+						{
+							$pageArray['pageID'] = $row['pageID'];
+							$pageArray['name'] = $row['name'];
+						}
+					}
+
+					$pageArray['subPages'] = $this->_getPageArrayRecursive($pageArray['pageID']);
+
+					$returnArray[] = $pageArray;
+				}
+			}
+			return $returnArray;
 	}
 }
 ?>

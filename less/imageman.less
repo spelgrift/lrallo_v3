@@ -37,29 +37,45 @@
 
 // Admin Nav Tabs & Panels
 
-.row.tabPanel {
+.tabPanel {
   display: none;
 }
 
-.row.tabPanel.active {
+.tabPanel.active {
   display:block;
 }
 
 // CONTENT
 
 .contentItem {
-  border: 1px dashed #333;
   background-color: white;
   min-height: 100px;
   margin-bottom:10px;
   position:relative;
 
+  &.editContent {
+    .content {
+      border: 1px dashed #333;
+    }
+    
+  }
+
+  &.spacer {
+    min-height:0;
+    margin-bottom: 0;
+  }
+
+  &.spacer.editContent {
+    margin-bottom:10px;
+    border: 1px dashed #333;
+  }
+
   // Content Controls
 
   ul.contentControlMenu {
     position:absolute;
-    top:0;
-    right:0;
+    top:1px;
+    right:7px;
     background-color: #fff;
     list-style: none;
     padding-left:0;
@@ -83,9 +99,41 @@
     }
   }
 
+  ul.spacerControls {
+    position:relative;
+    right:-5px;
+    background-color: #fff;
+    list-style: none;
+    padding-left:0;
+    margin-bottom: 0;
+
+    li{
+      display:inline-block;
+      padding: 5px 10px;
+      color: #000;
+      a{
+        color:#777;
+        &:hover{
+          color:#000;
+        }
+      }
+
+      &.handle{
+        cursor:move;
+      }
+    }
+  }
+
   .resizeContentControls {
     display:none;
-    padding: 10px;
+    position:absolute;
+    left:0;
+    right:0;
+    top:0;
+    bottom:0;
+    margin: 0 5px;
+    padding:10px;
+    border: 1px dashed #333;
 
     .btn-group {
       margin-bottom:5px;
@@ -100,6 +148,7 @@
     }
   }
 }
+
 
 
 

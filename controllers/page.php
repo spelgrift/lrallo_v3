@@ -10,13 +10,8 @@ class Page extends Controller
 	private $_urlKey = null;
 
 	// Page Attributes
-	private $_pageID = null;
-	private $_pageName = null;
-	private $_pageTitle = null;
-	private $_pageURL = null;
-	private $_contentID = null;
-	private $_parentPageID = 0;	// default
-	private $_parentPageURL = null;
+	private $_pageAttrArray = array('pageID' => 0);
+	private $_pageURL = null; // For building subpage path
 
 /**
  *	index - 		Builds page from DB elements and views.
@@ -39,7 +34,7 @@ class Page extends Controller
 		{
 			$this->_loadHome();
 		}
-		// Method or subpage(s) passed in URL, loop over url array
+		// Method or subpage(s) passed in URL, loop over url array, loading each page or calling method
 		else if(count($url) > 1) 
 		{
 			$result = $this->_parseURL($this->_URL);
@@ -78,14 +73,19 @@ class Page extends Controller
 	public function edit()
 	{
 		Auth::setAccess();
-		// Add vars to view
-		$this->view->pageTitle = "Edit Page: $this->_pageName";
-		$this->view->pageName = $this->_pageName;
-		$this->view->js = array('mustache.min.js', 'adminNav.js', 'addContent.js', 'contentControls.js', 'contentResize.js');
-		$this->view->adminNav = $this->model->adminNavArray('edit', $this->_pageURL);
-		$this->view->pageContent = $this->contentModel->getPageContent($this->_pageID);
+		// Pass page attributes to view
+		$this->view->pageAttr = $this->_pageAttrArray;
+		$this->view->pageTitle = "Edit Page: ".$this->_pageAttrArray['name'];
+		// Build page list for parent select
+		$this->view->pageList = $this->model->listPages();
+		// Admin Nav
+		$this->view->adminNav = $this->model->adminNavArray('edit', $this->_pageAttrArray['path']);
+		// Content
+		$this->view->pageContent = $this->contentModel->getPageContent($this->_pageAttrArray['pageID']);
+		// Templates
 		$this->view->templates = $this->contentModel->buildTemplates();
-
+		// Javascript
+		$this->view->js = array('mustache.min.js', 'adminNav.js', 'addContent.js', 'contentControls.js', 'contentResize.js');
 		// Render view
 		$this->view->render('page/edit');
 	}
@@ -104,13 +104,19 @@ class Page extends Controller
 	public function addPage()
 	{
 		Auth::setAccess();
-		$this->contentModel->addPage($this->_pageID);
+		$this->contentModel->addPage($this->_pageAttrArray['pageID']);
 	}
 
 	public function addText()
 	{
 		Auth::setAccess();
-		$this->contentModel->addText($this->_pageID);
+		$this->contentModel->addText($this->_pageAttrArray['pageID']);
+	}
+
+	public function addSpacer()
+	{
+		Auth::setAccess();
+		$this->contentModel->addSpacer($this->_pageAttrArray['pageID']);
 	}
 
 	public function trashContent($contentID)
@@ -118,6 +124,14 @@ class Page extends Controller
 		if($_SERVER['REQUEST_METHOD'] == "DELETE")
 		{
 			$this->contentModel->trashContent($contentID);
+		}
+	}
+
+	public function deleteSpacer($contentID)
+	{
+		if($_SERVER['REQUEST_METHOD'] == "DELETE")
+		{
+			$this->contentModel->deleteContent($contentID);
 		}
 	}
 
@@ -193,8 +207,6 @@ class Page extends Controller
 		$this->view->pageContent = $this->contentModel->getPageContent();
 	}
 
-
-
 /**
  *	_loadPage - hits DB and saves page info to the class. Returns false if page does not exist
  * @param string $url - The user defined page URL
@@ -202,42 +214,40 @@ class Page extends Controller
  */
 	private function _loadPage($url)
 	{
+		// Make sure page exists
 		if(!$result = $this->model->getPageInfo($url))
 		{
 			return false;
 		}
 
-		if(!$result['parentPageID'] == $this->_pageID) // Make sure parent page is valid 
+		// Make sure parent page is valid
+		if(!$result['parentPageID'] == $this->_pageAttrArray['pageID'])  
 		{
 			return false;
 		}
 
-		// Set page vars
-		$this->_pageID = $result['pageID'];
-		$this->_pageName = $result['name'];
-		$this->_pageTitle = $result['name'];
-		$this->_contentID = $result['contentID'];
-		$this->_parentPageID = $result['parentPageID'];
+		// Save full result array to class
+		$this->_pageAttrArray = $result;
 
-		if($this->_parentPageID == 0) {
-			$this->_pageURL = $result['url'];
+		// If page has a parent, build the path from the URLs from the previously loaded pages, otherwise, save the URL
+		if($this->_pageAttrArray['parentPageID'] != 0) {
+			$this->_pageAttrArray['path'] = $this->_pageURL . "/" . $result['url'];
+			$this->_pageURL = $this->_pageAttrArray['path'];			
 		} else {
-			$this->_pageURL = $this->_pageURL . "/" . $result['url'];
+			$this->_pageAttrArray['path'] = $result['url'];
+			$this->_pageURL = $result['url'];
 		}
 
 		// Set admin nav array
-		$this->view->adminNav = $this->model->adminNavArray('index', $this->_pageURL);
+		$this->view->adminNav = $this->model->adminNavArray('index', $this->_pageAttrArray['path']);
 
-		// Add vars to view
-		$this->view->pageTitle = $this->_pageTitle;
-		$this->view->pageName = $this->_pageName;
+		// Pass page attributes to view
+		$this->view->pageAttr = $this->_pageAttrArray;
 
-		// load content
-		$this->view->pageContent = $this->contentModel->getPageContent($this->_pageID);
+		// Load content
+		$this->view->pageContent = $this->contentModel->getPageContent($this->_pageAttrArray['pageID']);
 
 		return true;
 	}
-
-
 }
 ?>
