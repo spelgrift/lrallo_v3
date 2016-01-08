@@ -11,17 +11,7 @@
 		</div>
 		<div class="collapse navbar-collapse" id="mainNav">
 			<ul class="nav navbar-nav navbar-right">
-				<?php
-
-				foreach($this->nav as $row)
-				{
-					$name = $row['name'];
-					$url = $row['url'];
-
-					echo "<li><a href='" . URL . $url . "'>$name</a></li>";
-				}
-
-				?>
+				<?php	echo $this->nav;?>
 			</ul>
 		</div>
 	</div>

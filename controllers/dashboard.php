@@ -34,17 +34,8 @@ class Dashboard extends Controller {
 
 	public function reloadNav()
 	{
-		$a = $this->globalModel->loadNav();
-		foreach($a as $row)
-		{
-			$name = $row['name'];
-			$url = $row['url'];
-
-			echo "<li><a href='" . URL . $url . "'>$name</a></li>";
-		}
+		echo $this->globalModel->loadNav();
 	}
-
-
 
 }
 ?>

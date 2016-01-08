@@ -1,6 +1,6 @@
 <?php 
 // echo "<pre>";
-// print_r($this->pageList);
+// print_r($this->pageAttr);
 // echo "</pre>";
 require 'views/inc/header.php';
 require 'views/inc/addContentForms/addPage.php';
@@ -24,23 +24,23 @@ foreach($this->pageContent as $item)
 		</div>
 
 		<div class='form-group'>
-			<label for='settings-nameInput' class='col-sm-2 col-sm-offset-1 control-label'>Name</label>
+			<label for='settingsNameInput' class='col-sm-2 col-sm-offset-1 control-label'>Name</label>
 			<div class='col-sm-6'>
-				<input id='settings-nameInput' type='text' class='form-control' placeholder='Page Name' value="<?php echo $this->pageAttr['name']; ?>">
+				<input id='settingsNameInput' type='text' class='form-control' placeholder='Page Name' value="<?php echo $this->pageAttr['name']; ?>">
 			</div>
 		</div>
 
 		<div class='form-group'>
-			<label for='settings-urlInput' class='col-sm-2 col-sm-offset-1 control-label'>URL</label>
+			<label for='settingsUrlInput' class='col-sm-2 col-sm-offset-1 control-label'>URL</label>
 			<div class='col-sm-6'>
-				<input id='settings-urlInput' type='text' class='form-control' placeholder='Page URL' value="<?php echo $this->pageAttr['url']; ?>">
+				<input id='settingsUrlInput' type='text' class='form-control' placeholder='Page URL' value="<?php echo $this->pageAttr['url']; ?>">
 			</div>
 		</div>
 
 		<div class='form-group'>
-			<label for='settings-parentInput' class='col-sm-2 col-sm-offset-1 control-label'>Parent</label>
+			<label for='settingsParentInput' class='col-sm-2 col-sm-offset-1 control-label'>Parent</label>
 			<div class='col-sm-6'>
-				<select id='settings-parentInput' class='form-control'>
+				<select id='settingsParentInput' class='form-control'>
 				<?php
 					if($this->pageAttr['parentPageID'] == 0) {
 						echo "<option value='0' selected='selected'>-</option>";
@@ -54,11 +54,16 @@ foreach($this->pageContent as $item)
 		</div>
 
 		<div class='form-group'>
-			<label for='settings-NavCheck' class='col-sm-2 col-sm-offset-1 control-label'>Nav</label>
+			<label for='settingsNavCheck' class='col-sm-2 col-sm-offset-1 control-label'>Nav</label>
 			<div class='col-sm-6'>
 				<div class="checkbox">
 					<label>
 						<?php
+						if($this->pageAttr['nav'] == 1){
+							echo "<input type='checkbox' id='settingsNavCheck' checked>";
+						} else {
+							echo "<input type='checkbox' id='settingsNavCheck'>";
+						}
 
 						?>
 						Include in navigation
@@ -68,16 +73,12 @@ foreach($this->pageContent as $item)
 		</div>
 
 		<div class='form-group'>
-			<label for='settings-NavInput' class='col-sm-2 col-sm-offset-1 control-label'>Nav</label>
-			<div class='col-sm-6'>
-				<div class="checkbox">
-					<label>
-						<input type="checkbox"> Include in navigation
-					</label>
-      		</div>
+			<div class='col-sm-6 col-sm-offset-3'>
+				<a id='settingsSubmit' class='btn btn-primary' >Save Changes</a>
+				<a id='settingsTrashPage' class='btn btn-danger'>Delete Page</a>
 			</div>
 		</div>
-
+		<div id='settingsMsg' class='col-sm-6 col-sm-offset-3'></div>
 	</form>
 </div>
 <?php require 'views/inc/footer.php'; ?>

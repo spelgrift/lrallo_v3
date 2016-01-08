@@ -56,8 +56,9 @@
 						else
 						{
 							$name = $row['name'];
+							$id = isset($row['id']) ? "id='" . $row['id'] ."'" : "";
 
-							echo "<p class='navbar-text'><strong>$name</strong>" . $this->pageAttr['name'] . "</p>";
+							echo "<p $id class='navbar-text'><strong>$name</strong>" . $this->pageAttr['name'] . "</p>";
 						}
 						
 					}

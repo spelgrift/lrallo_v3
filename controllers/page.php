@@ -85,9 +85,14 @@ class Page extends Controller
 		// Templates
 		$this->view->templates = $this->contentModel->buildTemplates();
 		// Javascript
-		$this->view->js = array('mustache.min.js', 'adminNav.js', 'addContent.js', 'contentControls.js', 'contentResize.js');
+		$this->view->js = array('mustache.min.js', 'adminNav.js', 'pageSettings.js', 'addContent.js', 'contentControls.js', 'contentResize.js');
 		// Render view
 		$this->view->render('page/edit');
+	}
+
+	public function updateSettings()
+	{
+		$this->model->updateSettings($this->_pageAttrArray['pageID'], $this->_pageAttrArray['contentID']);
 	}
 
 	public function sortContent()
@@ -119,10 +124,13 @@ class Page extends Controller
 		$this->contentModel->addSpacer($this->_pageAttrArray['pageID']);
 	}
 
-	public function trashContent($contentID)
+	public function trashContent($contentID = false)
 	{
 		if($_SERVER['REQUEST_METHOD'] == "DELETE")
 		{
+			if(!$contentID) {
+				$contentID = $this->_pageAttrArray['contentID'];
+			}
 			$this->contentModel->trashContent($contentID);
 		}
 	}
@@ -146,7 +154,6 @@ class Page extends Controller
 		// Load base page controller
 		if (!$this->_loadPage($url[0]))
 		{
-			$this->error();
 			return false;
 		}
 
@@ -243,6 +250,7 @@ class Page extends Controller
 
 		// Pass page attributes to view
 		$this->view->pageAttr = $this->_pageAttrArray;
+		$this->view->pageTitle = $this->_pageAttrArray['name'];
 
 		// Load content
 		$this->view->pageContent = $this->contentModel->getPageContent($this->_pageAttrArray['pageID']);
