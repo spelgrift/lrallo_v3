@@ -28,8 +28,9 @@ class Global_Model extends Model {
 		{
 			$name = $row['name'];
 			$path = $row['path'];
+			$contentID = $row['contentID'];
 
-			$nav .= "<li><a href='" . URL . $path . "'>$name</a></li>";
+			$nav .= "<li id='listItem_$contentID'><a href='" . URL . $path . "'>$name</a></li>";
 		}
 
 		return $nav;

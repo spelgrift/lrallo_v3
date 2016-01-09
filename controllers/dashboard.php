@@ -19,7 +19,7 @@ class Dashboard extends Controller {
 		$this->view->pageTitle = 'DASHBOARD';
 		$this->view->adminNav = $this->globalModel->adminNavArray('dashboard');
 		$this->view->pageList = $this->globalModel->listPages();
-		$this->view->js = array('mustache.min.js', 'adminNav.js', 'addContentDashboard.js');
+		$this->view->js = array('mustache.min.js', 'adminNav.js', 'addContentDashboard.js', 'sortableNav.js');
 		// Render View
 		$this->view->render('dashboard/index');
 	}
@@ -28,6 +28,11 @@ class Dashboard extends Controller {
 	public function addPage()
 	{
 		$this->contentModel->addPage("0");
+	}
+
+	public function sortNav()
+	{
+		$this->model->sortNav();
 	}
 
 	public function deletePage()

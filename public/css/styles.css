@@ -6785,6 +6785,12 @@ button.close {
 #contentList td.listName > a:hover {
   text-decoration: none;
 }
+#mainNav i.navHandle {
+  position: absolute;
+  left: -2px;
+  top: 19px;
+  cursor: move;
+}
 #adminNav i.fa {
   padding-right: 5px;
 }
