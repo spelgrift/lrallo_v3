@@ -7,27 +7,30 @@ class Dashboard extends Controller {
 		parent::__construct();
 		Auth::setAccess();
 
-		$this->view->pageTitle = 'DASHBOARD';
-		$this->view->js = array('dashboard.js');
+		// Instantiate Content Model
+		$this->loadModel('content', false);
+		$this->contentModel = new Content_Model();
 	}
 
-	function index()
+	public function index()
 	{
+		
+		// Add View Vars
+		$this->view->pageTitle = 'DASHBOARD';
+		$this->view->adminNav = $this->globalModel->adminNavArray('dashboard');
+		$this->view->pageList = $this->globalModel->listPages();
+		$this->view->js = array('mustache.min.js', 'adminNav.js', 'addContentDashboard.js');
+		// Render View
 		$this->view->render('dashboard/index');
 	}
 
 
-	function addPage()
+	public function addPage()
 	{
-		$this->model->addPage();
+		$this->contentModel->addPage("0");
 	}
 
-	function listPages()
-	{
-		$this->model->listPages();
-	}
-
-	function deletePage()
+	public function deletePage()
 	{
 		$this->model->deletePage();
 	}

@@ -77,15 +77,15 @@ class Page extends Controller
 		$this->view->pageAttr = $this->_pageAttrArray;
 		$this->view->pageTitle = "Edit Page: ".$this->_pageAttrArray['name'];
 		// Build page list for parent select
-		$this->view->pageList = $this->model->listPages();
+		$this->view->pageList = $this->globalModel->listPages();
 		// Admin Nav
-		$this->view->adminNav = $this->model->adminNavArray('edit', $this->_pageAttrArray['path']);
+		$this->view->adminNav = $this->globalModel->adminNavArray('edit', $this->_pageAttrArray['path'], "Edit: " . $this->_pageAttrArray['name']);
 		// Content
 		$this->view->pageContent = $this->contentModel->getPageContent($this->_pageAttrArray['pageID']);
 		// Templates
 		$this->view->templates = $this->contentModel->buildTemplates();
 		// Javascript
-		$this->view->js = array('mustache.min.js', 'adminNav.js', 'pageSettings.js', 'addContent.js', 'contentControls.js', 'contentResize.js');
+		$this->view->js = array('mustache.min.js', 'adminNav.js', 'pageSettings.js', 'addPageContent.js', 'contentControls.js', 'contentResize.js');
 		// Render view
 		$this->view->render('page/edit');
 	}
@@ -204,7 +204,7 @@ class Page extends Controller
 		$this->_pageName = "Home Page";
 
 		// Set admin nav for homepage
-		$this->view->adminNav = $this->model->adminNavArray('home', $this->_pageURL);
+		$this->view->adminNav = $this->globalModel->adminNavArray('home', $this->_pageURL);
 
 		// Add vars to view
 		$this->view->pageTitle = $this->_pageTitle;
@@ -246,7 +246,7 @@ class Page extends Controller
 		}
 
 		// Set admin nav array
-		$this->view->adminNav = $this->model->adminNavArray('index', $this->_pageAttrArray['path']);
+		$this->view->adminNav = $this->globalModel->adminNavArray('index', $this->_pageAttrArray['path']);
 
 		// Pass page attributes to view
 		$this->view->pageAttr = $this->_pageAttrArray;

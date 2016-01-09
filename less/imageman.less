@@ -1,7 +1,17 @@
 // Dashboard
 
-#pageList a{
-	padding:10px;
+#contentList {
+  thead>tr>td {
+    font-weight: bold;
+  }
+  td.listName {
+    &>a {
+      font-weight: bold;
+      &:hover {
+        text-decoration: none;
+      }
+    }
+  }
 }
 
 // Admin Nav
@@ -16,6 +26,11 @@
   &>div>ul>li>a.active {
     color:#fff;
     cursor: text;
+  }
+
+  p.navbar-text {
+    margin-left:15px;
+    font-weight: bold;
   }
 
 }

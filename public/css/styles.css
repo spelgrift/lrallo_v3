@@ -6776,8 +6776,14 @@ button.close {
   background: green;
   padding: 20px;
 }
-#pageList a {
-  padding: 10px;
+#contentList thead > tr > td {
+  font-weight: bold;
+}
+#contentList td.listName > a {
+  font-weight: bold;
+}
+#contentList td.listName > a:hover {
+  text-decoration: none;
 }
 #adminNav i.fa {
   padding-right: 5px;
@@ -6785,6 +6791,10 @@ button.close {
 #adminNav > div > ul > li > a.active {
   color: #fff;
   cursor: text;
+}
+#adminNav p.navbar-text {
+  margin-left: 15px;
+  font-weight: bold;
 }
 .inverse-dropdown {
   background-color: #222;

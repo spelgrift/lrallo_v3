@@ -145,16 +145,26 @@ class Content_Model extends Model {
 		$this->db->insert('content', array(
 			'type' => 'page',
 			'url' => $url,
-			'parentPageID' => $parentPageID
+			'parentPageID' => $parentPageID,
+			'author' => $_SESSION['login']
 		));
+		$contentID = $this->db->lastInsertId();
 
 		// Page DB entry
 		$this->db->insert('page', array(
 			'name' => $name,
-			'contentid' => $this->db->lastInsertId()
+			'contentid' => $contentID
 		));
 
-		$results = array('error' => false);
+		$results = array(
+			'error' => false,
+			'name' => $name,
+			'path' => URL.$url,
+			'type' => 'Page',
+			'date' => date('Y/m/d'),
+			'author' => $_SESSION['login'],
+			'contentID' => $contentID
+		);
 		echo json_encode($results);
 	}
 

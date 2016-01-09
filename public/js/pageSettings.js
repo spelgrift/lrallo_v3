@@ -164,7 +164,5 @@ var pageSettings = (function() {
 	function reloadNav() {
 		$mainNav.load(baseURL + 'dashboard/reloadNav');
 	}
-
-
-
+	
 })();
