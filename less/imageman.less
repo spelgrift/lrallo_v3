@@ -12,6 +12,18 @@
       }
     }
   }
+  tr.contentListRow {
+    display:none;
+    &.visible {
+      display:table-row;
+    }
+  }
+  td {
+    text-align: center;
+    &:first-child {
+      text-align: left;
+    }
+  }
 }
 
 // Sortable Nav

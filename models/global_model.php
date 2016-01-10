@@ -7,22 +7,30 @@ class Global_Model extends Model {
 		parent::__construct();
 	}
 
+/**
+ *	loadNav - Sets admin nav array given page view
+ *	@return string Nav html
+ *
+ */
 	public function loadNav()
 	{
+		// Get attributes stored in content table as array
 		if($contentArray = $this->db->select("SELECT contentID, url, parentPageID FROM content WHERE nav = 1 AND hidden = 0 AND trashed = 0 ORDER BY nav_position ASC"))
 		{
-			$i = 0;
-			foreach($contentArray as $a){
-				$contentArray[$i]['path'] = $this->_buildPath($a['url'], $a['parentPageID']);
+			$i = 0; // Content array key
+			foreach($contentArray as $row){
+				// Build path given parent ID
+				$contentArray[$i]['path'] = $this->_buildPath($row['url'], $row['parentPageID']);
+				// Add relevant type specific attributes to content array
 				$query = "SELECT * FROM page WHERE contentID = :contentID";
-				$pageArray = $this->db->select($query, array(':contentID' => $a['contentID']));
+				$pageArray = $this->db->select($query, array(':contentID' => $row['contentID']));
 				$contentArray[$i]['name'] = $pageArray[0]['name'];
 				$i++;
 			}
 		} else {
 			$contentArray = array();
 		}
-		
+		// Build html for nav <li>'s from array
 		$nav = "";
 		foreach($contentArray as $row)
 		{
@@ -32,12 +40,11 @@ class Global_Model extends Model {
 
 			$nav .= "<li id='listItem_$contentID'><a href='" . URL . $path . "'>$name</a></li>";
 		}
-
 		return $nav;
 	}
 
 /**
- *	adminNavArray - Sets admin nav array given page view
+ *	adminNavArray - Builds admin nav array given page view
  *	@param string $view The view to load for
  *	@param string $pageURL The URL for the view page button 
  *	@param string $titleText Text to insert at the head of the nav bar
@@ -49,16 +56,20 @@ class Global_Model extends Model {
 		switch($view)
 		{
 			case 'index':
-				$adminNav = array(array(
-					'url' => URL . $pageURL . "/edit", 
-					'name' => "<i class='fa fa-fw fa-sliders'></i> Edit Page",
-				));
+				$adminNav = array(
+					array(
+						'url' => URL . $pageURL . "/edit", 
+						'name' => "<i class='fa fa-fw fa-sliders'></i> Edit Page",
+					)
+				);
 				break;
 			case 'home' :
-				$adminNav = array(array(
-					'url' => URL . "dashboard/edithome", 
-					'name' => "<i class='fa fa-fw fa-sliders'></i>Edit Homepage",
-				));
+				$adminNav = array(
+					array(
+						'url' => URL . "dashboard/edithome", 
+						'name' => "<i class='fa fa-fw fa-sliders'></i>Edit Homepage",
+					)
+				);
 				break;
 			case 'edit' :
 				$adminNav = array(
@@ -177,38 +188,131 @@ class Global_Model extends Model {
 	private function _getPageArrayRecursive($parentPageID, $path = "")
 	{
 		$returnArray = array();
-
-			if($result = $this->db->select("SELECT contentID, url, parentPageID, author, `date` FROM content WHERE type = 'page' AND trashed = '0' AND parentPageID = $parentPageID"))
+		// Append trailing / to path if item has a parent page
+		if(strlen($path) > 0) {	$path = $path . "/";	}
+		// 
+		if($result = $this->db->select("SELECT contentID, url, parentPageID, author, `date` FROM content WHERE type = 'page' AND trashed = '0' AND parentPageID = $parentPageID"))
+		{
+			
+			foreach($result as $row)
 			{
-				if(strlen($path) > 0) {
-					$path = $path . "/";
-				}
-				foreach($result as $row)
+				$pageArray = array(
+					'contentID' => $row['contentID'],
+					'url' => $row['url'],
+					'path' => $path . $row['url'],
+					'parentPageID' => $row['parentPageID'],
+					'date' => $row['date'],
+					'author' => $row['author']
+				);
+				if($result = $this->db->select("SELECT pageID, name FROM page WHERE contentID = '".$row['contentID']."'"))
 				{
-					$pageArray = array(
-						'contentID' => $row['contentID'],
-						'url' => $row['url'],
-						'path' => $path . $row['url'],
-						'parentPageID' => $row['parentPageID'],
-						'date' => $row['date'],
-						'author' => $row['author']
-					);
-					if($result = $this->db->select("SELECT pageID, name FROM page WHERE contentID = '".$row['contentID']."'"))
+					foreach($result as $row)
 					{
-						foreach($result as $row)
-						{
-							$pageArray['pageID'] = $row['pageID'];
-							$pageArray['name'] = $row['name'];
-						}
+						$pageArray['pageID'] = $row['pageID'];
+						$pageArray['name'] = $row['name'];
 					}
-
-					$pageArray['subPages'] = $this->_getPageArrayRecursive($pageArray['pageID'], $pageArray['path']);
-
-					$returnArray[] = $pageArray;
 				}
+
+				$pageArray['subPages'] = $this->_getPageArrayRecursive($pageArray['pageID'], $pageArray['path']);
+
+				$returnArray[] = $pageArray;
 			}
-			return $returnArray;
+		}
+		return $returnArray;
+	}
+
+/**
+ *	listContent - Builds array of all non-trashed content with subContent as sub-arrays
+ *	@return array 
+ *
+ */
+	public function listContent($type = 'all')
+	{
+		return $this->_getContentArrayRecursive($type, "0");
+	}
+
+	private function _getContentArrayRecursive($type, $parentPageID, $path = "")
+	{
+		// Build WHERE clause based on type
+		if($type === 'all')
+		{
+			$type = array(
+				'page',
+				'image',
+				'album',
+				'slideshow',
+				'video',
+				'text',
+				'embedded-video',
+				'shortcut'
+			);
+		}
+		$where = "";
+		foreach($type as $str) {
+			$where .= "type = '$str' OR ";
+		}
+		$where = rtrim($where, 'OR ') . " ";
+
+		// If pages are included in the requested types, group content by parent page
+		if(in_array('page', $type))
+		{
+			$parentCondition = "AND parentPageID = $parentPageID";
+		} else {
+			$parentCondition = "";
+		}
+		// Create empty array
+		$returnArray = array();
+		// Get content results from DB
+		if($result = $this->db->select("SELECT contentID, url, type, parentPageID, author, `date` FROM content WHERE trashed = '0' $parentCondition AND ( $where ) ORDER BY contentID DESC"))
+		{
+			foreach($result as $row)
+			{
+				// Add attributes common to all types
+				$typeArray = array(
+					'contentID' => $row['contentID'],
+					'type' => $row['type'],
+					'parentPageID' => $row['parentPageID'],
+					'date' => $row['date'],
+					'author' => $row['author']
+				);
+				// Switch by type
+				switch($row['type'])
+				{
+					case "page" :
+						// Append trailing / to path if item has a parent page
+						if(strlen($path) > 0) {	$path = $path . "/";	}
+
+						$typeArray['url'] = $row['url'];
+						$typeArray['path'] = $path . $row['url'];
+
+						if($result = $this->db->select("SELECT pageID, name FROM page WHERE contentID = '".$row['contentID']."'"))
+						{
+							foreach($result as $row)
+							{
+								$typeArray['pageID'] = $row['pageID'];
+								$typeArray['name'] = $row['name'];
+							}
+						}
+						$typeArray['subContent'] = $this->_getContentArrayRecursive($type, $typeArray['pageID'], $typeArray['path']);
+					break;
+					case "text" :
+						$typeArray['path'] = $path;
+
+						if($result = $this->db->select("SELECT `textID`, `text` FROM `text` WHERE contentID = '".$row['contentID']."'"))
+						{
+							foreach($result as $row)
+							{
+								$typeArray['textID'] = $row['textID'];
+								$typeArray['text'] = $row['text'];
+							}
+						}
+					break;
+				}
+
+				$returnArray[] = $typeArray;
+			}
+		}
+		return $returnArray;
 	}
 }
-
 ?>

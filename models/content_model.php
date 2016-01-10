@@ -160,6 +160,7 @@ class Content_Model extends Model {
 			'error' => false,
 			'name' => $name,
 			'path' => URL.$url,
+			'parent' => '-',
 			'type' => 'Page',
 			'date' => date('Y/m/d'),
 			'author' => $_SESSION['login'],
@@ -196,7 +197,8 @@ class Content_Model extends Model {
 		// Content DB entry
 		$this->db->insert('content', array(
 			'type' => 'text',
-			'parentPageID' => $parentPageID
+			'parentPageID' => $parentPageID,
+			'author' => $_SESSION['login']
 		));
 		$contentID = $this->db->lastInsertId();
 

@@ -6,11 +6,12 @@ require 'views/inc/header.php';
 require 'views/inc/addContentForms/addPage.php';
 ?>
 
-<!-- List Item Template -->
+<!-- List Item Templates -->
 <script type='text/template' id='pageListTemplate'>
 	<tr>
 		<td class='listName'><a href='{{path}}'>{{name}}</a></td>
 		<td>{{type}}</td>
+		<td>{{parent}}</td>
 		<td class='hidden-xs'>{{date}}</td>
 		<td class='hidden-xs'>{{author}}</td>
 		<td class='text-center'>
@@ -23,12 +24,23 @@ require 'views/inc/addContentForms/addPage.php';
 
 <!-- LIST CONTENT -->
 <div class='row tabPanel active' id='contentList'>
-	<div class='col-sm-12 col-lg-10 table-responsive'>
-		<table class='table table-striped'>
+	<form class='form-inline pull-right'>
+		<div class='form-group'>
+			<label>Filter list by type: </label>
+			<select class='form-control' id='filterContentList'>
+				<option value='all'>All Content</option>
+				<option value='page' selected>Pages</option>
+				<option value='text'>Text</option>
+			</select>
+		</div>
+	</form>
+	<div class='col-sm-12 col-lg-9 table-responsive'>
+		<table class='table table-hover'>
 			<thead>
 				<tr>
 					<td>Name</td>
 					<td>Type</td>
+					<td>Parent</td>
 					<td class='hidden-xs'>Date Created</td>
 					<td class='hidden-xs'>Author</td>
 					<td></td>
@@ -36,32 +48,55 @@ require 'views/inc/addContentForms/addPage.php';
 			</thead>
 			<tbody>
 				<?php
-					foreach($this->pageList as $row) {
-						displayPageList($row);
+					foreach($this->contentList as $row) {
+						displayContentList($row);
 					}
-					function displayPageList($row, $subLevel = 0)
+
+					function displayContentList($row, $subLevel = 0, $parentName = '-')
 					{
+						$defaultPad = "&ensp;<i class='fa fa-level-up fa-rotate-90'></i>&ensp;";
+						// Build pad based on subLevel
 						$pad = "";
 						if($subLevel == 1) {
-							$pad = "&mdash; ";
+							$pad = $defaultPad;
 						} else if($subLevel > 1) {
-							$pad = str_repeat("&emsp; ", ($subLevel - 1))."&mdash; ";
+							$pad = str_repeat("&emsp; ", ($subLevel - 1)).$defaultPad;
 						}
 
+						// Add vars common to all types
 						$contentID = $row['contentID'];
-						$name = $row['name'];
 						$path = $row['path'];
-						$type = 'Page';
 						$date = date('Y/m/d', strtotime($row['date']));
 						$author = $row['author'];
-						echo '<tr>';
 
-						echo "<td class='listName'>$pad<a href='".URL.$path."'>$name</a></td>";						
+						// Switch based on type
+						switch($row['type'])
+						{
+							case "page" :
+								$name = $row['name'];
+								$nameTd = "<td class='listName'><span class='listPad'>$pad</span><a href='".URL.$path."'>$name</a></td>";
+								$type = 'Page';
+								$rowClass = 'contentListRow page visible';
+								$parentLink = "<a href='".URL.$path."'>$name</a>";
+							break;
+							case "text" :
+								$trimmedText = substr(htmlentities($row['text']), 0, 25).'...';
+								$nameTd = "<td><span class='listPad'>$pad</span>$trimmedText</td>";
+								$type = 'Text';
+								$rowClass = 'contentListRow text';
+							break;
+						}
+
+						// Echo HTML
+						echo "<tr class='$rowClass'>";
+
+						echo $nameTd;						
 						echo "<td>$type</td>";
+						echo "<td>$parentName</td>";
 						echo "<td class='hidden-xs'>$date</td>";
 						echo "<td class='hidden-xs'>$author</td>";
 
-						echo "<td class='text-center'>";
+						echo "<td>";
 						echo "<a href='".URL.$path."' class='btn btn-primary btn-sm'>View</a> ";
 						echo "<a href='".URL.$path."/edit' class='btn btn-primary btn-sm'>Edit</a> ";
 						echo "<a href='#' id='$contentID' class='btn btn-primary btn-sm trashContent'>Trash</a>";
@@ -69,15 +104,16 @@ require 'views/inc/addContentForms/addPage.php';
 
 						echo "</tr>";
 
-						foreach($row['subPages'] as $row) {
-							displayPageList($row, $subLevel + 1);
+						if(isset($row['subContent'])) {
+							foreach($row['subContent'] as $row) {
+								displayContentList($row, $subLevel + 1, $parentLink);
+							}
 						}
-					}
-					
+					}					
 				?>
 			</tbody>
 		</table>
-	</table>
+	</div>
 </div>
 
 <div class='row tabPanel' id='trash'>

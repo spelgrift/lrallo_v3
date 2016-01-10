@@ -2,13 +2,12 @@
 
 class Page extends Controller
 {
-	function __construct(){parent::__construct();}
+	function __construct(){ parent::__construct(); }
 
 	// User given URL (Array)
 	private $_URL = null;
 	// If a method is called, this is the index for the method in the URL Array
 	private $_urlKey = null;
-
 	// Page Attributes
 	private $_pageAttrArray = array('pageID' => 0);
 	private $_pageURL = null; // For building subpage path
@@ -18,17 +17,14 @@ class Page extends Controller
  *					If method is passed in URL, call it!
  *					Otherwise, load the page
  *
- *
  */
 	public function index($url = array())
 	{
 		// Instantiate content model
 		$this->loadModel('content', false);
 		$this->contentModel = new Content_Model();
-
 		// Set URL
 		$this->_URL = $url;
-
 		// If URL is empty, load home page
 		if (empty($url[0])) 
 		{
@@ -44,7 +40,6 @@ class Page extends Controller
 					$this->_callControllerMethod($this->_urlKey);
 					return false;
 					break;
-
 				case $result === false :
 					$this->error();
 					return false;
@@ -60,7 +55,6 @@ class Page extends Controller
 				return false;
 			}
 		}
-
 		// Render Page 			
 		$this->view->render('page/index');
 	}
@@ -85,7 +79,7 @@ class Page extends Controller
 		// Templates
 		$this->view->templates = $this->contentModel->buildTemplates();
 		// Javascript
-		$this->view->js = array('mustache.min.js', 'adminNav.js', 'pageSettings.js', 'addPageContent.js', 'contentControls.js', 'contentResize.js');
+		$this->view->js = array('mustache.min.js', 'adminNav.js', 'pageSettings.js', 'addContentPage.js', 'contentControls.js', 'contentResize.js');
 		// Render view
 		$this->view->render('page/edit');
 	}
@@ -156,7 +150,6 @@ class Page extends Controller
 		{
 			return false;
 		}
-
 		unset($url[0]); // remove the base page controller from array
 		$i = 1; // URL array key
 		foreach($url as $item) // iterate through url array, checking if method or if page exists
@@ -200,16 +193,11 @@ class Page extends Controller
 	private function _loadHome()
 	{
 		// Set page vars
-		$this->_pageTitle = "Home";
-		$this->_pageName = "Home Page";
-
+		$this->_pageTitle = "Imageman";
 		// Set admin nav for homepage
-		$this->view->adminNav = $this->globalModel->adminNavArray('home', $this->_pageURL);
-
+		$this->view->adminNav = $this->globalModel->adminNavArray('home');
 		// Add vars to view
 		$this->view->pageTitle = $this->_pageTitle;
-		$this->view->pageName = $this->_pageName;
-
 		// load content
 		$this->view->pageContent = $this->contentModel->getPageContent();
 	}
@@ -226,16 +214,13 @@ class Page extends Controller
 		{
 			return false;
 		}
-
 		// Make sure parent page is valid
 		if(!$result['parentPageID'] == $this->_pageAttrArray['pageID'])  
 		{
 			return false;
 		}
-
 		// Save full result array to class
 		$this->_pageAttrArray = $result;
-
 		// If page has a parent, build the path from the URLs from the previously loaded pages, otherwise, save the URL
 		if($this->_pageAttrArray['parentPageID'] != 0) {
 			$this->_pageAttrArray['path'] = $this->_pageURL . "/" . $result['url'];
@@ -244,14 +229,11 @@ class Page extends Controller
 			$this->_pageAttrArray['path'] = $result['url'];
 			$this->_pageURL = $result['url'];
 		}
-
 		// Set admin nav array
 		$this->view->adminNav = $this->globalModel->adminNavArray('index', $this->_pageAttrArray['path']);
-
 		// Pass page attributes to view
 		$this->view->pageAttr = $this->_pageAttrArray;
 		$this->view->pageTitle = $this->_pageAttrArray['name'];
-
 		// Load content
 		$this->view->pageContent = $this->contentModel->getPageContent($this->_pageAttrArray['pageID']);
 

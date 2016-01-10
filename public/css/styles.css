@@ -6785,6 +6785,18 @@ button.close {
 #contentList td.listName > a:hover {
   text-decoration: none;
 }
+#contentList tr.contentListRow {
+  display: none;
+}
+#contentList tr.contentListRow.visible {
+  display: table-row;
+}
+#contentList td {
+  text-align: center;
+}
+#contentList td:first-child {
+  text-align: left;
+}
 #mainNav i.navHandle {
   position: absolute;
   left: -2px;

@@ -10,6 +10,10 @@ class Dashboard extends Controller {
 		// Instantiate Content Model
 		$this->loadModel('content', false);
 		$this->contentModel = new Content_Model();
+
+		// echo "<pre>";
+		// print_r($this->globalModel->listContent());
+		// echo "</pre>";
 	}
 
 	public function index()
@@ -19,7 +23,8 @@ class Dashboard extends Controller {
 		$this->view->pageTitle = 'DASHBOARD';
 		$this->view->adminNav = $this->globalModel->adminNavArray('dashboard');
 		$this->view->pageList = $this->globalModel->listPages();
-		$this->view->js = array('mustache.min.js', 'adminNav.js', 'addContentDashboard.js', 'sortableNav.js');
+		$this->view->contentList = $this->globalModel->listContent();
+		$this->view->js = array('mustache.min.js', 'adminNav.js', 'addContentDashboard.js', 'sortableNav.js', 'contentList.js');
 		// Render View
 		$this->view->render('dashboard/index');
 	}
