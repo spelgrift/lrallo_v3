@@ -75,7 +75,7 @@ foreach($this->pageContent as $item)
 		<div class='form-group'>
 			<div class='col-sm-6 col-sm-offset-3'>
 				<a id='settingsSubmit' class='btn btn-primary' >Save Changes</a>
-				<a id='settingsTrashPage' class='btn btn-danger'>Delete Page</a>
+				<a id='settingsTrashPage' class='btn btn-danger'>Trash Page</a>
 			</div>
 		</div>
 		<div id='settingsMsg' class='col-sm-6 col-sm-offset-3'></div>

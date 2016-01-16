@@ -1,6 +1,6 @@
 <?php 
 // echo "<pre>";
-// print_r($this->pageList);
+// print_r($this->trashList);
 // echo "</pre>";
 require 'views/inc/header.php'; 
 require 'views/inc/addContentForms/addPage.php';
@@ -8,23 +8,23 @@ require 'views/inc/addContentForms/addPage.php';
 
 <!-- List Item Templates -->
 <script type='text/template' id='pageListTemplate'>
-	<tr>
+	<tr id='{{contentID}}' class='contentListRow page visible'>
 		<td class='listName'><a href='{{path}}'>{{name}}</a></td>
 		<td>{{type}}</td>
 		<td>{{parent}}</td>
 		<td class='hidden-xs'>{{date}}</td>
 		<td class='hidden-xs'>{{author}}</td>
-		<td class='text-center'>
+		<td>
 			<a href='{{path}}' class='btn btn-primary btn-sm'>View</a>
 			<a href='{{path}}/edit' class='btn btn-primary btn-sm'>Edit</a>
-			<a href='#' id='{{$contentID}}' class='btn btn-primary btn-sm trashContent'>Trash</a>
+			<a href='#' id='{{contentID}}' class='btn btn-primary btn-sm trashContent'>Trash</a>
 		</td>
 	</tr>
 </script>
 
 <!-- LIST CONTENT -->
 <div class='row tabPanel active' id='contentList'>
-	<form class='form-inline pull-right'>
+	<form class='form-inline listControls'>
 		<div class='form-group'>
 			<label>Filter list by type: </label>
 			<select class='form-control' id='filterContentList'>
@@ -34,7 +34,7 @@ require 'views/inc/addContentForms/addPage.php';
 			</select>
 		</div>
 	</form>
-	<div class='col-sm-12 col-lg-9 table-responsive'>
+	<div class='col-sm-12 col-lg-10 table-responsive'>
 		<table class='table table-hover'>
 			<thead>
 				<tr>
@@ -47,81 +47,49 @@ require 'views/inc/addContentForms/addPage.php';
 				</tr>
 			</thead>
 			<tbody>
-				<?php
-					foreach($this->contentList as $row) {
-						displayContentList($row);
-					}
-
-					function displayContentList($row, $subLevel = 0, $parentName = '-')
-					{
-						$defaultPad = "&ensp;<i class='fa fa-level-up fa-rotate-90'></i>&ensp;";
-						// Build pad based on subLevel
-						$pad = "";
-						if($subLevel == 1) {
-							$pad = $defaultPad;
-						} else if($subLevel > 1) {
-							$pad = str_repeat("&emsp; ", ($subLevel - 1)).$defaultPad;
-						}
-
-						// Add vars common to all types
-						$contentID = $row['contentID'];
-						$path = $row['path'];
-						$date = date('Y/m/d', strtotime($row['date']));
-						$author = $row['author'];
-
-						// Switch based on type
-						switch($row['type'])
-						{
-							case "page" :
-								$name = $row['name'];
-								$nameTd = "<td class='listName'><span class='listPad'>$pad</span><a href='".URL.$path."'>$name</a></td>";
-								$type = 'Page';
-								$rowClass = 'contentListRow page visible';
-								$parentLink = "<a href='".URL.$path."'>$name</a>";
-							break;
-							case "text" :
-								$trimmedText = substr(htmlentities($row['text']), 0, 25).'...';
-								$nameTd = "<td><span class='listPad'>$pad</span>$trimmedText</td>";
-								$type = 'Text';
-								$rowClass = 'contentListRow text';
-							break;
-						}
-
-						// Echo HTML
-						echo "<tr class='$rowClass'>";
-
-						echo $nameTd;						
-						echo "<td>$type</td>";
-						echo "<td>$parentName</td>";
-						echo "<td class='hidden-xs'>$date</td>";
-						echo "<td class='hidden-xs'>$author</td>";
-
-						echo "<td>";
-						echo "<a href='".URL.$path."' class='btn btn-primary btn-sm'>View</a> ";
-						echo "<a href='".URL.$path."/edit' class='btn btn-primary btn-sm'>Edit</a> ";
-						echo "<a href='#' id='$contentID' class='btn btn-primary btn-sm trashContent'>Trash</a>";
-						echo "</td>";
-
-						echo "</tr>";
-
-						if(isset($row['subContent'])) {
-							foreach($row['subContent'] as $row) {
-								displayContentList($row, $subLevel + 1, $parentLink);
-							}
-						}
-					}					
-				?>
+				<?php	echo $this->contentRows;?>
 			</tbody>
 		</table>
 	</div>
 </div>
 
+<!-- TRASH -->
 <div class='row tabPanel' id='trash'>
-	<h2>Trash</h2>
+	<form class='form-inline listControls'>
+		
+		<div class='form-group'>
+			<label>Filter list by type: </label>
+			<select class='form-control' id='filterTrashList'>
+				<option value='all' selected>All Content</option>
+				<option value='page'>Pages</option>
+				<option value='text'>Text</option>
+			</select>
+		</div>
+		<div class='form-group'>
+			<a id='emptyTrash' class='btn btn-default' href='#'>Delete Selected</a>
+			<a id='deleteSelected' class='btn btn-default' href='#'>Restore Selected</a>
+			<a id='restoreSelected' class='btn btn-default' href='#'>Empty Trash</a>
+		</div>
+		
+	</form>
+	<div class='col-sm-12 col-lg-10 table-responsive'>
+		<table class='table table-hover'>
+			<thead>
+				<tr>
+					<td><input type='checkbox' id='trashCheckAll'></td>
+					<td>Name</td>
+					<td>Type</td>
+					<td>Parent</td>
+					<td class='hidden-xs'>Date Trashed</td>
+					<td class='hidden-xs'>Author</td>
+					<td></td>
+				</tr>
+			</thead>
+			<tbody>
+				<?php echo $this->trashRows; ?>
+			</tbody>
+		</table>
+	</div>
 </div>
-
-
-
-
 
 <?php require 'views/inc/footer.php'; ?>

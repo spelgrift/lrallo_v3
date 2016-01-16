@@ -1,0 +1,45 @@
+// Admin Nav
+
+#adminNav{
+
+	i.fa{
+		// color: #ccc;
+		padding-right:5px;
+	}
+
+  &>div>ul>li>a.active {
+    color:#fff;
+    cursor: text;
+  }
+
+  p.navbar-text {
+    margin-left:15px;
+    font-weight: bold;
+  }
+
+}
+
+.inverse-dropdown{
+  background-color: #222;
+  border-color: #080808;
+  &>li>a{
+    color: #999;
+    &:hover{
+      color: #fff;
+      background-color: #000;
+    }
+  }
+  &>.divider {
+    background-color: #000;
+  }
+}
+
+// Admin Nav Tabs & Panels
+
+.tabPanel {
+  display: none;
+}
+
+.tabPanel.active {
+  display:block;
+}

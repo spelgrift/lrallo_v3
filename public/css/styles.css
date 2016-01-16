@@ -6764,45 +6764,6 @@ button.close {
     display: none !important;
   }
 }
-#header {
-  background: gold;
-  padding: 20px;
-}
-#content {
-  background: #fff;
-  padding: 20px;
-}
-#footer {
-  background: green;
-  padding: 20px;
-}
-#contentList thead > tr > td {
-  font-weight: bold;
-}
-#contentList td.listName > a {
-  font-weight: bold;
-}
-#contentList td.listName > a:hover {
-  text-decoration: none;
-}
-#contentList tr.contentListRow {
-  display: none;
-}
-#contentList tr.contentListRow.visible {
-  display: table-row;
-}
-#contentList td {
-  text-align: center;
-}
-#contentList td:first-child {
-  text-align: left;
-}
-#mainNav i.navHandle {
-  position: absolute;
-  left: -2px;
-  top: 19px;
-  cursor: move;
-}
 #adminNav i.fa {
   padding-right: 5px;
 }
@@ -6834,11 +6795,73 @@ button.close {
 .tabPanel.active {
   display: block;
 }
+#contentList thead > tr > td,
+#trash thead > tr > td {
+  border-bottom: 2px solid #dddddd;
+  font-weight: bold;
+}
+#contentList td.listName > a,
+#trash td.listName > a {
+  font-weight: bold;
+}
+#contentList td.listName > a:hover,
+#trash td.listName > a:hover {
+  text-decoration: none;
+}
+#contentList tr.contentListRow,
+#trash tr.contentListRow {
+  display: none;
+}
+#contentList tr.contentListRow.visible,
+#trash tr.contentListRow.visible {
+  display: table-row;
+}
+#contentList form.listControls,
+#trash form.listControls {
+  width: auto;
+  background-color: #eeeeee;
+  border-radius: 4px;
+  padding: 7px 10px;
+  margin: 0 5px 10px 5px;
+  float: left;
+}
+#contentList form.listControls label,
+#trash form.listControls label {
+  font-weight: normal;
+}
+#contentList form.listControls .form-group,
+#trash form.listControls .form-group {
+  margin-left: 15px;
+}
+#contentList form.listControls .form-group:first-child,
+#trash form.listControls .form-group:first-child {
+  margin-left: 0;
+}
+#contentList td {
+  text-align: center;
+}
+#contentList td:first-child {
+  text-align: left;
+}
+#trash td {
+  text-align: center;
+}
+#trash td:nth-child(2) {
+  text-align: left;
+}
+#mainNav i.navHandle {
+  position: absolute;
+  left: -2px;
+  top: 19px;
+  cursor: move;
+}
 .contentItem {
   background-color: white;
-  min-height: 100px;
   margin-bottom: 10px;
   position: relative;
+}
+.contentItem .content {
+  min-height: 50px;
 }
 .contentItem.editContent .content {
   border: 1px dashed #333;

@@ -20,7 +20,7 @@ class Content_Model extends Model {
 	{
 		if($pageid) // PageID passed, get content for that page
 		{
-			$query = "SELECT contentID, type, position, bootstrap FROM content WHERE parentPageID = :parentPageID AND trashed = 0 ORDER BY position ASC";
+			$query = "SELECT contentID, type, position, bootstrap FROM content WHERE parentPageID = :parentPageID AND trashed = 0 AND orphaned = 0 ORDER BY position ASC";
 			if($result = $this->db->select($query, array(':parentPageID' => $pageid)))
 			{
 				foreach($result as $key => $row)
@@ -70,22 +70,75 @@ class Content_Model extends Model {
 		);
 	}
 
-	public function trashContent($contentID)
+	public function trashContent($contentID, $dashboard = false)
 	{
-		if($this->db->update('content', array('trashed' => 1), "`contentID` = " . $contentID))
+		$timestamp = date('Y-m-d H:i:s');
+		if($this->db->update('content', array('trashed' => 1, 'dateTrashed' => $timestamp), "`contentID` = " . $contentID))
 		{
-			echo json_encode(array('error' => false));
+			$affectedRows = array($contentID);
+			// If type is page, orphan associated content
+			$query = "SELECT pageID FROM page WHERE contentID = :contentID";
+			if($result = $this->db->select($query, array(':contentID' => $contentID)))
+			{
+				$affectedRows = $this->_orphanContent($result[0]['pageID'], $contentID, $affectedRows);
+			}
+
+			// If request came from dashboard, return array of affected child content to hide rows
+			if($dashboard) {
+				return $affectedRows;
+			}
+			return true;
 		}
 		else
 		{
-			echo json_encode(array('error' => true));
+			return false;
 		}		
 	}
 
-	public function deleteContent($contentID)
+	public function deleteContent($contentID, $recursion = false)
 	{
-		$this->db->delete('content', "`contentID` = $contentID");
-		echo json_encode(array('error' => false));
+		// Get content type
+		if($result = $this->db->select("SELECT type FROM content WHERE contentID = :contentID", array(':contentID' => $contentID)))
+		{
+			// If item is a page, delete orphaned content
+			if($result[0]['type'] == 'page')
+			{
+				if($pageResult = $this->db->select("SELECT contentID FROM content WHERE orphanedByID = :contentID", array(':contentID' => $contentID)))
+				{
+					foreach($pageResult as $row)
+					{
+						$this->deleteContent($row['contentID'], true);
+					}
+				}
+			}
+			// Delete record from type table
+			$this->db->delete($result[0]['type'], "`contentID` = $contentID");
+			// Delete content record
+			$this->db->delete('content', "`contentID` = $contentID");
+			if(!$recursion) {
+				echo json_encode(array('error' => false));
+			}
+			return;
+		}
+		echo json_encode(array('error' => true));	
+	}
+
+	public function restoreContent($contentID)
+	{
+		// Get content type
+		if($result = $this->db->select("SELECT type FROM content WHERE contentID = :contentID", array(':contentID' => $contentID)))
+		{
+			// If item is a page, restore orphaned content
+			if($result[0]['type'] == 'page')
+			{
+				$this->db->update('content', array('orphaned' => 0, 'orphanedByID' => 0), "orphanedByID = ".$contentID);
+			}
+			// Update content record
+			$this->db->update('content', array('trashed' => 0), "`contentID` = $contentID");
+			echo json_encode(array('error' => false));
+			return;
+		}
+		echo json_encode(array('error' => true));	
 	}
 
 	public function sortContent()
@@ -262,6 +315,30 @@ class Content_Model extends Model {
 				$this->db->update('content', $postData, "`contentID` = ".$row['contentID']);
 			}
 		}
+	}
+
+	private function _orphanContent($parentPageID, $trashedID, $affectedRows)
+	{
+		if($result = $this->db->select("SELECT contentID FROM content WHERE parentPageID = ".$parentPageID))
+		{
+			foreach($result as $row)
+			{
+				// Update DB with orphaned flag, the date orphaned, and the pageID of page whose deletion started this mess ($trashedID)
+				$timestamp = date('Y-m-d H:i:s');
+				$this->db->update('content', array(
+					'orphaned' => 1,
+					'dateOrphaned' => $timestamp,
+					'orphanedByID' => $trashedID
+				), "`contentID` = " . $row['contentID']);
+				// Add contentIDs of affected content to array
+				$affectedRows[] = $row['contentID'];
+				// If pages are affected, call this method to add them to the array
+				if($result = $this->db->select("SELECT pageID FROM page WHERE contentID = ".$row['contentID'])) {
+					$affectedRows = $this->_orphanContent($result[0]['pageID'], $trashedID, $affectedRows);
+				}
+			}
+		}
+		return $affectedRows;
 	}
 }
 

@@ -1,94 +1,14 @@
-// Dashboard
-
-#contentList {
-  thead>tr>td {
-    font-weight: bold;
-  }
-  td.listName {
-    &>a {
-      font-weight: bold;
-      &:hover {
-        text-decoration: none;
-      }
-    }
-  }
-  tr.contentListRow {
-    display:none;
-    &.visible {
-      display:table-row;
-    }
-  }
-  td {
-    text-align: center;
-    &:first-child {
-      text-align: left;
-    }
-  }
-}
-
-// Sortable Nav
-#mainNav {
-  i.navHandle {
-    position:absolute;
-    left:-2px;
-    top:19px;
-    cursor:move;
-  }
-}
-
-// Admin Nav
-
-#adminNav{
-
-	i.fa{
-		// color: #ccc;
-		padding-right:5px;
-	}
-
-  &>div>ul>li>a.active {
-    color:#fff;
-    cursor: text;
-  }
-
-  p.navbar-text {
-    margin-left:15px;
-    font-weight: bold;
-  }
-
-}
-
-.inverse-dropdown{
-  background-color: #222;
-  border-color: #080808;
-  &>li>a{
-    color: #999;
-    &:hover{
-      color: #fff;
-      background-color: #000;
-    }
-  }
-  &>.divider {
-    background-color: #000;
-  }
-}
-
-// Admin Nav Tabs & Panels
-
-.tabPanel {
-  display: none;
-}
-
-.tabPanel.active {
-  display:block;
-}
-
 // CONTENT
 
 .contentItem {
   background-color: white;
-  min-height: 100px;
+  // min-height: 100px;
   margin-bottom:10px;
   position:relative;
+
+  .content {
+    min-height: 50px;
+  }
 
   &.editContent {
     .content {
@@ -185,9 +105,3 @@
     }
   }
 }
-
-
-
-
-
-

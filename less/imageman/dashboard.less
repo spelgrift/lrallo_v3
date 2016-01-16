@@ -1,0 +1,70 @@
+// Content/Trash Lists
+
+#contentList, #trash {
+  thead>tr>td {
+    border-bottom: 2px solid #dddddd;
+    font-weight: bold; 
+  }
+  td.listName {
+    &>a {
+      font-weight: bold;
+      &:hover {
+        text-decoration: none;
+      }
+    }
+  }
+  tr.contentListRow {
+    display:none;
+    &.visible {
+      display:table-row;
+    }
+  }
+
+  form.listControls {
+    width:auto;
+    background-color: #eeeeee;
+    border-radius: 4px;
+    padding: 7px 10px;
+    margin: 0 5px 10px 5px;
+    float:left;
+
+    label {
+      font-weight: normal;
+    }
+
+    .form-group {
+      margin-left: 15px;
+      &:first-child {
+        margin-left: 0;
+      }
+    }
+  }
+}
+
+#contentList {
+  td {
+    text-align: center;
+    &:first-child {
+      text-align: left;
+    }
+  }
+}
+
+#trash {
+  td {
+    text-align: center;
+    &:nth-child(2) {
+      text-align: left;
+    }
+  }
+}
+
+// Sortable Nav
+#mainNav {
+  i.navHandle {
+    position:absolute;
+    left:-2px;
+    top:19px;
+    cursor:move;
+  }
+}

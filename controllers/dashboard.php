@@ -10,21 +10,16 @@ class Dashboard extends Controller {
 		// Instantiate Content Model
 		$this->loadModel('content', false);
 		$this->contentModel = new Content_Model();
-
-		// echo "<pre>";
-		// print_r($this->globalModel->listContent());
-		// echo "</pre>";
 	}
 
 	public function index()
 	{
-		
 		// Add View Vars
 		$this->view->pageTitle = 'DASHBOARD';
 		$this->view->adminNav = $this->globalModel->adminNavArray('dashboard');
-		$this->view->pageList = $this->globalModel->listPages();
-		$this->view->contentList = $this->globalModel->listContent();
-		$this->view->js = array('mustache.min.js', 'adminNav.js', 'addContentDashboard.js', 'sortableNav.js', 'contentList.js');
+		$this->view->contentRows = $this->model->renderContentRows($this->model->listContent());
+		$this->view->trashRows = $this->model->renderTrashRows($this->model->listTrash());
+		$this->view->js = array('mustache.min.js', 'events.js', 'adminNav.js', 'addContentDashboard.js', 'sortableNav.js', 'contentList.js', 'trash.js');
 		// Render View
 		$this->view->render('dashboard/index');
 	}
@@ -33,6 +28,33 @@ class Dashboard extends Controller {
 	public function addPage()
 	{
 		$this->contentModel->addPage("0");
+	}
+
+	public function trashContent($contentID)
+	{
+		if($_SERVER['REQUEST_METHOD'] == "DELETE")
+		{
+			if($affectedRows = $this->contentModel->trashContent($contentID, true))
+			{
+				echo json_encode(array(
+					'error' => false,
+					'affectedRows' => $affectedRows
+				));
+			}
+		}
+	}
+
+	public function deleteContent($contentID)
+	{
+		if($_SERVER['REQUEST_METHOD'] == "DELETE")
+		{
+			$this->contentModel->deleteContent($contentID);
+		}
+	}
+
+	public function restoreContent($contentID)
+	{
+		$this->contentModel->restoreContent($contentID);
 	}
 
 	public function sortNav()
@@ -48,6 +70,16 @@ class Dashboard extends Controller {
 	public function reloadNav()
 	{
 		echo $this->globalModel->loadNav();
+	}
+
+	public function reloadTrash()
+	{
+		echo $this->model->renderTrashRows($this->model->listTrash());
+	}
+
+	public function reloadContentList()
+	{
+		echo $this->model->renderContentRows($this->model->listContent());
 	}
 
 }

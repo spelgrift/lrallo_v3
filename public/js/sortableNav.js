@@ -1,20 +1,35 @@
 var sortableNav = (function() {
 	// Cache DOM
-	var $mainNav = $('#mainNav'),
-	$navList = $mainNav.find('ul.navbar-nav'),
-	$navItems = $navList.find('li'),
-	sortHandle = "<i class='navHandle fa fa-plus'></i>";
+	var $mainNav,
+		$navList,
+		$navItems,
+		sortHandle = "<i class='navHandle fa fa-plus'></i>";
 
-	// Append handles and IDs to nav items
-	$navItems.each(function(i) {
-		$(this).css({'position' : 'relative', 'margin-left' : '15px'}).append(sortHandle);
+	// Bind Events
+	events.on('reloadNav', function() {
+		$navList.sortable('destroy');
+		initSortable();
 	});
 
-	// Init Sortable
-	$navList.sortable({
-		handle : '.navHandle',
-		update : updateSortable
-	});
+	// Main Functions
+	initSortable();
+
+	function initSortable() {
+		$mainNav = $('#mainNav');
+		$navList = $mainNav.find('ul.navbar-nav');
+		$navItems = $navList.find('li');
+
+		// Append handles and IDs to nav items
+		$navItems.each(function(i) {
+			$(this).css({'position' : 'relative', 'margin-left' : '15px'}).append(sortHandle);
+		});
+
+		// Init Sortable
+		$navList.sortable({
+			handle : '.navHandle',
+			update : updateSortable
+		});
+	}
 
 	function updateSortable() {
 		var order = $(this).sortable('serialize');
@@ -23,9 +38,8 @@ var sortableNav = (function() {
 			type: 'POST',
 			data: order,
 			success: function() {
-				console.log('sorted!');
+				// console.log('sorted!');
 			}
 		})
 	}
-
 })();

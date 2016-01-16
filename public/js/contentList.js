@@ -1,28 +1,50 @@
 var contentList = (function() {
 	// Cache DOM
 	var $contentList = $('#contentList'),
-	$typeFilter = $contentList.find('select#filterContentList');
+	$trashList = $('#trash'),
+	$contentTypeFilter = $contentList.find('select#filterContentList'),
+	$trashTypeFilter = $trashList.find('select#filterTrashList');
 
 	// Bind events
-	$typeFilter.on('change', function() {
+	$contentTypeFilter.on('change', function() {
 		var type = $(this).val();
-		displayRows(type);
+		displayRows(type, 'content');
 	});
 
-	function displayRows(type)
+	$trashTypeFilter.on('change', function() {
+		var type = $(this).val();
+		displayRows(type, 'trash');
+	});
+
+	// Show/Hide rows
+	function displayRows(type, list)
 	{
+		// Select list
+		switch(list) {
+			case 'content' :
+				var $targetList = $contentList;
+			break;
+			case 'trash' :
+				var $targetList = $trashList;
+			break;
+		}
 		// Get rows to show and hide
-		var $visibleRows = $contentList.find('tr.contentListRow.visible');
+		var $visibleRows = $targetList.find('tr.contentListRow.visible');
 		if(type == 'all') {
-			var $targetRows = $contentList.find('tr.contentListRow');
-			$contentList.find('span.listPad').show();
+			var $targetRows = $targetList.find('tr.contentListRow');
+			if(list == 'content') {
+				$targetList.find('span.listPad').show();
+			}
 		} else {
-			var $targetRows = $contentList.find('tr.contentListRow.'+type);
-			if(type != 'page') {
-				$contentList.find('span.listPad').hide();
-			} else {
-				$contentList.find('span.listPad').show();
-			}	
+			var $targetRows = $targetList.find('tr.contentListRow.'+type);
+			if(list == 'content') {
+				// If list contains pages, show the parent pad
+				if(type != 'page') {
+					$targetList.find('span.listPad').hide();
+				} else {
+					$targetList.find('span.listPad').show();
+				}	
+			}
 		}
 
 		// Hide visible rows

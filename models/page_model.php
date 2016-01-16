@@ -110,5 +110,52 @@ class Page_Model extends Model {
 			'viewPath' => $viewPath
 		));
 	}
+
+/**
+ *	listPages - Builds array of all non-trashed pages with subpages
+ *					as sub-arrays. For use in Edit Page parent select
+ *	@return array 
+ *
+ */
+	public function listPages()
+	{
+		return $this->_getPageArrayRecursive("0");
+	}
+
+	private function _getPageArrayRecursive($parentPageID, $path = "")
+	{
+		$returnArray = array();
+		// Append trailing / to path if item has a parent page
+		if(strlen($path) > 0) {	$path = $path . "/";	}
+		// 
+		if($result = $this->db->select("SELECT contentID, url, parentPageID, author, `date` FROM content WHERE type = 'page' AND trashed = '0' AND parentPageID = $parentPageID"))
+		{
+			
+			foreach($result as $row)
+			{
+				$pageArray = array(
+					'contentID' => $row['contentID'],
+					'url' => $row['url'],
+					'path' => $path . $row['url'],
+					'parentPageID' => $row['parentPageID'],
+					'date' => $row['date'],
+					'author' => $row['author']
+				);
+				if($result = $this->db->select("SELECT pageID, name FROM page WHERE contentID = '".$row['contentID']."'"))
+				{
+					foreach($result as $row)
+					{
+						$pageArray['pageID'] = $row['pageID'];
+						$pageArray['name'] = $row['name'];
+					}
+				}
+
+				$pageArray['subPages'] = $this->_getPageArrayRecursive($pageArray['pageID'], $pageArray['path']);
+
+				$returnArray[] = $pageArray;
+			}
+		}
+		return $returnArray;
+	}
 }
 ?>

@@ -71,7 +71,7 @@ class Page extends Controller
 		$this->view->pageAttr = $this->_pageAttrArray;
 		$this->view->pageTitle = "Edit Page: ".$this->_pageAttrArray['name'];
 		// Build page list for parent select
-		$this->view->pageList = $this->globalModel->listPages();
+		$this->view->pageList = $this->model->listPages();
 		// Admin Nav
 		$this->view->adminNav = $this->globalModel->adminNavArray('edit', $this->_pageAttrArray['path'], "Edit: " . $this->_pageAttrArray['name']);
 		// Content
@@ -125,7 +125,13 @@ class Page extends Controller
 			if(!$contentID) {
 				$contentID = $this->_pageAttrArray['contentID'];
 			}
-			$this->contentModel->trashContent($contentID);
+			if($this->contentModel->trashContent($contentID)){
+				echo json_encode(array('error' => false));
+			} else {
+				echo json_encode(array('error' => true));
+			}
+
+			
 		}
 	}
 
