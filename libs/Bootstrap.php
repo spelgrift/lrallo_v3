@@ -105,7 +105,5 @@ class Bootstrap
 			return false;
 		}
 	}
-
 }
-
 ?>

@@ -33,8 +33,6 @@ class Database extends PDO {
 		} else {
 			return false;
 		}
-		
-
 	}
 
 	/**
@@ -66,7 +64,6 @@ class Database extends PDO {
 		foreach($data as $key => $value){
 			$sth->bindValue(":$key", $value);
 		}
-
 		$sth->execute();
 	}
 
@@ -100,6 +97,5 @@ class Database extends PDO {
 			return false;
 		}
 	}
-
 }
 ?>

@@ -10,7 +10,7 @@ var trash = (function() {
 	$trashList = $('#trash'),
 	$trashTypeFilter = $trashList.find('select#filterTrashList'),
 	$trashTbody = $trashList.find('tbody'),
-	$checkAll = $trashList.find('#trashCheckAll')
+	$checkAll = $trashList.find('#trashCheckAll'),
 	$mainNav = $('#mainNav').children('ul.navbar-nav');
 
 /**
@@ -59,18 +59,79 @@ var trash = (function() {
 		restoreContent(contentID, $thisRow);
 	});
 
-	// Check/uncheck all
-	$checkAll.on('change', function() {
-		var $checkBoxes = $trashList.find('.trashCheck');
-		$checkBoxes.prop('checked', !$checkBoxes.prop('checked'));
-	})
+	// Empty Trash
+	$trashList.on('click', '.emptyTrash', function(ev) {
+		ev.preventDefault();
+		if(confirm('Are you sure you want to PERMANENTLY DELETE all items in trash?')) {
+			emptyTrash();
+		}
+	});
 
+	// Delete Selected
+	$trashList.on('click', '.deleteSelected', function(ev) {
+		ev.preventDefault();
+		var checkedItems = buildCheckedArray();
+		if(checkedItems.length > 0) {
+			if(confirm('Are you sure you want to PERMANENTLY DELETE the selected items?')) {
+				deleteSelected(checkedItems);
+			}	
+		}
+	});
+
+	// Restore Selected
+	$trashList.on('click', '.restoreSelected', function(ev) {
+		ev.preventDefault();
+		var checkedItems = buildCheckedArray();
+		if(checkedItems.length > 0) {
+			if(confirm('Are you sure you want to restore the selected items?')) {
+				restoreSelected(checkedItems);
+			}	
+		}
+	});
+
+	// Check/uncheck-all behavior
+	$checkAll.on('change', function() {
+		var $trashChecks = $trashList.find('.trashCheck');
+		$trashChecks.each(function(){
+			$(this).prop('checked', $checkAll.prop('checked'));
+		});
+	});
+
+	$trashList.on('change', '.trashCheck', function() {
+		var $trashChecks = $trashList.find('.trashCheck');
+		// If user unchecks a box and the check-all box is checked, uncheck it!
+		if(!$(this).prop('checked') && $checkAll.prop('checked')) {
+			$checkAll.prop('checked', false);
+		}
+		// If all checkboxes are checked and check-all box is unchecked, check it!
+		if($('.trashCheck:checked').length == $trashChecks.length && !$checkAll.prop('checked')) {
+			$checkAll.prop('checked', true);
+		}
+	});
 
 /**
  * 
  * MAIN FUNCTIONS
  * 
  */
+   // Empty Trash
+   function emptyTrash()
+   {
+   	$.ajax({
+   		type: 'DELETE',
+   		url: baseURL + 'dashboard/emptyTrash/',
+   		dataType: 'json',
+   		success: function(data) {
+   			if(!data.error) {
+ 					$trashTbody.find('tr').fadeOut(300, function() {
+			 			$(this).remove();
+			 		});
+			 		reloadTrash();
+ 				}
+   		}
+   	})
+   }
+
  	// Trash content
  	function trashContent(contentID)
  	{
@@ -83,6 +144,9 @@ var trash = (function() {
  					var $trashedRows = $contentList.find('tr#' +data.affectedRows.join(',tr#'));
 			 		$trashedRows.fadeOut(300, function() {
 			 			$(this).remove();
+			 			if($contentTbody.find('tr').length == 0) {
+							reloadContentList();
+						}
 			 		});
 			 		reloadTrash();
 			 		reloadNav();
@@ -102,7 +166,33 @@ var trash = (function() {
  				if(!data.error) {
 			 		$thisRow.fadeOut(300, function() {
 			 			$(this).remove();
+			 			if($trashTbody.find('tr').length == 0) {
+							reloadTrash();
+						}
 			 		});
+ 				}
+ 			}
+ 		});
+ 	}
+
+ 	// Delete Selected
+ 	function deleteSelected(checkedItems)
+ 	{
+ 		$.ajax({
+ 			type: 'POST',
+ 			url: baseURL + 'dashboard/deleteMultiple/',
+ 			data: {checkedItems : checkedItems},
+ 			dataType: 'json',
+ 			success: function(data) {
+ 				if(!data.error) {
+			 		var $deletedRows = $trashList.find('tr#' +checkedItems.join(',tr#'));
+			 		$deletedRows.fadeOut(300, function() {
+			 			$(this).remove();
+			 			if($trashTbody.find('tr').length == 0) {
+							reloadTrash();
+						}
+			 		});
+			 		$checkAll.prop('checked', false);
  				}
  			}
  		});
@@ -119,9 +209,37 @@ var trash = (function() {
  				if(!data.error) {
 			 		$thisRow.fadeOut(300, function() {
 			 			$(this).remove();
+			 			if($trashTbody.find('tr').length == 0) {
+							reloadTrash();
+						}
 			 		});
 			 		reloadContentList();
 			 		reloadNav();
+ 				}
+ 			}
+ 		});
+ 	}
+
+ 	// Restore Selected
+ 	function restoreSelected(checkedItems)
+ 	{
+ 		$.ajax({
+ 			type: 'POST',
+ 			url: baseURL + 'dashboard/restoreMultiple/',
+ 			data: {checkedItems : checkedItems},
+ 			dataType: 'json',
+ 			success: function(data) {
+ 				if(!data.error) {
+			 		var $restoredRows = $trashList.find('tr#' +checkedItems.join(',tr#'));
+			 		$restoredRows.fadeOut(300, function() {
+			 			$(this).remove();
+			 			if($trashTbody.find('tr').length == 0) {
+							reloadTrash();
+						}
+			 		});
+			 		reloadContentList();
+			 		reloadNav();
+			 		$checkAll.prop('checked', false);
  				}
  			}
  		});
@@ -132,6 +250,7 @@ var trash = (function() {
  * UTLITY FUNCTIONS
  * 
  */
+
  	function reloadTrash()
  	{
  		$trashTypeFilter.val('all');
@@ -150,4 +269,13 @@ var trash = (function() {
 		});
 	}
 
+	function buildCheckedArray()
+	{
+		var checkedItems = [],
+		$checkBoxes = $trashList.find('.trashCheck:checked');
+		$checkBoxes.each(function() {
+			checkedItems.push($(this).closest('tr').attr('id'));
+		});
+		return checkedItems;
+	}
 })();

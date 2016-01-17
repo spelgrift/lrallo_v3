@@ -35,7 +35,6 @@ var addContent = (function(){
 		ev.preventDefault();
 	});
 
-
 	/**
 	 * 
 	 * ADD CONTENT FUNCTIONS
@@ -63,6 +62,9 @@ var addContent = (function(){
 					// Success
 					$pageNameInput.val("");
 					$addPageModal.modal('hide');
+					if($tableBody.find('tr.placeholderRow').length > 0) {
+						$tableBody.find('tr.placeholderRow').remove();
+					}
 
 					$tableBody.prepend(Mustache.render(pageListTemplate, data));
 				} else {

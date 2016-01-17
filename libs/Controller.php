@@ -9,7 +9,7 @@ class Controller {
 		// Load global model (for loading nav from db on all controllers, etc.)
 		$this->loadModel('global', false);
 		$this->globalModel = new Global_Model();
-
+		// Load navigation for all controllers/pages
 		$this->loadNav();
 	}
 

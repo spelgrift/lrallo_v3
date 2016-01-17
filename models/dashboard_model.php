@@ -27,6 +27,9 @@ class Dashboard_Model extends Model {
 		foreach($contentList as $row) {
 			$contentRows .= $this->_renderContentHtmlRecursive($row);
 		}
+		if($contentRows == "") {
+			$contentRows = "<tr class='placeholderRow'><td colspan='5'>No content found. Get started by clicking 'Add Content' above and creating a page.</td></tr>";
+		}
 		return $contentRows;
 	}
 
@@ -85,6 +88,7 @@ class Dashboard_Model extends Model {
 				$rowHTML .= $this->_renderContentHtmlRecursive($row, $subLevel + 1, $parentLink);
 			}
 		}
+
 		return $rowHTML;
 	}
 
@@ -122,7 +126,7 @@ class Dashboard_Model extends Model {
 			}
 
 			// Echo HTML
-			$trashRows .= "<tr class='$rowClass'>";
+			$trashRows .= "<tr id='$contentID' class='$rowClass'>";
 
 			$trashRows .= "<td><input type='checkbox' class='trashCheck'></td>";
 
@@ -138,6 +142,9 @@ class Dashboard_Model extends Model {
 			$trashRows .= "</td>";
 
 			$trashRows .= "</tr>";
+		}
+		if($trashRows == "") {
+			$trashRows = "<tr class='placeholderRow'><td colspan='6'>(empty)</td></tr>";
 		}
 		return $trashRows;
 	}

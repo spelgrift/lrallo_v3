@@ -130,8 +130,6 @@ class Page extends Controller
 			} else {
 				echo json_encode(array('error' => true));
 			}
-
-			
 		}
 	}
 
@@ -192,7 +190,7 @@ class Page extends Controller
 	}
 
 /**
- *	_loadHome - Sets view vars with homepage info
+ *	_loadHome - Sets view vars with homepage attributes
  *					
  *
  */

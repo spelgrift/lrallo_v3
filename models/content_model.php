@@ -95,7 +95,7 @@ class Content_Model extends Model {
 		}		
 	}
 
-	public function deleteContent($contentID, $recursion = false)
+	public function deleteContent($contentID)
 	{
 		// Get content type
 		if($result = $this->db->select("SELECT type FROM content WHERE contentID = :contentID", array(':contentID' => $contentID)))
@@ -115,12 +115,21 @@ class Content_Model extends Model {
 			$this->db->delete($result[0]['type'], "`contentID` = $contentID");
 			// Delete content record
 			$this->db->delete('content', "`contentID` = $contentID");
-			if(!$recursion) {
-				echo json_encode(array('error' => false));
-			}
-			return;
+			return true;
 		}
-		echo json_encode(array('error' => true));	
+		return false;
+	}
+
+	public function emptyTrash()
+	{
+		if($result = $this->db->select("SELECT contentID FROM content WHERE trashed = 1"))
+		{
+			foreach($result as $row)
+			{
+				$this->deleteContent($row['contentID']);
+			}
+			echo json_encode(array('error' => false));
+		}
 	}
 
 	public function restoreContent($contentID)
@@ -135,10 +144,9 @@ class Content_Model extends Model {
 			}
 			// Update content record
 			$this->db->update('content', array('trashed' => 0), "`contentID` = $contentID");
-			echo json_encode(array('error' => false));
-			return;
+			return true;
 		}
-		echo json_encode(array('error' => true));	
+		return false;
 	}
 
 	public function sortContent()
@@ -341,5 +349,4 @@ class Content_Model extends Model {
 		return $affectedRows;
 	}
 }
-
 ?>

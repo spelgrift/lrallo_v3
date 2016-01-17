@@ -66,9 +66,9 @@ require 'views/inc/addContentForms/addPage.php';
 			</select>
 		</div>
 		<div class='form-group'>
-			<a id='emptyTrash' class='btn btn-default' href='#'>Delete Selected</a>
-			<a id='deleteSelected' class='btn btn-default' href='#'>Restore Selected</a>
-			<a id='restoreSelected' class='btn btn-default' href='#'>Empty Trash</a>
+			<a class='btn btn-default deleteSelected' href='#'>Delete Selected</a>
+			<a class='btn btn-default restoreSelected' href='#'>Restore Selected</a>
+			<a class='btn btn-default emptyTrash' href='#'>Empty Trash</a>
 		</div>
 		
 	</form>

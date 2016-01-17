@@ -8,9 +8,8 @@ class Login_Model extends Model {
 		$login = $_POST['login'];
 		$password = Hash::create('sha256', $_POST['password'], PASS_HASH_KEY);
 
-		$data = $this->db->select("SELECT userid, login, role FROM user WHERE login = :login AND password = :password", array(':login' => $login, ':password' => $password));
-
-		if($this->db->rowCount > 0){
+		if($data = $this->db->select("SELECT userid, login, role FROM user WHERE login = :login AND password = :password", array(':login' => $login, ':password' => $password)))
+		{
 			Session::init();
 			Session::set('userid', $data[0]['userid']);
 			Session::set('login', $data[0]['login']);
