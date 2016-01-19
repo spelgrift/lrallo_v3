@@ -109,6 +109,11 @@ var trash = (function() {
 		}
 	});
 
+	// Trash reload event
+	events.on('reloadTrash', function() {
+		reloadTrash();
+	});
+
 /**
  * 
  * MAIN FUNCTIONS

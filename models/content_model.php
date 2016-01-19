@@ -230,6 +230,78 @@ class Content_Model extends Model {
 		echo json_encode($results);
 	}
 
+/*
+ *
+ * NAV LINK TYPE FUNCTIONS
+ *
+ */
+
+	// Add NavLink
+	public function addNavLink()
+	{
+		// Validate
+		$form = new Form();
+		$form ->post('name')
+				->val('blank')
+				->post('url')
+				->val('blank');
+		if(!$form->submit()) { // Error
+			$error = $form->fetchError();
+			$results = array(
+				'error' => true,
+				'error_msg' => reset($error), 
+				'error_field' => key($error) 
+			);
+			echo json_encode($results);
+			return false;
+		}
+		$data = $form->fetch(); // Form passed
+
+		// Content DB entry
+		$this->db->insert('content', array(
+			'type' => 'navLink',
+			'url' => $data['url'],
+			'parentPageID' => 0,
+			'author' => $_SESSION['login'],
+			'nav' => 1
+		));
+
+		// NavLink DB entry
+		$this->db->insert('navLink', array(
+			'name' => $data['name'],
+			'contentid' => $this->db->lastInsertId()
+		));
+
+		echo json_encode(array('error' => false));
+	}
+
+	// Edit NavLink
+	public function editNavLink($contentID)
+	{
+		// Validate
+		$form = new Form();
+		$form ->post('name')
+				->val('blank')
+				->post('url')
+				->val('blank');
+		if(!$form->submit()) { // Error
+			$error = $form->fetchError();
+			$results = array(
+				'error' => true,
+				'error_msg' => reset($error), 
+				'error_field' => key($error) 
+			);
+			echo json_encode($results);
+			return false;
+		}
+		$data = $form->fetch(); // Form passed
+
+		// Update Content DB Entry
+		$this->db->update('content', array('url' => $data['url']), "`contentID` = ".$contentID);
+		$this->db->update('navLink', array('name' => $data['name']), "`contentID` = " .$contentID);
+		echo json_encode(array('error' => false));
+	}
+
 /**
  *
  *	TEXT TYPE FUNCTIONS

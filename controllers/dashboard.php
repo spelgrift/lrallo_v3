@@ -19,7 +19,7 @@ class Dashboard extends Controller {
 		$this->view->adminNav = $this->globalModel->adminNavArray('dashboard');
 		$this->view->contentRows = $this->model->renderContentRows($this->model->listContent());
 		$this->view->trashRows = $this->model->renderTrashRows($this->model->listTrash());
-		$this->view->js = array('mustache.min.js', 'events.js', 'adminNav.js', 'addContentDashboard.js', 'sortableNav.js', 'contentList.js', 'trash.js');
+		$this->view->js = array('mustache.min.js', 'events.js', 'adminNav.js', 'addContentDashboard.js', 'sortableNav.js', 'navLinkControls.js', 'contentList.js', 'trash.js');
 		// Render View
 		$this->view->render('dashboard/index');
 	}
@@ -28,6 +28,27 @@ class Dashboard extends Controller {
 	public function addPage()
 	{
 		$this->contentModel->addPage("0");
+	}
+
+	public function addNavLink()
+	{
+		$this->contentModel->addNavLink();
+	}
+
+	public function editNavLink($contentID)
+	{
+		$this->contentModel->editNavLink($contentID);
+	}
+
+	public function trashNavLink($contentID)
+	{
+		if($_SERVER['REQUEST_METHOD'] == "DELETE") {
+			if($this->contentModel->trashContent($contentID)) {
+				echo json_encode(array('error' => false));
+			} else {
+				echo json_encode(array('error' => true));
+			}
+		}
 	}
 
 	public function trashContent($contentID)

@@ -5,6 +5,7 @@ var addContent = (function(){
 	 * 
 	 */
 	var $contentList = $('#contentList'),
+	$mainNav = $('#mainNav').children('ul.navbar-nav'),
 	$tableBody = $contentList.find('tbody'),
 	$addTab = $('a.addTab');
 
@@ -16,6 +17,13 @@ var addContent = (function(){
 	$submitPage = $addPageModal.find('button#submitNewPage'),
 	$pageMsg = $addPageModal.find('#pageMsg'),
 	pageListTemplate = $('#pageListTemplate').text();
+
+	// Add Nav Link
+	var $addNavLinkModal = $('#addNavLinkModal'),
+	$navLinkNameInput = $addNavLinkModal.find('input#newNavName'),
+	$navLinkUrlInput = $addNavLinkModal.find('input#newNavUrl'),
+	$submitNavLink = $addNavLinkModal.find('button#submitNewNavLink'),
+	$navLinkMsg = $addNavLinkModal.find('#navLinkMsg');
 
 	/**
 	 * 
@@ -32,6 +40,12 @@ var addContent = (function(){
 	// Submit Page
 	$submitPage.on('click', function(ev) {
 		submitPage();
+		ev.preventDefault();
+	});
+
+	// Submit Nav Link
+	$submitNavLink.on('click', function(ev) {
+		submitNavLink();
 		ev.preventDefault();
 	});
 
@@ -58,8 +72,7 @@ var addContent = (function(){
 			data: { name : pageName },
 			dataType: 'json',
 			success: function( data ) {
-				if(!data.error) {
-					// Success
+				if(!data.error) { // Success
 					$pageNameInput.val("");
 					$addPageModal.modal('hide');
 					if($tableBody.find('tr.placeholderRow').length > 0) {
@@ -67,11 +80,52 @@ var addContent = (function(){
 					}
 
 					$tableBody.prepend(Mustache.render(pageListTemplate, data));
-				} else {
-					// Error
+				} else { // Error
 					$pageMsg.html("<p class='text-danger'>"+data.error_msg+"</p>");
 					$pageNameInput.focus();
 					clearMsg($pageMsg);
+				}
+			}
+		});
+	}
+
+	function submitNavLink() {
+		// Get user input
+		var navLinkName = $navLinkNameInput.val(),
+		navLinkUrl = $navLinkUrlInput.val();
+		// Validate
+		if(navLinkName.length < 1) {
+			$navLinkMsg.html("<p class='text-danger'>You must enter a name.</p>");
+			$navLinkNameInput.focus();
+			clearMsg($navLinkMsg);
+			return false;
+		}
+		if(navLinkUrl.length < 1) {
+			$navLinkMsg.html("<p class='text-danger'>You must enter a url</p>");
+			$navLinkUrlInput.focus();
+			clearMsg($navLinkMsg);
+			return false;
+		}
+
+		// Post to server
+		$.ajax({
+			type: 'POST',
+			url: baseURL + 'dashboard/addNavLink',
+			data: { 
+				name : navLinkName,
+				url : navLinkUrl
+			},
+			dataType: 'json',
+			success: function( data ) {
+				if(!data.error) { // Success
+					$navLinkNameInput.val("");
+					$navLinkUrlInput.val("");
+					$addNavLinkModal.modal('hide');
+					reloadNav();	
+				} else { // Error
+					$navLinkMsg.html("<p class='text-danger'>"+data.error_msg+"</p>");
+					$navLinkNameInput.focus();
+					clearMsg($navLinkMsg);
 				}
 			}
 		});
@@ -83,9 +137,14 @@ var addContent = (function(){
 	 * 
 	 */
 	function selectModal(type) {
-		if(type == 'page')
-		{
-			$addPageModal.modal('show');
+		switch(type) {
+			case 'page' :
+				$addPageModal.modal('show');
+			break;
+
+			case 'navLink' :
+				$addNavLinkModal.modal('show');
+			break;
 		}
 	}
 
@@ -99,6 +158,12 @@ var addContent = (function(){
 				selector.show();
 			});
 		}, timeout);
+	}
+
+	function reloadNav() {
+		$mainNav.load(baseURL + 'dashboard/reloadNav', function() {
+			events.emit('reloadNav');
+		});
 	}
 
 

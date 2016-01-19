@@ -5,6 +5,20 @@ class Val
 
 	public function __construct(){}
 
+	public function blank($data)
+	{
+		if(strlen($data) == 0) {
+			return "This field is required.";
+		}
+	}
+
+	public function url($data)
+	{
+		if(filter_var($data, FILTER_VALIDATE_URL) === false) {
+			return "You must enter a valid URL.";
+		}
+	}
+
 	public function minlength($data, $arg)
 	{
 		if (strlen($data) < $arg) {

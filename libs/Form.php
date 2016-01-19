@@ -55,7 +55,16 @@ class Form
 		{
 			return $this->_postData;
 		}
-		
+	}
+
+	/**
+	 * fetchError - Returns error array
+	 *
+	 * @return array
+	 */
+	public function fetchError()
+	{
+		return $this->_error;
 	}
 
 	/**
@@ -71,20 +80,18 @@ class Form
 		} else {
 			$error = $this->_val->{$typeOfValidator}($this->_postData[$this->_currentItem], $arg);
 		}
-		
 
 		if ($error)
 		{
 			$this->_error[$this->_currentItem] = $error;
 		}
-
 		return $this;
 	}
+
 	/**
 	 * submit - Handles the form, throws exception upon error
 	 *
 	 * @return boolean
-	 * @throws Exception
 	 */
 	public function submit(){
 		if(empty($this->_error))
@@ -93,12 +100,13 @@ class Form
 		}
 		else
 		{
-			$e = '';
-			foreach($this->_error as $key => $value)
-			{
-				$e .= $key . ' => ' . $value . "<br>";
-			}
-			throw new Exception($e);
+			return false;
+			// $e = '';
+			// foreach($this->_error as $key => $value)
+			// {
+			// 	$e .= $key . ' => ' . $value . "<br>";
+			// }
+			// throw new Exception($e);
 		}
 	}
 

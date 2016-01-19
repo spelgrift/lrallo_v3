@@ -15,14 +15,14 @@ class Global_Model extends Model {
 	public function loadNav()
 	{
 		// Get attributes stored in content table as array
-		if($contentArray = $this->db->select("SELECT contentID, url, parentPageID FROM content WHERE nav = 1 AND hidden = 0 AND trashed = 0 AND orphaned = 0 ORDER BY nav_position ASC"))
+		if($contentArray = $this->db->select("SELECT contentID, url, parentPageID, type FROM content WHERE nav = 1 AND hidden = 0 AND trashed = 0 AND orphaned = 0 ORDER BY nav_position ASC"))
 		{
 			$i = 0; // Content array key
 			foreach($contentArray as $row){
 				// Build path given parent ID
 				$contentArray[$i]['path'] = $this->_buildPath($row['url'], $row['parentPageID']);
 				// Add relevant type specific attributes to content array
-				$query = "SELECT * FROM page WHERE contentID = :contentID";
+				$query = "SELECT name FROM ".$row['type']." WHERE contentID = :contentID";
 				$pageArray = $this->db->select($query, array(':contentID' => $row['contentID']));
 				$contentArray[$i]['name'] = $pageArray[0]['name'];
 				$i++;
@@ -35,10 +35,18 @@ class Global_Model extends Model {
 		foreach($contentArray as $row)
 		{
 			$name = $row['name'];
-			$path = $row['path'];
+			$path = URL . $row['path'];
 			$contentID = $row['contentID'];
+			$class = '';
+			$dataID = '';
 
-			$nav .= "<li id='listItem_$contentID'><a href='" . URL . $path . "'>$name</a></li>";
+			if($row['type'] == 'navLink') {
+				$path = $row['path'];
+				$class = "class='navLink'";
+				$dataID = "data-id='$contentID'";
+			}
+
+			$nav .= "<li $class $dataID id='listItem_$contentID'><a $class href='" . $path . "'>$name</a></li>";
 		}
 		return $nav;
 	}
@@ -156,6 +164,12 @@ class Global_Model extends Model {
 								'name' => 'Video',
 								'class' => 'addTab',
 								'data-id' => 'video'
+							),
+							array(
+								'url' => '#',
+								'name' => 'Navigation Link',
+								'class' => 'addTab',
+								'data-id' => 'navLink'
 							)
 						)
 					),

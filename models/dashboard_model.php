@@ -123,6 +123,12 @@ class Dashboard_Model extends Model {
 					$type = 'Text';
 					$rowClass = 'contentListRow text visible';
 				break;
+				case "navLink" :
+					$name = $row['name'];
+					$nameTd = "<td>$name</td>";
+					$type = 'Nav Link';
+					$rowClass = 'contentListRow navLink visible';
+				break;
 			}
 
 			// Echo HTML
@@ -287,6 +293,12 @@ class Dashboard_Model extends Model {
 						if($result = $this->db->select("SELECT `textID`, `text` FROM `text` WHERE contentID = '".$row['contentID']."'"))
 						{
 							$typeArray['text'] = $result[0]['text'];
+						}
+					break;
+					case "navLink" :
+						if($result = $this->db->select("SELECT `name` FROM `navLink` WHERE contentID = '".$row['contentID']."'"))
+						{
+							$typeArray['name'] = $result[0]['name'];
 						}
 					break;
 				}

@@ -6861,11 +6861,24 @@ button.close {
 #trash td:nth-child(2) {
   text-align: left;
 }
+#mainNav li {
+  position: relative;
+}
 #mainNav i.navHandle {
   position: absolute;
   left: -2px;
   top: 19px;
   cursor: move;
+}
+#mainNav a.navLinkControl {
+  position: absolute;
+  right: -19px;
+  top: 1px;
+  color: #000;
+  z-index: 1;
+}
+#mainNav a.navLinkControl:hover {
+  color: #555;
 }
 .contentItem {
   background-color: white;

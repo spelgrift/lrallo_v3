@@ -71,12 +71,27 @@
   }
 }
 
-// Sortable Nav
+// Sortable Nav / Nav Link Controls
 #mainNav {
+  li {
+    position:relative;
+  }
   i.navHandle {
     position:absolute;
     left:-2px;
     top:19px;
     cursor:move;
   }
+  a.navLinkControl {
+    position:absolute;
+    right:-19px;
+    top:1px;
+    color:#000;
+    z-index: 1;
+    &:hover {
+      color:#555;
+    }
+  }
 }
+
+

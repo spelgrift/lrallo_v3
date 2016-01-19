@@ -4,6 +4,7 @@
 // echo "</pre>";
 require 'views/inc/header.php'; 
 require 'views/inc/addContentForms/addPage.php';
+require 'views/inc/addContentForms/addNavLink.php';
 ?>
 
 <!-- List Item Templates -->
@@ -21,6 +22,40 @@ require 'views/inc/addContentForms/addPage.php';
 		</td>
 	</tr>
 </script>
+
+<!-- Edit NavLink Modal -->
+<div id="editNavLinkModal" class="modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">Edit Navigation Link</h4>
+			</div>
+
+			<div class="modal-body">
+				<form>
+					<div class='form-group'>
+						<label for='editNavName'>Displayed Text</label>
+						<input type='text' class='form-control' id='editNavName' placeholder='Nav Link'>
+					</div>
+				</form>
+				<form>
+					<div class='form-group'>
+						<label for='editNavUrl'>Destination URL</label>
+						<input type='text' class='form-control' id='editNavUrl' placeholder='http://...'>
+					</div>
+				</form>
+				<div id='editNavLinkMsg'></div>
+			</div>
+
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" id='deleteNavLink' class="btn btn-danger">Delete Link</button>
+				<button type="button" id='submitEditNavLink' class="btn btn-primary">Save</button>
+			</div>
+		</div>
+	</div>
+</div>
 
 <!-- LIST CONTENT -->
 <div class='row tabPanel active' id='contentList'>
@@ -63,6 +98,7 @@ require 'views/inc/addContentForms/addPage.php';
 				<option value='all' selected>All Content</option>
 				<option value='page'>Pages</option>
 				<option value='text'>Text</option>
+				<option value='navLink'>Nav Links</option>
 			</select>
 		</div>
 		<div class='form-group'>
