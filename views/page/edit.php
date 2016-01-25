@@ -5,6 +5,7 @@
 require 'views/inc/header.php';
 require 'views/inc/addContentForms/addPage.php';
 require 'views/inc/addContentForms/addText.php';
+require 'views/inc/addContentForms/addImage.php';
 require 'views/inc/addContentForms/addSpacer.php';
 ?>
 

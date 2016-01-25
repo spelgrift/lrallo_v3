@@ -111,6 +111,12 @@ class Global_Model extends Model {
 							),
 							array(
 								'url' => '#',
+								'name' => 'Single Image',
+								'class' => 'addTab',
+								'data-id' => 'singleImage'
+							),
+							array(
+								'url' => '#',
 								'name' => 'Spacer',
 								'class' => 'addTab',
 								'data-id' => 'spacer'

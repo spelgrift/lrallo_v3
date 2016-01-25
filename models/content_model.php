@@ -66,6 +66,15 @@ class Content_Model extends Model {
 				'type' => 'spacer',
 				'contentID' => "{{contentID}}",
 				'bootstrap' => 'col-xs-12'
+			),
+			array(
+				'templateID' => 'singleImgTemplate',
+				'type' => 'singleImage',
+				'contentID' => '{{contentID}}',
+				'bootstrap' => '{{bootstrap}}',
+				'smVersion' => '{{smVersion}}',
+				'mdVersion' => '{{mdVersion}}',
+				'lgVersion' => '{{lgVersion}}'
 			)
 		);
 	}
@@ -180,11 +189,7 @@ class Content_Model extends Model {
 
 		// Validate length
 		if($name == ""){
-			$results = array(
-				'error' => true,
-				'error_msg' => 'You must enter a name!'
-			);
-			echo json_encode($results);
+			$this->_returnError('You must enter a name!');
 			return false;
 		}
 		// Create URL friendly string
@@ -192,13 +197,8 @@ class Content_Model extends Model {
 		$url = strtolower($url);
 
 		// Make sure name/URL is not taken
-		$query = "SELECT * FROM content WHERE url = :url";
-		if($result = $this->db->select($query, array(':url' => $url))){
-			$results = array(
-				'error' => true,
-				'error_msg' => 'A page with that name already exists.'
-			);
-			echo json_encode($results);
+		if($result = $this->db->select("SELECT * FROM content WHERE url = :url", array(':url' => $url))){
+			$this->_returnError('A page with that name already exists.');
 			return false;
 		}
 
@@ -232,6 +232,98 @@ class Content_Model extends Model {
 
 /*
  *
+ * SINGLE IMAGE TYPE FUNCTIONS
+ *
+ */
+
+	// Add Single Image
+	public function addSingleImage($parentPageID, $parentUrl = 'frontpage')
+	{
+		// Check if there is a file
+		if(empty($_FILES)) {
+			$this->_returnError("No File!");
+			return false;
+		}
+
+		// Check if there is a file error
+		if($_FILES['file']['error'] == 1) {
+			$this->_returnError("File Error!");
+			unlink($_FILES['file']['tmp_name']);
+			return false;
+		}
+		
+		// Check if file is an image (not a very good check, admittedly)
+		if(!preg_match("/\.(gif|jpg|png)$/i", $_FILES['file']['name'])){
+			$this->_returnError("Invalid filetype");
+			unlink($_FILES['file']['tmp_name']);
+			return false;
+		}
+
+		// Great, move ahead with upload!
+		// Get file info
+		$fileTempPath = $_FILES['file']['tmp_name'];
+		$fileName = $_FILES['file']['name'];
+		$fileExt = end(explode(".", $fileName));
+
+		$original = ORIGINALS . $fileName;
+
+		// Attempt to save original file
+		if(!move_uploaded_file($fileTempPath, $original)) {
+			$this->_returnError("Error saving file.");
+			return false;
+		}
+
+		// Resize to display versions
+		$baseName = $parentUrl . "_" . date("Ymd-his") . "_";
+		$smVersion = UPLOADS . $baseName . "sm." . $fileExt;
+		$mdVersion = UPLOADS . $baseName . "md." . $fileExt;
+		$lgVersion = UPLOADS . $baseName . "lg." . $fileExt;
+
+		Image::makeDisplayImgs($original, $smVersion, $mdVersion, $lgVersion);
+
+		// Get orientation and set bootstrap value accordingly
+		$orientation = Image::getOrientation($original);
+		if($orientation == 'portrait') {
+			$bootstrap = 'col-xs-12 col-sm-6';
+		} else {
+			$bootstrap = 'col-xs-12';
+		}
+
+		// Content DB Entry
+		$this->db->insert('content', array(
+			'type' => 'singleImage',
+			'parentPageID' => $parentPageID,
+			'author' => $_SESSION['login'],
+			'bootstrap' => $bootstrap
+		));
+		$contentID = $this->db->lastInsertId();
+
+		// Single Image DB Entry
+		$this->db->insert('singleImage', array(
+			'contentID' => $contentID,
+			'name' => $fileName,
+			'original' => $original,
+			'smVersion' => $smVersion,
+			'mdVersion' => $mdVersion,
+			'lgVersion' => $lgVersion,
+			'orientation' => $orientation
+		));
+
+		// Success!
+		$results = array(
+			'error' => false,
+			'results' => array(
+				'contentID' => $contentID,
+				'bootstrap' => $bootstrap,
+				'smVersion' => $smVersion,
+				'mdVersion' => $mdVersion,
+				'lgVersion' => $lgVersion
+			)
+		);
+		echo json_encode($results);	
+	}
+/*
+ *
  * NAV LINK TYPE FUNCTIONS
  *
  */
@@ -247,12 +339,7 @@ class Content_Model extends Model {
 				->val('blank');
 		if(!$form->submit()) { // Error
 			$error = $form->fetchError();
-			$results = array(
-				'error' => true,
-				'error_msg' => reset($error), 
-				'error_field' => key($error) 
-			);
-			echo json_encode($results);
+			$this->_returnError(reset($error), key($error));
 			return false;
 		}
 		$data = $form->fetch(); // Form passed
@@ -286,12 +373,7 @@ class Content_Model extends Model {
 				->val('blank');
 		if(!$form->submit()) { // Error
 			$error = $form->fetchError();
-			$results = array(
-				'error' => true,
-				'error_msg' => reset($error), 
-				'error_field' => key($error) 
-			);
-			echo json_encode($results);
+			$this->_returnError(reset($error), key($error));
 			return false;
 		}
 		$data = $form->fetch(); // Form passed
@@ -316,11 +398,7 @@ class Content_Model extends Model {
 
 		// Validate length
 		if($text == ""){ 
-			$results = array(
-				'error' => true,
-				'error_msg' => 'Please enter some text!'
-			);
-			echo json_encode($results);
+			$this->_returnError('Please enter some text!');
 			return false;
 		}
 
@@ -384,6 +462,15 @@ class Content_Model extends Model {
  * UTILITY FUNCTIONS
  *
  */
+	private function _returnError($message, $field = null)
+	{
+		$results = array(
+			'error' => true,
+			'error_msg' => $message,
+			'error_field' => $field
+		);
+		echo json_encode($results);
+	}
 
 	private function _advanceContentPositions($parentPageID = 0)
 	{

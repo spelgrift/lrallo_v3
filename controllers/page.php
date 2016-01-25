@@ -79,7 +79,7 @@ class Page extends Controller
 		// Templates
 		$this->view->templates = $this->contentModel->buildTemplates();
 		// Javascript
-		$this->view->js = array('mustache.min.js', 'adminNav.js', 'pageSettings.js', 'addContentPage.js', 'contentControls.js', 'contentResize.js');
+		$this->view->js = array('mustache.min.js', 'dropzone.js', 'adminNav.js', 'pageSettings.js', 'addContentPage.js', 'contentControls.js', 'contentResize.js');
 		// Render view
 		$this->view->render('page/edit');
 	}
@@ -110,6 +110,12 @@ class Page extends Controller
 	{
 		Auth::setAccess();
 		$this->contentModel->addText($this->_pageAttrArray['pageID']);
+	}
+
+	public function addSingleImage()
+	{
+		Auth::setAccess();
+		$this->contentModel->addSingleImage($this->_pageAttrArray['pageID'], $this->_pageAttrArray['url']);
 	}
 
 	public function addSpacer()

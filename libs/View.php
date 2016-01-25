@@ -28,6 +28,15 @@ class View {
 
 				break;
 
+			case 'singleImage':
+				$smVersion = $contentObject['smVersion'];
+				$mdVersion = $contentObject['mdVersion'];
+				$lgVersion = $contentObject['lgVersion'];
+
+				require 'views/inc/content/singleImage.php';
+				
+				break;
+
 			case 'spacer':
 				require 'views/inc/content/spacer.php';
 

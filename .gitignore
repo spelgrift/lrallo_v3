@@ -41,3 +41,12 @@ Thumbs.db
 #################
 *.sublime-project
 *.sublime-workspace
+
+# User Uploaded Images #
+########################
+uploads/*.jpg
+uploads/*.gif
+uploads/*.png
+uploads/originals/*.jpg
+uploads/originals/*.gif
+uploads/originals/*.png

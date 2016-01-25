@@ -65,6 +65,12 @@ class Dashboard_Model extends Model {
 				$type = 'Text';
 				$rowClass = 'contentListRow text';
 			break;
+			case "singleImage":
+				$name = $row['name'];
+				$nameTd = "<td><span class='listPad'>$pad</span>$name</td>";
+				$type = 'Single Image';
+				$rowClass = 'contentListRow singleImage';
+			break;
 		}
 		// Echo HTML
 		$rowHTML .= "<tr id='$contentID' class='$rowClass'>";
@@ -123,6 +129,12 @@ class Dashboard_Model extends Model {
 					$type = 'Text';
 					$rowClass = 'contentListRow text visible';
 				break;
+				case "singleImage":
+					$name = $row['name'];
+					$nameTd = "<td>$name</td>";
+					$type = 'Single Image';
+					$rowClass = 'contentListRow singleImage visible';
+				break;
 				case "navLink" :
 					$name = $row['name'];
 					$nameTd = "<td>$name</td>";
@@ -172,7 +184,7 @@ class Dashboard_Model extends Model {
 		{
 			$type = array(
 				'page',
-				'image',
+				'singleImage',
 				'album',
 				'slideshow',
 				'video',
@@ -241,6 +253,14 @@ class Dashboard_Model extends Model {
 							}
 						}
 					break;
+					case "singleImage" :
+						$typeArray['path'] = $path;
+						if($result = $this->db->select("SELECT singleImageID, name FROM singleImage WHERE contentID = '".$row['contentID']."'"))
+						{
+							$typeArray['singleImageID'] = $result[0]['singleImageID'];
+							$typeArray['name'] = $result[0]['name'];
+						}
+					break;
 				}
 
 				$returnArray[] = $typeArray;
@@ -293,6 +313,13 @@ class Dashboard_Model extends Model {
 						if($result = $this->db->select("SELECT `textID`, `text` FROM `text` WHERE contentID = '".$row['contentID']."'"))
 						{
 							$typeArray['text'] = $result[0]['text'];
+						}
+					break;
+					case "singleImage" :
+						if($result = $this->db->select("SELECT singleImageID, name FROM singleImage WHERE contentID = '".$row['contentID']."'"))
+						{
+							$typeArray['singleImageID'] = $result[0]['singleImageID'];
+							$typeArray['name'] = $result[0]['name'];
 						}
 					break;
 					case "navLink" :

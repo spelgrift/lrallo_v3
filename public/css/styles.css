@@ -6965,3 +6965,74 @@ button.close {
 .contentItem .resizeContentControls p {
   font-size: .8em;
 }
+.dropzone {
+  min-height: 100px;
+  border-radius: 5px;
+  border: 2px dashed #337ab7;
+  padding: 20px;
+  background-color: white;
+}
+.dropzone,
+.dropzone > * {
+  box-sizing: border-box;
+}
+.dropzone.dz-clickable {
+  cursor: pointer;
+}
+.dropzone.dz-clickable * {
+  cursor: default;
+}
+.dropzone.dz-clickable .dz-message,
+.dropzone.dz-clickable .dz-message > * {
+  cursor: pointer;
+}
+.dropzone.dz-started > .dz-message {
+  display: none;
+}
+.dropzone.dz-drag-hover {
+  border-style: solid;
+}
+.dropzone.dz-drag-hover > .dz-message {
+  opacity: 0.9;
+}
+.dropzone .dz-message {
+  text-align: center;
+  margin: 2em 0;
+  opacity: 0.5;
+}
+.dropzone .dz-thumbnail {
+  overflow: hidden;
+  border-radius: 10px;
+  display: inline-block;
+}
+.dropzone .dz-filename {
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-right: 5px;
+  color: #333;
+  display: block;
+  margin-bottom: 5px;
+}
+.dropzone .dz-filesize {
+  font-size: .9em;
+  color: #555;
+  font-weight: normal;
+  display: block;
+  margin-bottom: 5px;
+}
+.dropzone .removeImage {
+  cursor: pointer;
+}
+.dropzone .progress {
+  margin-bottom: 10px;
+}
+.dropzone .dz-error {
+  display: block;
+  margin-bottom: 5px;
+}
+.dropzone .dz-preview.dz-error .dz-details > .progress {
+  display: none;
+}
+.DZtemplate {
+  display: none;
+}

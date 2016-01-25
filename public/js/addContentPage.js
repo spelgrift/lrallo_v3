@@ -23,6 +23,13 @@ var addContent = (function(){
 	$textMsg = $addTextModal.find('#textMsg'),
 	textTemplate = $('#textTemplate').html();
 
+	// Add Single  Image
+	var $addImageModal = $('#addImageModal'),
+	$submitImage = $addImageModal.find('button#submitNewImage'),
+	singleImgDZTemplate = $('#singleImgDZTemplate').html(),
+	$imageMsg = $addImageModal.find('#imageMsg'),
+	singleImgTemplate = $('#singleImgTemplate').html();
+
 	// Add Spacer
 	var $addSpacerModal = $('#addSpacerModal'),
 	$submitSpacer = $addSpacerModal.find('button#submitNewSpacer'),
@@ -53,11 +60,76 @@ var addContent = (function(){
 		ev.preventDefault();
 	});
 
+	// Submit Single Image
+	$submitImage.on('click', function(ev) {
+		$singleImgDropzone.processQueue();
+		ev.preventDefault();
+	});
+
 	// Submit Spacer
 	$submitSpacer.on('click', function(ev) {
 		submitSpacer();
 		ev.preventDefault();
-	})
+	});
+
+	/**
+	 * 
+	 * DROPZONES
+	 * 
+	 */
+	Dropzone.autoDiscover = false;
+
+	//
+	// Single Image Dropzone
+	//
+	var $singleImgDropzone = new Dropzone('div.singleImageDropzone', {
+		url : pageURL + '/addSingleImage',
+		autoProcessQueue : false,
+		maxFiles : 1,
+		maxFilesize : 2,
+		thumbnailWidth : 125,
+		thumbnailHeight : 125,
+		previewTemplate : singleImgDZTemplate,
+		dictDefaultMessage : "Drop file here to upload<br>(or click)"
+	});
+
+	// Handle Dropzone success
+	$singleImgDropzone.on("success", function(file, data) {
+		data = JSON.parse(data);
+		if(!data.error) { // Success!
+			// Hide modal
+			$addImageModal.modal('hide');
+			// Render template
+			$(Mustache.render(singleImgTemplate, data.results)).hide().prependTo($contentArea).fadeIn('slow');
+		} else { // Error!		
+			$singleImgDropzone.emit("error", file, data.error_msg);
+		}
+
+	});
+
+	// Enable Submit button when file added
+	$singleImgDropzone.on("addedfile", function(file) {
+		$submitImage.removeAttr('disabled');
+	});
+
+	// Disable Submit button when no files
+	$singleImgDropzone.on("removedfile", function(file) {
+		if($singleImgDropzone.files.length == 0) {
+			$submitImage.attr('disabled', 'disabled');
+		}
+	});
+
+	// Remove file if more than 1 added
+	$singleImgDropzone.on("maxfilesexceeded", function(file) {
+		this.removeFile(file);
+	});
+
+	// Remove files when modal closed
+	$addImageModal.on('hidden.bs.modal', function() {
+		$singleImgDropzone.removeAllFiles();
+	});
+
+	
 
 	/**
 	 * 
@@ -161,18 +233,22 @@ var addContent = (function(){
 	 * 
 	 */
 	function selectModal(type) {
-		if(type == 'text')
-		{
-			// Maybe skip this and add a new empty text block right onto the page?
-			$addTextModal.modal('show');
-		}
-		else if(type == 'page')
-		{
-			$addPageModal.modal('show');
-		}
-		else if(type == 'spacer')
-		{
-			$addSpacerModal.modal('show');
+		switch(type) {
+			case 'text' :
+				$addTextModal.modal('show');
+			break;
+
+			case 'page' :
+				$addPageModal.modal('show');
+			break;
+
+			case 'spacer' :
+				$addSpacerModal.modal('show');
+			break;
+
+			case 'singleImage' :
+				$addImageModal.modal('show');
+			break;
 		}
 	}
 
