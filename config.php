@@ -7,6 +7,9 @@ define('DEVPATH', '/ts/imageman/'); // Remove for production!
 define('LIBS', 'libs/');
 define('UPLOADS', 'uploads/');
 define('ORIGINALS', UPLOADS.'originals/');
+define('THUMBS', UPLOADS.'thumbs/');
+define('DELETED', ORIGINALS.'deleted/');
+
 
 // Database Login
 define('dbTYPE', 'mysql');
@@ -22,7 +25,10 @@ define('PASS_HASH_KEY', 'RogerTheDog');
 define('GENERAL_HASH_KEY', 'WonderfulWonderful');
 
 // Image resizing dimensions
-define('SmIMAGE', 800);
-define('MdIMAGE', 1200);
-define('LgIMAGE', 1600);
+define('SmIMAGE', 1200);
+define('LgIMAGE', 1755);
+define('THUMBSIZE', 300);
+
+// Save original images on delete (moves them to deleted dir)
+define('SAVE_ORIGINALS', false);
 ?>

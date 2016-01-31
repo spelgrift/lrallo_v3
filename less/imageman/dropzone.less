@@ -18,6 +18,10 @@
 			cursor:pointer;
 		}
 	}
+	.removeImage {
+		cursor:pointer;
+	}
+
 	&.dz-started>.dz-message {
 		display:none;
 	}
@@ -34,6 +38,7 @@
 		opacity: 0.5;
 	}
 
+	// SINGLE IMAGE DZ STYLES
 	.dz-thumbnail {
 		overflow: hidden;
 		border-radius: 10px;
@@ -57,10 +62,6 @@
 		margin-bottom:5px;
 	}
 
-	.removeImage {
-		cursor:pointer;
-	}
-
 	.progress {
 		margin-bottom: 10px;
 	}
@@ -75,6 +76,75 @@
 			display:none;
 		}
 	}
+
+	// GALLERY DZ STYLES
+
+	.gallery-preview {
+		margin: 5px 0;
+
+		.dz-gal-thumb {
+			position: relative;
+			overflow: hidden;
+			border-radius: 7px;
+			min-height: 125px;
+			min-width:125px;
+			background-color: #999;
+			a.dz-gal-remove {
+				position: absolute;
+				z-index: 1000;
+				bottom: 0;
+				left: 0;
+				width:100%;
+				background-color: #be2626;
+				border-radius: 0 0 7px 7px;
+				padding: 3px 0;
+				color: white;
+				font-size: .9em;
+				cursor:pointer;
+				opacity: 0;
+				-webkit-transition: opacity 0.3s ease;
+		      -moz-transition: opacity 0.3s ease;
+		      -ms-transition: opacity 0.3s ease;
+		      -o-transition: opacity 0.3s ease;
+		      transition: opacity 0.3s ease;
+				&:hover {
+					background-color: #a92222;
+					text-decoration: none;
+				}
+				&>* {
+					cursor:pointer;
+				}
+			}
+			&:hover a.dz-gal-remove {
+				opacity: 1;
+			}
+		}
+		&.dz-error {
+			.dz-gal-error {
+				position: absolute;
+				z-index: 1;
+				top: 0;
+				bottom: 0;
+				left: 5px;
+				right: 5px;
+				padding: 10px;
+				border-radius: 7px;
+				background-color: rgba(190, 38, 38, 0.6);
+				color: white;
+				font-size: .9em;
+			}
+			a.dz-gal-remove {
+				cursor:pointer;
+				opacity: 1;
+				&>* {
+					cursor:pointer;
+				}
+			}
+		}
+	}	
+}
+#galleryProgress {
+	display: none;
 }
 
 .DZtemplate {

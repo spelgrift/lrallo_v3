@@ -86,7 +86,7 @@ var addContent = (function(){
 		url : pageURL + '/addSingleImage',
 		autoProcessQueue : false,
 		maxFiles : 1,
-		maxFilesize : 2,
+		maxFilesize : 3,
 		thumbnailWidth : 125,
 		thumbnailHeight : 125,
 		previewTemplate : singleImgDZTemplate,

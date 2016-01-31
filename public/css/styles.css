@@ -6902,10 +6902,11 @@ button.close {
 .contentItem ul.contentControlMenu {
   position: absolute;
   top: 1px;
-  right: 7px;
+  right: 6px;
   background-color: #fff;
   list-style: none;
   padding-left: 0;
+  border-radius: 0 0 0 5px;
   display: none;
 }
 .contentItem ul.contentControlMenu li {
@@ -6986,6 +6987,9 @@ button.close {
 .dropzone.dz-clickable .dz-message > * {
   cursor: pointer;
 }
+.dropzone .removeImage {
+  cursor: pointer;
+}
 .dropzone.dz-started > .dz-message {
   display: none;
 }
@@ -7020,9 +7024,6 @@ button.close {
   display: block;
   margin-bottom: 5px;
 }
-.dropzone .removeImage {
-  cursor: pointer;
-}
 .dropzone .progress {
   margin-bottom: 10px;
 }
@@ -7031,6 +7032,69 @@ button.close {
   margin-bottom: 5px;
 }
 .dropzone .dz-preview.dz-error .dz-details > .progress {
+  display: none;
+}
+.dropzone .gallery-preview {
+  margin: 5px 0;
+}
+.dropzone .gallery-preview .dz-gal-thumb {
+  position: relative;
+  overflow: hidden;
+  border-radius: 7px;
+  min-height: 125px;
+  min-width: 125px;
+  background-color: #999;
+}
+.dropzone .gallery-preview .dz-gal-thumb a.dz-gal-remove {
+  position: absolute;
+  z-index: 1000;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #be2626;
+  border-radius: 0 0 7px 7px;
+  padding: 3px 0;
+  color: white;
+  font-size: .9em;
+  cursor: pointer;
+  opacity: 0;
+  -webkit-transition: opacity 0.3s ease;
+  -moz-transition: opacity 0.3s ease;
+  -ms-transition: opacity 0.3s ease;
+  -o-transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease;
+}
+.dropzone .gallery-preview .dz-gal-thumb a.dz-gal-remove:hover {
+  background-color: #a92222;
+  text-decoration: none;
+}
+.dropzone .gallery-preview .dz-gal-thumb a.dz-gal-remove > * {
+  cursor: pointer;
+}
+.dropzone .gallery-preview .dz-gal-thumb:hover a.dz-gal-remove {
+  opacity: 1;
+}
+.dropzone .gallery-preview.dz-error .dz-gal-error {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  bottom: 0;
+  left: 5px;
+  right: 5px;
+  padding: 10px;
+  border-radius: 7px;
+  background-color: rgba(190, 38, 38, 0.6);
+  color: white;
+  font-size: .9em;
+}
+.dropzone .gallery-preview.dz-error a.dz-gal-remove {
+  cursor: pointer;
+  opacity: 1;
+}
+.dropzone .gallery-preview.dz-error a.dz-gal-remove > * {
+  cursor: pointer;
+}
+#galleryProgress {
   display: none;
 }
 .DZtemplate {

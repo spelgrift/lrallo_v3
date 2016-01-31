@@ -16,6 +16,10 @@ var contentList = (function() {
 		displayRows(type, 'trash');
 	});
 
+	events.on('changeContentFilter', function(type) {
+		displayRows(type, 'content');
+	});
+
 	// Show/Hide rows
 	function displayRows(type, list)
 	{

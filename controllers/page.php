@@ -239,13 +239,19 @@ class Page extends Controller
 			$this->_pageAttrArray['path'] = $result['url'];
 			$this->_pageURL = $result['url'];
 		}
-		// Set admin nav array
-		$this->view->adminNav = $this->globalModel->adminNavArray('index', $this->_pageAttrArray['path']);
-		// Pass page attributes to view
-		$this->view->pageAttr = $this->_pageAttrArray;
-		$this->view->pageTitle = $this->_pageAttrArray['name'];
-		// Load content
-		$this->view->pageContent = $this->contentModel->getPageContent($this->_pageAttrArray['pageID']);
+
+		// Switch on page type (page, gallery, video)
+		switch($this->_pageAttrArray['type']) {
+			case "page" :
+				// Set admin nav array
+				$this->view->adminNav = $this->globalModel->adminNavArray('index', $this->_pageAttrArray['path']);
+				// Pass page attributes to view
+				$this->view->pageAttr = $this->_pageAttrArray;
+				$this->view->pageTitle = $this->_pageAttrArray['name'];
+				// Load content
+				$this->view->pageContent = $this->contentModel->getPageContent($this->_pageAttrArray['pageID']);
+				break;
+		}
 
 		return true;
 	}

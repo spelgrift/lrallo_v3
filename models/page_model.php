@@ -5,19 +5,19 @@ class Page_Model extends Model {
 	function __construct(){parent::__construct();}
 
 /**
- *	getPageInfo - 
+ *	getPageInfo - Gets page infro from DB, page can be any type (normal page, gallery, video)
  *	@param string $url The page url
  *	@return mixed, array of page attributes, false on no rows
  *
  */
 	public function getPageInfo($url)
 	{
-		$query = "SELECT * FROM content WHERE url = :url AND trashed = 0";
+		$query = "SELECT contentID, url, type, parentPageID, nav, hidden FROM content WHERE url = :url AND trashed = 0 AND (type = 'page' OR type = 'gallery' OR type = 'video')";
 		if($a = $this->db->select($query, array(':url' => $url)))
 		{
 			$contentAttr = $a[0];
-			// Get page info
-			$query = "SELECT * FROM page WHERE contentID = :contentID";
+			// Get page info from appropriate table
+			$query = "SELECT * FROM ".$contentAttr['type']." WHERE contentID = :contentID";
 			if($a = $this->db->select($query, array(':contentID' => $contentAttr['contentID'])))
 			{
 				$pageAttr = $a[0];
@@ -129,8 +129,7 @@ class Page_Model extends Model {
 		if(strlen($path) > 0) {	$path = $path . "/";	}
 		// 
 		if($result = $this->db->select("SELECT contentID, url, parentPageID, author, `date` FROM content WHERE type = 'page' AND trashed = '0' AND parentPageID = $parentPageID"))
-		{
-			
+		{			
 			foreach($result as $row)
 			{
 				$pageArray = array(
@@ -149,7 +148,6 @@ class Page_Model extends Model {
 						$pageArray['name'] = $row['name'];
 					}
 				}
-
 				$pageArray['subPages'] = $this->_getPageArrayRecursive($pageArray['pageID'], $pageArray['path']);
 
 				$returnArray[] = $pageArray;

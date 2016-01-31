@@ -5,11 +5,32 @@ class Image
 	/**
 	 * makeDisplayImgs
 	 */
-	public static function makeDisplayImgs($sourceImg, $sm_destImg, $md_destImg, $lg_destImg)
+	public static function makeDisplayImgs($sourceImg, $sm_destImg, $lg_destImg)
 	{
 		self::fitImage($sourceImg, $sm_destImg, SmIMAGE, SmIMAGE);
-		self::fitImage($sourceImg, $md_destImg, MdIMAGE, MdIMAGE);
 		self::fitImage($sourceImg, $lg_destImg, LgIMAGE, LgIMAGE);
+	}
+
+	/**
+	 * makeThumbnail
+	 */
+	public static function makeThumbnail($sourceImg, $destImg)
+	{
+		$image = new Imagick($sourceImg);
+		$image->resizeImage(THUMBSIZE * 2, THUMBSIZE * 2, Imagick::FILTER_CATROM, 1, TRUE);
+		$w_orig = $image->getImageWidth();
+		$h_orig = $image->getImageHeight();
+		$x = ($w_orig / 2) - (THUMBSIZE / 2);
+		$y = ($h_orig / 2) - (THUMBSIZE / 2);
+		$image->cropImage(THUMBSIZE, THUMBSIZE, $x, $y);
+		// Set to use jpeg compression
+		$image->setImageCompression(Imagick::COMPRESSION_JPEG);
+		// Set compression level (1 lowest quality, 100 highest quality)
+		$image->setImageCompressionQuality(80);
+		// Writes resultant image to output directory
+		$image->writeImage($destImg);
+		// Destroys Imagick object
+		$image->destroy();
 	}
 
 	/**

@@ -30,7 +30,6 @@ class View {
 
 			case 'singleImage':
 				$smVersion = $contentObject['smVersion'];
-				$mdVersion = $contentObject['mdVersion'];
 				$lgVersion = $contentObject['lgVersion'];
 
 				require 'views/inc/content/singleImage.php';

@@ -120,6 +120,11 @@ class Content_Model extends Model {
 					}
 				}
 			}
+			// If item is an image, delete the image files
+			if($result[0]['type'] == 'singleImage')
+			{
+				$this->_deleteSingleImgFiles($contentID);
+			}
 			// Delete record from type table
 			$this->db->delete($result[0]['type'], "`contentID` = $contentID");
 			// Delete content record
@@ -183,10 +188,9 @@ class Content_Model extends Model {
 
 	// Add Page
 
-	public function addPage($parentPageID)
+	public function addPage($parentPageID = "0")
 	{
 		$name = $_POST['name'];
-
 		// Validate length
 		if($name == ""){
 			$this->_returnError('You must enter a name!');
@@ -195,13 +199,10 @@ class Content_Model extends Model {
 		// Create URL friendly string
 		$url = preg_replace('#[^a-z.0-9_]#i', '_', $name);
 		$url = strtolower($url);
-
 		// Make sure name/URL is not taken
-		if($result = $this->db->select("SELECT * FROM content WHERE url = :url", array(':url' => $url))){
-			$this->_returnError('A page with that name already exists.');
+		if(!$this->_checkTaken($url)){
 			return false;
 		}
-
 		// Content DB entry
 		$this->db->insert('content', array(
 			'type' => 'page',
@@ -216,17 +217,169 @@ class Content_Model extends Model {
 			'name' => $name,
 			'contentid' => $contentID
 		));
-
+		// Success!
 		$results = array(
 			'error' => false,
+			'results' => array(
+				'name' => $name,
+				'path' => URL.$url,
+				'parent' => '-',
+				'type' => 'Page',
+				'date' => date('Y/m/d'),
+				'author' => $_SESSION['login'],
+				'contentID' => $contentID
+			)
+		);
+		echo json_encode($results);
+	}
+
+/*
+ *
+ * GALLERY TYPE FUNCTIONS
+ *
+ */
+
+	// Add Gallery
+	public function addGallery($parentPageID = "0")
+	{
+		$name = $_POST['name'];
+		// Validate length
+		if($name == ""){
+			$this->_returnError('You must enter a name!');
+			return false;
+		}
+		// Create URL friendly string
+		$url = preg_replace('#[^a-z.0-9_]#i', '_', $name);
+		$url = strtolower($url);
+		// Make sure name/URL is not taken
+		if(!$this->_checkTaken($url)){
+			return false;
+		}
+		// Content DB entry
+		$this->db->insert('content', array(
+			'type' => 'gallery',
+			'url' => $url,
+			'parentPageID' => $parentPageID,
+			'author' => $_SESSION['login']
+		));
+		$contentID = $this->db->lastInsertId();
+		// Page DB entry
+		$this->db->insert('gallery', array(
 			'name' => $name,
-			'path' => URL.$url,
+			'contentid' => $contentID
+		));
+		$galID = $this->db->lastInsertId();
+		// Success! (Return only galID and contentID for subsequent image upload)
+		$results = array(
+			'error' => false,
+			'results' => array(
+				'galID' => $galID,
+				'galURL' => $url
+			)
+		);
+		echo json_encode($results);
+	}
+
+	// Add Images
+	public function addGalImages($galID, $galURL)
+	{
+		// Make sure some files were uploaded
+		if(empty($_FILES)) {
+			$this->_returnError("No Files!");
+			return false;
+		}
+		// Count images currently in this gallery for position value and filename counter
+		$imgCount = $this->db->countRows('galImage', 'galleryID', $galID);
+		$position = $imgCount;
+		$paddedCount = str_pad((int) $imgCount, 3, "0", STR_PAD_LEFT);
+		// Image base name
+		$baseName = $galURL."_".$paddedCount;
+		// Reorder file array into one that makes sense
+		$fileArray = $this->_reArrayFiles($_FILES['file']);
+		// Array to track errors
+		$error = array();
+		// Iterate over array
+		foreach($fileArray as $file)
+		{
+			// Check if there was a file error
+			if($file['error'] == 1) {
+				$error[] = array('name' => $file['name'], 'error' => 'File Error');
+				continue;
+			}
+			// Make sure file is an image
+			if(!preg_match("/\.(gif|jpg|png)$/i", $file['name'])){
+				$error[] = array('name' => $file['name'], 'error' => 'Invalid Type');
+				unlink($file['tmp_name']);
+				continue;
+			}
+			// Get file Info
+			$fileTempPath = $file['tmp_name'];
+			$fileName = $file['name'];
+			$fileExt = end(explode(".", $fileName));
+			$original = ORIGINALS . $fileName;
+			// Attempt to save original file
+			if(!move_uploaded_file($fileTempPath, $original)) {
+				$error[] = array('name' => $fileName, 'error' => 'Error Saving File');
+				continue;
+			}
+			// Check if name exists, if so, increment file name until a unique one is found
+			$f = false;
+			while(!$f) {
+				$testName = UPLOADS.$baseName."_sm.".$fileExt;
+				if(!file_exists($testName)){
+					$smVersion = UPLOADS.$baseName."_sm.".$fileExt;
+					$lgVersion = UPLOADS.$baseName."_lg.".$fileExt;
+					$thumb = THUMBS.$baseName."_thumb.".$fileExt;
+					$f = true;
+				} else {
+					$baseName++;
+				}
+			}
+			// Make display versions
+			Image::makeDisplayImgs($original, $smVersion, $lgVersion);
+			// Make thumbnail
+			Image::makeThumbnail($smVersion, $thumb);
+			// Get orientation
+			$orientation = Image::getOrientation($original);
+			// DB Entry
+			$this->db->insert('galImage', array(
+				'galleryID' => $galID,
+				'name' => $fileName,
+				'original' => $original,
+				'thumb' => $thumb,
+				'smVersion' => $smVersion,
+				'lgVersion' => $lgVersion,
+				'orientation' => $orientation,
+				'position' => $position
+			));
+			// Increment filename
+			$baseName++;
+		}
+		// Get Gallery info to return to page
+		$galInfo = $this->db->select("SELECT name, contentID FROM gallery WHERE galleryID = :galleryID", array(':galleryID' => $galID));
+		$returnDetails = array(
+			'name' => $galInfo[0]['name'],
+			'path' => URL.$galURL,
 			'parent' => '-',
-			'type' => 'Page',
+			'type' => 'Gallery',
 			'date' => date('Y/m/d'),
 			'author' => $_SESSION['login'],
-			'contentID' => $contentID
+			'contentID' => $galInfo[0]['contentID']
 		);
+		// Report any errors
+		if(!empty($error)) {
+			$results = array(
+				'error' => true,
+				'error_msg' => 'There were errors with your upload, however some files may have saved correctly. See the error list below.',
+				'error_details' => $error,
+				'results' => $returnDetails
+			);
+		} else {
+			$results = array(
+				'error' => false,
+				'results' => $returnDetails
+			);
+		}
 		echo json_encode($results);
 	}
 
@@ -276,10 +429,9 @@ class Content_Model extends Model {
 		// Resize to display versions
 		$baseName = $parentUrl . "_" . date("Ymd-his") . "_";
 		$smVersion = UPLOADS . $baseName . "sm." . $fileExt;
-		$mdVersion = UPLOADS . $baseName . "md." . $fileExt;
 		$lgVersion = UPLOADS . $baseName . "lg." . $fileExt;
 
-		Image::makeDisplayImgs($original, $smVersion, $mdVersion, $lgVersion);
+		Image::makeDisplayImgs($original, $smVersion, $lgVersion);
 
 		// Get orientation and set bootstrap value accordingly
 		$orientation = Image::getOrientation($original);
@@ -304,7 +456,6 @@ class Content_Model extends Model {
 			'name' => $fileName,
 			'original' => $original,
 			'smVersion' => $smVersion,
-			'mdVersion' => $mdVersion,
 			'lgVersion' => $lgVersion,
 			'orientation' => $orientation
 		));
@@ -316,11 +467,29 @@ class Content_Model extends Model {
 				'contentID' => $contentID,
 				'bootstrap' => $bootstrap,
 				'smVersion' => $smVersion,
-				'mdVersion' => $mdVersion,
 				'lgVersion' => $lgVersion
 			)
 		);
 		echo json_encode($results);	
+	}
+
+	private function _deleteSingleImgFiles($contentID)
+	{
+		if($result = $this->db->select("SELECT name, original, smVersion, mdVersion, lgVersion FROM singleImage WHERE contentID = :contentID", array(':contentID' => $contentID)))
+		{
+			// Delete display versions
+			unlink($result[0]['smVersion']);
+			unlink($result[0]['mdVersion']);
+			unlink($result[0]['lgVersion']);
+
+			// If Save Originals is true, move original to deleted folder, otherwise, delete it
+			if(SAVE_ORIGINALS) {
+				$newPath = DELETED . $result[0]['name'];
+				rename($result[0]['original'], $newPath);
+			} else {
+				unlink($result[0]['original']);
+			}
+		}
 	}
 /*
  *
@@ -462,6 +631,27 @@ class Content_Model extends Model {
  * UTILITY FUNCTIONS
  *
  */
+	private function _reArrayFiles(&$file_post)
+	{
+		$file_array = array();
+		$file_count = count($file_post['name']);
+		$file_keys = array_keys($file_post);
+		for ($i=0; $i<$file_count; $i++) {
+		  foreach ($file_keys as $key) {
+		      $file_array[$i][$key] = $file_post[$key][$i];
+		  }
+		}
+		return $file_array;
+	}
+
+	private function _checkTaken($url) {
+		if($result = $this->db->select("SELECT contentID FROM content WHERE url = :url", array(':url' => $url))){
+			$this->_returnError('A page with that name already exists.');
+			return false;
+		}
+		return true;
+	}
+
 	private function _returnError($message, $field = null)
 	{
 		$results = array(

@@ -59,12 +59,22 @@ class Dashboard_Model extends Model {
 				$rowClass = 'contentListRow page visible';
 				$parentLink = "<a href='".URL.$path."'>$name</a>";
 			break;
+
+			case "gallery" :
+				$name = $row['name'];
+				$nameTd = "<td class='listName'><span class='listPad'>$pad</span><a href='".URL.$path."'>$name</a></td>";
+				$type = 'Gallery';
+				$rowClass = 'contentListRow gallery';
+				$parentLink = "<a href='".URL.$path."'>$name</a>";
+			break;
+
 			case "text" :
 				$trimmedText = substr(htmlentities($row['text']), 0, 25).'...';
 				$nameTd = "<td><span class='listPad'>$pad</span>$trimmedText</td>";
 				$type = 'Text';
 				$rowClass = 'contentListRow text';
 			break;
+
 			case "singleImage":
 				$name = $row['name'];
 				$nameTd = "<td><span class='listPad'>$pad</span>$name</td>";
@@ -122,6 +132,12 @@ class Dashboard_Model extends Model {
 					$nameTd = "<td class='listName'>$name</td>";
 					$type = 'Page';
 					$rowClass = 'contentListRow page visible';
+				break;
+				case "gallery" :
+					$name = $row['name'];
+					$nameTd = "<td class='listName'>$name</td>";
+					$type = 'Gallery';
+					$rowClass = 'contentListRow gallery visible';
 				break;
 				case "text" :
 					$trimmedText = substr(htmlentities($row['text']), 0, 25).'...';
@@ -185,7 +201,7 @@ class Dashboard_Model extends Model {
 			$type = array(
 				'page',
 				'singleImage',
-				'album',
+				'gallery',
 				'slideshow',
 				'video',
 				'text',
@@ -231,36 +247,44 @@ class Dashboard_Model extends Model {
 						$typeArray['url'] = $row['url'];
 						$typeArray['path'] = $path . $row['url'];
 
-						if($result = $this->db->select("SELECT pageID, name FROM page WHERE contentID = '".$row['contentID']."'"))
-						{
-							foreach($result as $row)
-							{
-								$typeArray['pageID'] = $row['pageID'];
-								$typeArray['name'] = $row['name'];
-							}
-						}
+						$result = $this->db->select("SELECT pageID, name FROM page WHERE contentID = '".$row['contentID']."'");
+
+						$typeArray['pageID'] = $result[0]['pageID'];
+						$typeArray['name'] = $result[0]['name'];
+
 						$typeArray['subContent'] = $this->_getContentArrayRecursive($type, $typeArray['pageID'], $typeArray['path']);
-					break;
+						break;
+
+					case "gallery" :
+						// Append trailing / to path if item has a parent page
+						if(strlen($path) > 0) {	$path = $path . "/";	}
+
+						$typeArray['url'] = $row['url'];
+						$typeArray['path'] = $path . $row['url'];
+
+						$result = $this->db->select("SELECT galleryID, name FROM gallery WHERE contentID = '".$row['contentID']."'");
+
+						$typeArray['galleryID'] = $result[0]['galleryID'];
+						$typeArray['name'] = $result[0]['name'];
+						break;
+
 					case "text" :
 						$typeArray['path'] = $path;
 
-						if($result = $this->db->select("SELECT `textID`, `text` FROM `text` WHERE contentID = '".$row['contentID']."'"))
-						{
-							foreach($result as $row)
-							{
-								$typeArray['textID'] = $row['textID'];
-								$typeArray['text'] = $row['text'];
-							}
-						}
-					break;
+						$result = $this->db->select("SELECT `textID`, `text` FROM `text` WHERE contentID = '".$row['contentID']."'");
+
+						$typeArray['textID'] = $result[0]['textID'];
+						$typeArray['text'] = $result[0]['text'];
+						break;
+
 					case "singleImage" :
 						$typeArray['path'] = $path;
-						if($result = $this->db->select("SELECT singleImageID, name FROM singleImage WHERE contentID = '".$row['contentID']."'"))
-						{
-							$typeArray['singleImageID'] = $result[0]['singleImageID'];
-							$typeArray['name'] = $result[0]['name'];
-						}
-					break;
+
+						$result = $this->db->select("SELECT singleImageID, name FROM singleImage WHERE contentID = '".$row['contentID']."'");
+
+						$typeArray['singleImageID'] = $result[0]['singleImageID'];
+						$typeArray['name'] = $result[0]['name'];
+						break;
 				}
 
 				$returnArray[] = $typeArray;
@@ -303,31 +327,33 @@ class Dashboard_Model extends Model {
 				switch($row['type'])
 				{
 					case "page" :
-						if($result = $this->db->select("SELECT pageID, name FROM page WHERE contentID = '".$row['contentID']."'"))
-						{
-							$typeArray['pageID'] = $result[0]['pageID'];
-							$typeArray['name'] = $result[0]['name'];
-						}
-					break;
+						$result = $this->db->select("SELECT pageID, name FROM page WHERE contentID = '".$row['contentID']."'");
+
+						$typeArray['pageID'] = $result[0]['pageID'];
+						$typeArray['name'] = $result[0]['name'];
+						break;
+					case "gallery" :
+						$result = $this->db->select("SELECT galleryID, name FROM gallery WHERE contentID = '".$row['contentID']."'");
+
+						$typeArray['galleryID'] = $result[0]['galleryID'];
+						$typeArray['name'] = $result[0]['name'];
+						break;
 					case "text" :
-						if($result = $this->db->select("SELECT `textID`, `text` FROM `text` WHERE contentID = '".$row['contentID']."'"))
-						{
-							$typeArray['text'] = $result[0]['text'];
-						}
-					break;
+						$result = $this->db->select("SELECT `textID`, `text` FROM `text` WHERE contentID = '".$row['contentID']."'");
+
+						$typeArray['text'] = $result[0]['text'];
+						break;
 					case "singleImage" :
-						if($result = $this->db->select("SELECT singleImageID, name FROM singleImage WHERE contentID = '".$row['contentID']."'"))
-						{
-							$typeArray['singleImageID'] = $result[0]['singleImageID'];
-							$typeArray['name'] = $result[0]['name'];
-						}
-					break;
+						$result = $this->db->select("SELECT singleImageID, name FROM singleImage WHERE contentID = '".$row['contentID']."'");
+
+						$typeArray['singleImageID'] = $result[0]['singleImageID'];
+						$typeArray['name'] = $result[0]['name'];
+						break;
 					case "navLink" :
-						if($result = $this->db->select("SELECT `name` FROM `navLink` WHERE contentID = '".$row['contentID']."'"))
-						{
-							$typeArray['name'] = $result[0]['name'];
-						}
-					break;
+						$result = $this->db->select("SELECT `name` FROM `navLink` WHERE contentID = '".$row['contentID']."'");
+
+						$typeArray['name'] = $result[0]['name'];
+						break;
 				}
 
 				$returnArray[] = $typeArray;

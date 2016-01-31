@@ -17,8 +17,7 @@ if($adminControls) {
 <div class='content'>
 <?php
 echo "<img class='img-responsive visible-xs-block' src='".URL.$smVersion."'>";
-echo "<img class='img-responsive hidden-xs hidden-lg' src='".URL.$mdVersion."'>"; 
-echo "<img class='img-responsive visible-lg-block' src='".URL.$lgVersion."'>"; 
+echo "<img class='img-responsive hidden-xs' src='".URL.$lgVersion."'>"; 
 ?>
 	
 </div>

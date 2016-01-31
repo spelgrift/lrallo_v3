@@ -163,7 +163,7 @@ class Global_Model extends Model {
 								'url' => '#',
 								'name' => 'Image Gallery',
 								'class' => 'addTab',
-								'data-id' => 'album'
+								'data-id' => 'gallery'
 							),
 							array(
 								'url' => '#',

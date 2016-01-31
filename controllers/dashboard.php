@@ -19,15 +19,24 @@ class Dashboard extends Controller {
 		$this->view->adminNav = $this->globalModel->adminNavArray('dashboard');
 		$this->view->contentRows = $this->model->renderContentRows($this->model->listContent());
 		$this->view->trashRows = $this->model->renderTrashRows($this->model->listTrash());
-		$this->view->js = array('mustache.min.js', 'events.js', 'adminNav.js', 'addContentDashboard.js', 'sortableNav.js', 'navLinkControls.js', 'contentList.js', 'trash.js');
+		$this->view->js = array('mustache.min.js', 'dropzone.js', 'events.js', 'adminNav.js', 'addContentDashboard.js', 'sortableNav.js', 'navLinkControls.js', 'contentList.js', 'trash.js');
 		// Render View
 		$this->view->render('dashboard/index');
 	}
 
-
 	public function addPage()
 	{
-		$this->contentModel->addPage("0");
+		$this->contentModel->addPage();
+	}
+
+	public function addGallery()
+	{
+		$this->contentModel->addGallery();
+	}
+
+	public function uploadGalImages()
+	{
+		$this->contentModel->addGalImages($_POST['galID'], $_POST['galURL']);
 	}
 
 	public function addNavLink()
