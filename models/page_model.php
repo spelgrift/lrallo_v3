@@ -46,21 +46,11 @@ class Page_Model extends Model {
 
 		// Validate length
 		if($name == ""){
-			$results = array(
-				'error' => true,
-				'error_msg' => 'Name cannot be blank!',
-				'error_field' => 'name'
-			);
-			echo json_encode($results);
+			$this->_returnError('Name cannot be blank!', 'name');
 			return false;
 		}
 		if($url == ""){
-			$results = array(
-				'error' => true,
-				'error_msg' => 'URL cannot be blank!',
-				'error_field' => 'url'
-			);
-			echo json_encode($results);
+			$this->_returnError('URL cannot be blank!', 'url');
 			return false;
 		}
 		// Make sure URL uses correct characters
@@ -69,22 +59,12 @@ class Page_Model extends Model {
 		// Make sure name/URL are not taken
 		$query = "SELECT * FROM content WHERE url = :url";
 		if($url != $origURL && $result = $this->db->select($query, array(':url' => $url))){
-			$results = array(
-				'error' => true,
-				'error_msg' => 'A page with that URL already exists.',
-				'error_field' => 'url'
-			);
-			echo json_encode($results);
+			$this->_returnError('A page with that URL already exists.', 'url');
 			return false;
 		}
 		$query = "SELECT * FROM page WHERE name = :name";
 		if($name != $origName && $result = $this->db->select($query, array(':name' => $name))){
-			$results = array(
-				'error' => true,
-				'error_msg' => 'A page with that name already exists.',
-				'error_field' => 'name'
-			);
-			echo json_encode($results);
+			$this->_returnError('A page with that name already exists.', 'name');
 			return false;
 		}
 

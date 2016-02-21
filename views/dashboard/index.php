@@ -100,7 +100,7 @@ require 'views/inc/addContentForms/addNavLink.php';
 			<select class='form-control' id='filterTrashList'>
 				<option value='all' selected>All Content</option>
 				<option value='page'>Pages</option>
-				<option value='gallery' selected>Galleries</option>
+				<option value='gallery'>Galleries</option>
 				<option value='text'>Text</option>
 				<option value='singleImage'>Images</option>
 				<option value='navLink'>Nav Links</option>

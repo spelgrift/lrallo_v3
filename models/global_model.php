@@ -63,14 +63,6 @@ class Global_Model extends Model {
 	{
 		switch($view)
 		{
-			case 'index':
-				$adminNav = array(
-					array(
-						'url' => URL . $pageURL . "/edit", 
-						'name' => "<i class='fa fa-fw fa-sliders'></i> Edit Page",
-					)
-				);
-				break;
 			case 'home' :
 				$adminNav = array(
 					array(
@@ -79,7 +71,23 @@ class Global_Model extends Model {
 					)
 				);
 				break;
-			case 'edit' :
+			case 'pageIndex':
+				$adminNav = array(
+					array(
+						'url' => URL . $pageURL . "/edit", 
+						'name' => "<i class='fa fa-fw fa-sliders'></i> Edit Page",
+					)
+				);
+				break;
+			case 'galIndex':
+				$adminNav = array(
+					array(
+						'url' => URL . $pageURL . "/edit", 
+						'name' => "<i class='fa fa-fw fa-sliders'></i> Edit Gallery",
+					)
+				);
+				break;
+			case 'editPage' :
 				$adminNav = array(
 					array(
 						'name' => $titleText,
@@ -134,6 +142,38 @@ class Global_Model extends Model {
 						'name' => "<i class='fa fa-fw fa-desktop'></i> View Page",
 						'id' => "viewTab"
 					),
+				);
+				break;
+			case 'editGallery' :
+				$adminNav = array(
+					array(
+						'name' => $titleText,
+						'id' => 'adminNavName'
+					),
+					array(
+						'url' => "#", 
+						'name' => "<i class='fa fa-fw fa-arrows-alt'></i> Edit Sequence",
+						'data-tab' => 'editSequence',
+						'class' => ' adminTab active'
+					),
+					array(
+						'url' => "#",
+						'name' => "<i class='fa fa-fw fa-plus'></i> Add Images",
+						'class' => 'adminTab addImages',
+						'data-tab' => 'editSequence',
+						'id' => 'addImages'
+					),
+					array(
+						'url' => "#", 
+						'name' => "<i class='fa fa-fw fa-wrench'></i> Settings",
+						'class' => 'adminTab',
+						'data-tab' => 'galSettings'
+					),
+					array(
+						'url' => URL . $pageURL, 
+						'name' => "<i class='fa fa-fw fa-desktop'></i> View Gallery",
+						'id' => "viewTab"
+					)
 				);
 				break;
 			case 'dashboard' :

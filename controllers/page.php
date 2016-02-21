@@ -2,7 +2,13 @@
 
 class Page extends Controller
 {
-	function __construct(){ parent::__construct(); }
+	function __construct()
+	{ 
+		parent::__construct();
+		// Instantiate content model
+		$this->loadModel('content', false);
+		$this->contentModel = new Content_Model();
+	}
 
 	// User given URL (Array)
 	private $_URL = null;
@@ -15,14 +21,11 @@ class Page extends Controller
 /**
  *	index - 		Builds page from DB elements and views.
  *					If method is passed in URL, call it!
- *					Otherwise, load the page
+ *					Otherwise, render the page
  *
  */
 	public function index($url = array())
 	{
-		// Instantiate content model
-		$this->loadModel('content', false);
-		$this->contentModel = new Content_Model();
 		// Set URL
 		$this->_URL = $url;
 		// If URL is empty, load home page
@@ -55,13 +58,46 @@ class Page extends Controller
 				return false;
 			}
 		}
-		// Render Page 			
-		$this->view->render('page/index');
+		// Add view vars and render page based on type
+		$this->view->pageAttr = $this->_pageAttrArray;
+		$this->view->pageTitle = $this->_pageAttrArray['name'];
+		switch($this->_pageAttrArray['type'])
+		{
+			case 'page' :
+				// Switch if homepage
+				if(!$this->_pageAttrArray['home'])
+				{
+					// Admin Nav
+					$this->view->adminNav = $this->globalModel->adminNavArray('pageIndex', $this->_pageAttrArray['path']);				
+					// Load content
+					$this->view->pageContent = $this->contentModel->getPageContent($this->_pageAttrArray['pageID']);
+				} 
+				else
+				{
+					// Home Admin Nav
+					$this->view->adminNav = $this->globalModel->adminNavArray('home');
+					// Home content
+					$this->view->pageContent = $this->contentModel->getPageContent();
+				}
+				// Render
+				$this->view->render('page/index');
+				break;
+			case 'gallery' :
+				// Admin nav
+				$this->view->adminNav = $this->globalModel->adminNavArray('galIndex', $this->_pageAttrArray['path']);
+				// Gal Images
+				$this->view->galImages = $this->contentModel->getGalImages($this->_pageAttrArray['galleryID']);
+				// JS
+				$this->view->js = array('encapsulatedPlugin.js', 'slideMan.js', 'gallery.js');
+				// Render
+				$this->view->render('gallery/index');
+				break;
+		}				
 	}
 
 /**
- *	edit - 	Edit a page!
  *
+ *	edit - 	Edit a page/gallery/video!
  *
  */
 	public function edit()
@@ -69,21 +105,43 @@ class Page extends Controller
 		Auth::setAccess();
 		// Pass page attributes to view
 		$this->view->pageAttr = $this->_pageAttrArray;
-		$this->view->pageTitle = "Edit Page: ".$this->_pageAttrArray['name'];
 		// Build page list for parent select
 		$this->view->pageList = $this->model->listPages();
-		// Admin Nav
-		$this->view->adminNav = $this->globalModel->adminNavArray('edit', $this->_pageAttrArray['path'], "Edit: " . $this->_pageAttrArray['name']);
-		// Content
-		$this->view->pageContent = $this->contentModel->getPageContent($this->_pageAttrArray['pageID']);
-		// Templates
-		$this->view->templates = $this->contentModel->buildTemplates();
-		// Javascript
-		$this->view->js = array('mustache.min.js', 'dropzone.js', 'adminNav.js', 'pageSettings.js', 'addContentPage.js', 'contentControls.js', 'contentResize.js');
-		// Render view
-		$this->view->render('page/edit');
+		// Switch based on type
+		switch($this->_pageAttrArray['type'])
+		{
+			case 'page' :
+				$this->view->pageTitle = "Edit Page | ".$this->_pageAttrArray['name'];
+				// Admin Nav
+				$this->view->adminNav = $this->globalModel->adminNavArray('editPage', $this->_pageAttrArray['path'], "Edit: " . $this->_pageAttrArray['name']);
+				// Content
+				$this->view->pageContent = $this->contentModel->getPageContent($this->_pageAttrArray['pageID']);
+				// Templates
+				$this->view->templates = $this->contentModel->buildTemplates();
+				// Javascript
+				$this->view->js = array('mustache.min.js', 'dropzone.js', 'adminNav.js', 'pageSettings.js', 'addContentPage.js', 'contentControls.js', 'contentResize.js');
+				// Render view
+				$this->view->render('page/edit');
+				break;
+			case 'gallery' :
+				$this->view->pageTitle = "Edit Gallery | ".$this->_pageAttrArray['name'];
+				// Admin Nav
+				$this->view->adminNav = $this->globalModel->adminNavArray('editGallery', $this->_pageAttrArray['path'], "Edit: " . $this->_pageAttrArray['name']);
+				// Gal Images
+				$this->view->galImages = $this->contentModel->getGalImages($this->_pageAttrArray['galleryID']);
+				// Javascript
+				$this->view->js = array('mustache.min.js', 'dropzone.js', 'adminNav.js', 'galleryImgSettings.js');
+				// Render view
+				$this->view->render('gallery/edit');
+				break;
+		}
 	}
 
+/**
+ *
+ *	EDIT PAGE METHODS
+ *
+ */
 	public function updateSettings()
 	{
 		$this->model->updateSettings($this->_pageAttrArray['pageID'], $this->_pageAttrArray['contentID']);
@@ -128,14 +186,8 @@ class Page extends Controller
 	{
 		if($_SERVER['REQUEST_METHOD'] == "DELETE")
 		{
-			if(!$contentID) {
-				$contentID = $this->_pageAttrArray['contentID'];
-			}
-			if($this->contentModel->trashContent($contentID)){
-				echo json_encode(array('error' => false));
-			} else {
-				echo json_encode(array('error' => true));
-			}
+			if(!$contentID) $contentID = $this->_pageAttrArray['contentID'];
+			$this->contentModel->trashContent($contentID);
 		}
 	}
 
@@ -145,6 +197,16 @@ class Page extends Controller
 		{
 			$this->contentModel->deleteContent($contentID);
 		}
+	}
+
+/**
+ *
+ *	EDIT GALLERY METHODS
+ *
+ */
+	public function sortGalImages()
+	{
+		$this->contentModel->sortGalImages();
 	}
 
 /**
@@ -202,14 +264,12 @@ class Page extends Controller
  */
 	private function _loadHome()
 	{
-		// Set page vars
-		$this->_pageTitle = "Imageman";
-		// Set admin nav for homepage
-		$this->view->adminNav = $this->globalModel->adminNavArray('home');
-		// Add vars to view
-		$this->view->pageTitle = $this->_pageTitle;
-		// load content
-		$this->view->pageContent = $this->contentModel->getPageContent();
+		// Set homepage attributes
+		$this->_pageAttrArray = array(
+			'type' => 'page',
+			'name' => 'Imageman',
+			'home' => true
+		);
 	}
 
 /**
@@ -239,20 +299,8 @@ class Page extends Controller
 			$this->_pageAttrArray['path'] = $result['url'];
 			$this->_pageURL = $result['url'];
 		}
-
-		// Switch on page type (page, gallery, video)
-		switch($this->_pageAttrArray['type']) {
-			case "page" :
-				// Set admin nav array
-				$this->view->adminNav = $this->globalModel->adminNavArray('index', $this->_pageAttrArray['path']);
-				// Pass page attributes to view
-				$this->view->pageAttr = $this->_pageAttrArray;
-				$this->view->pageTitle = $this->_pageAttrArray['name'];
-				// Load content
-				$this->view->pageContent = $this->contentModel->getPageContent($this->_pageAttrArray['pageID']);
-				break;
-		}
-
+		// Set flag that this is NOT the homepage
+		$this->_pageAttrArray['home'] = false;
 		return true;
 	}
 }

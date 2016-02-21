@@ -91,16 +91,19 @@ class Content_Model extends Model {
 			{
 				$affectedRows = $this->_orphanContent($result[0]['pageID'], $contentID, $affectedRows);
 			}
-
 			// If request came from dashboard, return array of affected child content to hide rows
 			if($dashboard) {
-				return $affectedRows;
+				echo json_encode(array(
+					'error' => false,
+					'affectedRows' => $affectedRows
+				));
+				return;
 			}
-			return true;
+			echo json_encode(array('error' => false));
 		}
 		else
 		{
-			return false;
+			echo json_encode(array('error' => true));
 		}		
 	}
 
@@ -109,21 +112,29 @@ class Content_Model extends Model {
 		// Get content type
 		if($result = $this->db->select("SELECT type FROM content WHERE contentID = :contentID", array(':contentID' => $contentID)))
 		{
-			// If item is a page, delete orphaned content
-			if($result[0]['type'] == 'page')
+			// Switch on content type
+			switch($result[0]['type'])
 			{
-				if($pageResult = $this->db->select("SELECT contentID FROM content WHERE orphanedByID = :contentID", array(':contentID' => $contentID)))
-				{
-					foreach($pageResult as $row)
+				case 'page' :
+					// If item is a page, delete orphaned content
+					if($pageResult = $this->db->select("SELECT contentID FROM content WHERE orphanedByID = :contentID", array(':contentID' => $contentID)))
 					{
-						$this->deleteContent($row['contentID'], true);
+						foreach($pageResult as $row)
+						{
+							$this->deleteContent($row['contentID'], true);
+						}
 					}
-				}
-			}
-			// If item is an image, delete the image files
-			if($result[0]['type'] == 'singleImage')
-			{
-				$this->_deleteSingleImgFiles($contentID);
+					break;
+
+				case 'gallery' :
+					// Delete image files
+					$this->_deleteGalImages($contentID);
+					break;
+
+				case 'singleImage' :
+					// Delete image files
+					$this->_deleteSingleImgFiles($contentID);
+					break;
 			}
 			// Delete record from type table
 			$this->db->delete($result[0]['type'], "`contentID` = $contentID");
@@ -197,10 +208,11 @@ class Content_Model extends Model {
 			return false;
 		}
 		// Create URL friendly string
-		$url = preg_replace('#[^a-z.0-9_]#i', '_', $name);
-		$url = strtolower($url);
+		$url = $this->_makeURL($name);
+
 		// Make sure name/URL is not taken
 		if(!$this->_checkTaken($url)){
+			$this->_returnError('A page with this name already exists!');
 			return false;
 		}
 		// Content DB entry
@@ -211,7 +223,6 @@ class Content_Model extends Model {
 			'author' => $_SESSION['login']
 		));
 		$contentID = $this->db->lastInsertId();
-
 		// Page DB entry
 		$this->db->insert('page', array(
 			'name' => $name,
@@ -238,6 +249,18 @@ class Content_Model extends Model {
  * GALLERY TYPE FUNCTIONS
  *
  */
+	// Get Gallery images for display on gallery type page
+	public function getGalImages($galID)
+	{
+		if($result = $this->db->select("SELECT galImageID, thumb, smVersion, lgVersion, orientation, position FROM galImage WHERE galleryID = :galleryID ORDER BY position ASC", array(':galleryID' => $galID)))
+		{
+			return $result;
+		}
+		else
+		{
+			return array();
+		}
+	}
 
 	// Add Gallery
 	public function addGallery($parentPageID = "0")
@@ -253,6 +276,7 @@ class Content_Model extends Model {
 		$url = strtolower($url);
 		// Make sure name/URL is not taken
 		if(!$this->_checkTaken($url)){
+			$this->_returnError('A gallery (or page) with this name already exists');
 			return false;
 		}
 		// Content DB entry
@@ -283,6 +307,7 @@ class Content_Model extends Model {
 	// Add Images
 	public function addGalImages($galID, $galURL)
 	{
+		set_time_limit(600);
 		// Make sure some files were uploaded
 		if(empty($_FILES)) {
 			$this->_returnError("No Files!");
@@ -352,8 +377,9 @@ class Content_Model extends Model {
 				'orientation' => $orientation,
 				'position' => $position
 			));
-			// Increment filename
+			// Increment filename and position
 			$baseName++;
+			$position++;
 		}
 		// Get Gallery info to return to page
 		$galInfo = $this->db->select("SELECT name, contentID FROM gallery WHERE galleryID = :galleryID", array(':galleryID' => $galID));
@@ -381,6 +407,48 @@ class Content_Model extends Model {
 			);
 		}
 		echo json_encode($results);
+	}
+
+	public function sortGalImages()
+	{
+		if(isset($_POST['listItem']))
+		{
+			foreach($_POST['listItem'] as $position => $ID)
+			{
+				$this->db->update('galImage', array('position' => $position), "`galImageID` = " . $ID);
+			}
+		}
+	}
+
+	private function _deleteGalImages($contentID)
+	{
+		if($result = $this->db->select("SELECT galleryID FROM gallery WHERE contentID = :contentID", array(':contentID' => $contentID)))
+		{
+			$galleryID = $result[0]['galleryID'];
+		} else {
+			return;
+		}
+
+		$query = "SELECT name, original, thumb, smVersion, lgVersion FROM galImage WHERE galleryID = :galleryID";
+		if($result = $this->db->select($query, array(':galleryID' => $galleryID)))
+		{
+			foreach ($result as $row) {
+				// Delete display versions
+				unlink($row['thumb']);
+				unlink($row['smVersion']);
+				unlink($row['lgVersion']);
+
+				// If Save Originals is true, move original to deleted folder, otherwise, delete it
+				if(SAVE_ORIGINALS) {
+					$newPath = DELETED . $row['name'];
+					rename($row['original'], $newPath);
+				} else {
+					unlink($row['original']);
+				}
+			}
+			// Delete DB records
+			$this->db->delete('galImage', "galleryID = $galleryID", $this->db->rowCount);
+		}	
 	}
 
 /*
@@ -631,6 +699,12 @@ class Content_Model extends Model {
  * UTILITY FUNCTIONS
  *
  */
+	private function _makeURL($str)
+	{
+		$url = preg_replace('#[^a-z.0-9_]#i', '_', $str);
+		return strtolower($url);
+	}
+
 	private function _reArrayFiles(&$file_post)
 	{
 		$file_array = array();
@@ -646,20 +720,9 @@ class Content_Model extends Model {
 
 	private function _checkTaken($url) {
 		if($result = $this->db->select("SELECT contentID FROM content WHERE url = :url", array(':url' => $url))){
-			$this->_returnError('A page with that name already exists.');
 			return false;
 		}
 		return true;
-	}
-
-	private function _returnError($message, $field = null)
-	{
-		$results = array(
-			'error' => true,
-			'error_msg' => $message,
-			'error_field' => $field
-		);
-		echo json_encode($results);
 	}
 
 	private function _advanceContentPositions($parentPageID = 0)

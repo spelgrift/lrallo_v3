@@ -23,6 +23,9 @@
 						<div id='galleryProgress' class='progress active' role='progressbar' aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
 							<div class="progress-bar" style="width:0%;" data-dz-uploadprogress></div>
 						</div>
+						<div id='galleryLoading' class='pull-left text-left'>
+							<p><img class='loading' src='<? echo URL; ?>public/images/loading.gif'>Processing images...</p>
+						</div>
 					</div>
 
 					<div class='col-sm-4'>

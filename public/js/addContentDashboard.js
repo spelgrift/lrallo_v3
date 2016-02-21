@@ -25,7 +25,8 @@ var addContent = (function(){
 	galDZtemplate = $('#galDZTemplate').html(),
 	$submitGal = $addGalModal.find('button#submitNewGal'),
 	$galMsg = $addGalModal.find('#galleryMsg'),
-	$galProgress = $addGalModal.find('#galleryProgress');
+	$galProgress = $addGalModal.find('#galleryProgress'),
+	$galProcessing = $addGalModal.find('#galleryLoading');
 
 	// Add Nav Link
 	var $addNavLinkModal = $('#addNavLinkModal'),
@@ -78,7 +79,7 @@ var addContent = (function(){
 		url : baseURL + 'dashboard/uploadGalImages/',
 		autoProcessQueue : false,
 		uploadMultiple : true,
-		parallelUploads: 20,
+		parallelUploads: 50,
 		maxFilesize : 3,
 		acceptedFiles : "image/*,.jpg,.JPG",
 		thumbnailWidth : 125,
@@ -93,7 +94,7 @@ var addContent = (function(){
 
 		$galleryDropzone.removeAllFiles();
 		$galNameInput.val('');
-		$galProgress.hide().find('.progress-bar').css('width', '0%');
+		$galProcessing.hide();
 
 		if(!data.error) { // Success!
 			// Hide modal
@@ -123,7 +124,12 @@ var addContent = (function(){
 
 	// Update total progress bar
 	$galleryDropzone.on('totaluploadprogress', function(progress) {
-		$galProgress.find('.progress-bar').css('width', progress + '%');
+		if(progress < 100) {
+			$galProgress.find('.progress-bar').css('width', progress + '%');
+		} else {
+			$galProgress.hide().find('.progress-bar').css('width', '0%');
+			$galProcessing.show();
+		}
 	});
 
 	// Enable Submit button when file added

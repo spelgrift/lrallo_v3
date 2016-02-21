@@ -52,23 +52,14 @@ class Dashboard extends Controller {
 	public function trashNavLink($contentID)
 	{
 		if($_SERVER['REQUEST_METHOD'] == "DELETE") {
-			if($this->contentModel->trashContent($contentID)) {
-				echo json_encode(array('error' => false));
-			} else {
-				echo json_encode(array('error' => true));
-			}
+			$this->contentModel->trashContent($contentID);
 		}
 	}
 
 	public function trashContent($contentID)
 	{
 		if($_SERVER['REQUEST_METHOD'] == "DELETE") {
-			if($affectedRows = $this->contentModel->trashContent($contentID, true))	{
-				echo json_encode(array(
-					'error' => false,
-					'affectedRows' => $affectedRows
-				));
-			}
+			$this->contentModel->trashContent($contentID, true);
 		}
 	}
 

@@ -25,6 +25,15 @@ class Model {
 		return $path;
 	}
 
-}
+	protected function _returnError($message, $field = null)
+	{
+		$results = array(
+			'error' => true,
+			'error_msg' => $message,
+			'error_field' => $field
+		);
+		echo json_encode($results);
+	}
 
+}
 ?>
