@@ -5,4 +5,3 @@ function __autoload($class){
 }
 $bootstrap =  new Bootstrap();
 $bootstrap->init();
-?>

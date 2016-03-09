@@ -136,4 +136,3 @@ class Page_Model extends Model {
 		return $returnArray;
 	}
 }
-?>

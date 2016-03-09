@@ -56,9 +56,4 @@ class User extends Controller {
 		$this->model->editSave($data);
 		header('location: ' . URL . 'user');
 	}
-
-
-
-
 }
-?>

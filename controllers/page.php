@@ -144,11 +144,13 @@ class Page extends Controller
  */
 	public function updateSettings()
 	{
+		Auth::setAccess();
 		$this->model->updateSettings($this->_pageAttrArray['pageID'], $this->_pageAttrArray['contentID']);
 	}
 
 	public function sortContent()
 	{
+		Auth::setAccess();
 		$this->contentModel->sortContent();
 	}
 
@@ -184,6 +186,7 @@ class Page extends Controller
 
 	public function trashContent($contentID = false)
 	{
+		Auth::setAccess();
 		if($_SERVER['REQUEST_METHOD'] == "DELETE")
 		{
 			if(!$contentID) $contentID = $this->_pageAttrArray['contentID'];
@@ -193,6 +196,7 @@ class Page extends Controller
 
 	public function deleteSpacer($contentID)
 	{
+		Auth::setAccess();
 		if($_SERVER['REQUEST_METHOD'] == "DELETE")
 		{
 			$this->contentModel->deleteContent($contentID);
@@ -206,7 +210,17 @@ class Page extends Controller
  */
 	public function sortGalImages()
 	{
-		$this->contentModel->sortGalImages();
+		Auth::setAccess();
+		$this->contentModel->sortContent();
+	}
+
+	public function trashGalImage($galImageID)
+	{
+		Auth::setAccess();
+		if($_SERVER['REQUEST_METHOD'] == "DELETE")
+		{
+			$this->contentModel->trashGalImage($galImageID);
+		}
 	}
 
 /**
@@ -304,4 +318,3 @@ class Page extends Controller
 		return true;
 	}
 }
-?>

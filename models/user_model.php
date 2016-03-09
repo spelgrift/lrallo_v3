@@ -47,5 +47,3 @@ class User_Model extends Model {
 		$this->db->update('user', $postData, "`userid` = {$data['id']}");
 	}
 }
-
-?>

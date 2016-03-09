@@ -125,12 +125,14 @@ class Content_Model extends Model {
 						}
 					}
 					break;
-
 				case 'gallery' :
 					// Delete image files
 					$this->_deleteGalImages($contentID);
 					break;
-
+				case 'galImage' :
+					// Delete image files
+					$this->_deleteGalImageFiles($contentID);
+					break;
 				case 'singleImage' :
 					// Delete image files
 					$this->_deleteSingleImgFiles($contentID);
@@ -198,7 +200,6 @@ class Content_Model extends Model {
  */
 
 	// Add Page
-
 	public function addPage($parentPageID = "0")
 	{
 		$name = $_POST['name'];
@@ -220,7 +221,8 @@ class Content_Model extends Model {
 			'type' => 'page',
 			'url' => $url,
 			'parentPageID' => $parentPageID,
-			'author' => $_SESSION['login']
+			'author' => $_SESSION['login'],
+			'bootstrap' => BS_PAGE
 		));
 		$contentID = $this->db->lastInsertId();
 		// Page DB entry
@@ -252,7 +254,12 @@ class Content_Model extends Model {
 	// Get Gallery images for display on gallery type page
 	public function getGalImages($galID)
 	{
-		if($result = $this->db->select("SELECT galImageID, thumb, smVersion, lgVersion, orientation, position FROM galImage WHERE galleryID = :galleryID ORDER BY position ASC", array(':galleryID' => $galID)))
+		$query = "SELECT c.contentID, c.position, g.galImageID, g.thumb, g.smVersion, g.lgVersion, g.caption, g.orientation
+			FROM content AS c
+			LEFT JOIN galImage AS g ON c.contentID = g.contentID
+			WHERE c.trashed = 0 and c.hidden = 0 and c.parentGalID = :galID
+			ORDER BY c.position ASC";
+		if($result = $this->db->select($query, array(':galID' => $galID)))
 		{
 			return $result;
 		}
@@ -366,16 +373,21 @@ class Content_Model extends Model {
 			Image::makeThumbnail($smVersion, $thumb);
 			// Get orientation
 			$orientation = Image::getOrientation($original);
-			// DB Entry
+			// DB Entries
+			$this->db->insert('content', array(
+				'type' => 'galImage',
+				'parentGalID' => $galID,
+				'position' => $position,
+				'author' => $_SESSION['login']
+			));
 			$this->db->insert('galImage', array(
-				'galleryID' => $galID,
+				'contentID' => $this->db->lastInsertId(),
 				'name' => $fileName,
 				'original' => $original,
 				'thumb' => $thumb,
 				'smVersion' => $smVersion,
 				'lgVersion' => $lgVersion,
-				'orientation' => $orientation,
-				'position' => $position
+				'orientation' => $orientation
 			));
 			// Increment filename and position
 			$baseName++;
@@ -409,17 +421,6 @@ class Content_Model extends Model {
 		echo json_encode($results);
 	}
 
-	public function sortGalImages()
-	{
-		if(isset($_POST['listItem']))
-		{
-			foreach($_POST['listItem'] as $position => $ID)
-			{
-				$this->db->update('galImage', array('position' => $position), "`galImageID` = " . $ID);
-			}
-		}
-	}
-
 	private function _deleteGalImages($contentID)
 	{
 		if($result = $this->db->select("SELECT galleryID FROM gallery WHERE contentID = :contentID", array(':contentID' => $contentID)))
@@ -428,16 +429,18 @@ class Content_Model extends Model {
 		} else {
 			return;
 		}
-
-		$query = "SELECT name, original, thumb, smVersion, lgVersion FROM galImage WHERE galleryID = :galleryID";
-		if($result = $this->db->select($query, array(':galleryID' => $galleryID)))
+		$query = "SELECT c.contentID, g.galImageID, g.name, g.thumb, g.smVersion, g.lgVersion, g.original
+			FROM content AS c
+			LEFT JOIN galImage AS g ON c.contentID = g.contentID
+			WHERE c.parentGalID = :galID";
+		if($result = $this->db->select($query, array(':galID' => $galleryID)))
 		{
+			$imgCount = $this->db->rowCount;
 			foreach ($result as $row) {
 				// Delete display versions
 				unlink($row['thumb']);
 				unlink($row['smVersion']);
 				unlink($row['lgVersion']);
-
 				// If Save Originals is true, move original to deleted folder, otherwise, delete it
 				if(SAVE_ORIGINALS) {
 					$newPath = DELETED . $row['name'];
@@ -445,10 +448,30 @@ class Content_Model extends Model {
 				} else {
 					unlink($row['original']);
 				}
+				// Delete DB records
+				$this->db->delete('galImage', "galImageID = ".$row['galImageID']);
 			}
-			// Delete DB records
-			$this->db->delete('galImage', "galleryID = $galleryID", $this->db->rowCount);
+			// Delete content DB records
+			$this->db->delete('content', "parentGalID = '$galleryID' AND type = 'galImage'", $imgCount);
 		}	
+	}
+
+	private function _deleteGalImageFiles($contentID)
+	{
+		if($result = $this->db->select("SELECT name, original, thumb, smVersion, lgVersion FROM galImage WHERE contentID = :contentID", array(':contentID' => $contentID)))
+		{
+			// Delete display versions
+			unlink($result[0]['thumb']);
+			unlink($result[0]['smVersion']);
+			unlink($result[0]['lgVersion']);
+			// If Save Originals is true, move original to deleted folder, otherwise, delete it
+			if(SAVE_ORIGINALS) {
+				$newPath = DELETED . $result[0]['name'];
+				rename($result[0]['original'], $newPath);
+			} else {
+				unlink($result[0]['original']);
+			}
+		}
 	}
 
 /*
@@ -543,11 +566,10 @@ class Content_Model extends Model {
 
 	private function _deleteSingleImgFiles($contentID)
 	{
-		if($result = $this->db->select("SELECT name, original, smVersion, mdVersion, lgVersion FROM singleImage WHERE contentID = :contentID", array(':contentID' => $contentID)))
+		if($result = $this->db->select("SELECT name, original, smVersion, lgVersion FROM singleImage WHERE contentID = :contentID", array(':contentID' => $contentID)))
 		{
 			// Delete display versions
 			unlink($result[0]['smVersion']);
-			unlink($result[0]['mdVersion']);
 			unlink($result[0]['lgVersion']);
 
 			// If Save Originals is true, move original to deleted folder, otherwise, delete it
@@ -646,7 +668,8 @@ class Content_Model extends Model {
 		$this->db->insert('content', array(
 			'type' => 'text',
 			'parentPageID' => $parentPageID,
-			'author' => $_SESSION['login']
+			'author' => $_SESSION['login'],
+			'bootstrap' => BS_TEXT
 		));
 		$contentID = $this->db->lastInsertId();
 
@@ -683,7 +706,8 @@ class Content_Model extends Model {
 		// Content DB entry
 		$this->db->insert('content', array(
 			'type' => 'spacer',
-			'parentPageID' => $parentPageID
+			'parentPageID' => $parentPageID,
+			'bootstrap' => 'col-xs-12'
 		));
 		$contentID = $this->db->lastInsertId();
 
@@ -761,4 +785,3 @@ class Content_Model extends Model {
 		return $affectedRows;
 	}
 }
-?>

@@ -44,7 +44,4 @@ class Val
 	{
 		throw new Exception("$name does not exist inside of: " . __CLASS__);
 	}
-
-
 }
-?>

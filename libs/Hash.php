@@ -15,5 +15,3 @@ class Hash
 		return hash_final($context);
 	}
 }
-
-?>

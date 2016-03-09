@@ -31,4 +31,9 @@ define('THUMBSIZE', 300);
 
 // Save original images on delete (moves them to deleted dir)
 define('SAVE_ORIGINALS', false);
+
+// Default content bootstrap widths
+define('BS_TEXT', 'col-xs-12');
+define('BS_SINGLE_IMAGE', 'col-xs-12');
+define('BS_PAGE', 'col-xs-6 col-sm-4');
 ?>

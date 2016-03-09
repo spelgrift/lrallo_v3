@@ -235,4 +235,3 @@ class Global_Model extends Model {
 		return $adminNav;
 	}
 }
-?>

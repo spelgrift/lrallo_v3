@@ -2,11 +2,11 @@ $(function() {
 	var galleryImgSettings = (function() {
 		var $editSequence = $('#editSequence'),
 		galURL = $('a#viewTab').attr('href');
-/*
-*
-* BIND EVENTS
-*
-*/
+	/*
+	*
+	* BIND EVENTS
+	*
+	*/
 		// Show/hide controls on mouseover
 		$editSequence.on({
 			mouseenter: function() {
@@ -22,12 +22,36 @@ $(function() {
 			handle: '.handle',
 			update: updateSortable
 		});
-/*
- *
- * CORE FUNCTIONS
- *
- */
 
+		// Trash Image
+		$editSequence.on('click', '.trashImage', function(ev) {
+			ev.preventDefault();
+			var contentID = $(this).attr('id'),
+			$thisImage = $(this).closest('.adminThumb');
+			if(confirm('Are you sure you want to trash this image?')) {
+				trashImage(contentID, $thisImage);
+			}
+		})
+		
+	/*
+	 *
+	 * CORE FUNCTIONS
+	 *
+	 */
+	 	function trashImage(contentID, $thisImage) {
+	 		$.ajax({
+				type: 'DELETE',
+				url: galURL + '/trashContent/' + contentID,
+				dataType: 'json',
+				success: function(data) {
+					if(!data.error) {
+						$thisImage.fadeOut(300, function() {
+							$(this).remove();
+						});
+					}
+				}
+			});
+	 	}
 	 	function updateSortable() {
 	 		var order = $(this).sortable('serialize');
 	 		$.ajax({
@@ -39,6 +63,5 @@ $(function() {
 	 			}
 	 		});
 	 	}		
-
 	})();
 });

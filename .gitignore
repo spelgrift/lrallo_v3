@@ -50,3 +50,4 @@ uploads/*.png
 uploads/originals/*.jpg
 uploads/originals/*.gif
 uploads/originals/*.png
+uploads/thumbs/*.*

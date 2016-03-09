@@ -10,6 +10,7 @@ require 'views/inc/header.php';
 // Display sortable thumbnails
 foreach($this->galImages as $image)
 {
+	$contentID = $image['contentID'];
 	$imgID = $image['galImageID'];
 	$thumb = URL.$image['thumb'];
 

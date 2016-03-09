@@ -42,5 +42,3 @@ class Controller {
 		$this->view->nav = $this->globalModel->loadNav();
 	}
 }
-
-?>
