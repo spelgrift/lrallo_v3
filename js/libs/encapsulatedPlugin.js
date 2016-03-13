@@ -1,3 +1,4 @@
+var jQuery = require('jquery');
 /**
  * Plugin generator plugin. Doesn't allow for chaining directly, but preserves public
  * methods and namespaces, and supports multiple elements.

@@ -1,3 +1,5 @@
+var $ = require('jquery');
+require('../libs/jquery-ui.sortable');
 $(function() {
 	var galleryImgSettings = (function() {
 		var $editSequence = $('#editSequence'),
@@ -31,7 +33,7 @@ $(function() {
 			if(confirm('Are you sure you want to trash this image?')) {
 				trashImage(contentID, $thisImage);
 			}
-		})
+		});
 		
 	/*
 	 *

@@ -1,4 +1,6 @@
-var contentList = (function() {
+var $ = require('jquery');
+
+$(function() {
 	// Cache DOM
 	var $contentList = $('#contentList'),
 	$trashList = $('#trash'),
@@ -23,24 +25,25 @@ var contentList = (function() {
 	// Show/Hide rows
 	function displayRows(type, list)
 	{
+		var $targetList, $targetRows;
 		// Select list
 		switch(list) {
 			case 'content' :
-				var $targetList = $contentList;
+				$targetList = $contentList;
 			break;
 			case 'trash' :
-				var $targetList = $trashList;
+				$targetList = $trashList;
 			break;
 		}
 		// Get rows to show and hide
 		var $visibleRows = $targetList.find('tr.contentListRow.visible');
 		if(type == 'all') {
-			var $targetRows = $targetList.find('tr.contentListRow');
+			$targetRows = $targetList.find('tr.contentListRow');
 			if(list == 'content') {
 				$targetList.find('span.listPad').show();
 			}
 		} else {
-			var $targetRows = $targetList.find('tr.contentListRow.'+type);
+			$targetRows = $targetList.find('tr.contentListRow.'+type);
 			if(list == 'content') {
 				// If list contains pages, show the parent pad
 				if(type != 'page') {
@@ -61,4 +64,4 @@ var contentList = (function() {
 			$(this).addClass('visible');
 		});
 	}
-})();
+});

@@ -1,0 +1,7 @@
+require('../less/styles.less');
+
+require('./libs/bs.dropdown.js'); // Bootstrap dropdowns
+require('./libs/bs.modal.js'); // Bootstrap modals
+
+require('./imageman/login.js'); // Handle login
+require('./imageman/gallery.js'); // Public Gallery view

@@ -58,6 +58,8 @@ class Page extends Controller
 				return false;
 			}
 		}
+		// JS (public)
+		$this->view->js = array('public.min.js');
 		// Add view vars and render page based on type
 		$this->view->pageAttr = $this->_pageAttrArray;
 		$this->view->pageTitle = $this->_pageAttrArray['name'];
@@ -87,8 +89,6 @@ class Page extends Controller
 				$this->view->adminNav = $this->globalModel->adminNavArray('galIndex', $this->_pageAttrArray['path']);
 				// Gal Images
 				$this->view->galImages = $this->contentModel->getGalImages($this->_pageAttrArray['galleryID']);
-				// JS
-				$this->view->js = array('encapsulatedPlugin.js', 'slideMan.js', 'gallery.js');
 				// Render
 				$this->view->render('gallery/index');
 				break;
@@ -119,7 +119,8 @@ class Page extends Controller
 				// Templates
 				$this->view->templates = $this->contentModel->buildTemplates();
 				// Javascript
-				$this->view->js = array('mustache.min.js', 'dropzone.js', 'adminNav.js', 'pageSettings.js', 'addContentPage.js', 'contentControls.js', 'contentResize.js');
+				$this->view->js = array('editPage.min.js');
+				// $this->view->js = array('mustache.min.js', 'dropzone.js', 'adminNav.js', 'pageSettings.js', 'addContentPage.js', 'contentControls.js', 'contentResize.js');
 				// Render view
 				$this->view->render('page/edit');
 				break;
@@ -130,7 +131,8 @@ class Page extends Controller
 				// Gal Images
 				$this->view->galImages = $this->contentModel->getGalImages($this->_pageAttrArray['galleryID']);
 				// Javascript
-				$this->view->js = array('mustache.min.js', 'dropzone.js', 'adminNav.js', 'galleryImgSettings.js');
+				$this->view->js = array('editGal.min.js');
+				// $this->view->js = array('mustache.min.js', 'dropzone.js', 'adminNav.js', 'galleryImgSettings.js');
 				// Render view
 				$this->view->render('gallery/edit');
 				break;

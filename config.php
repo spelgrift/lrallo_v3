@@ -1,5 +1,4 @@
 <?php
-
 // Paths (ensure to leave on trailing /)
 define('URL', 'http://kate.sampelgrift.com/ts/imageman/');
 define('DEVPATH', '/ts/imageman/'); // Remove for production!
@@ -36,4 +35,3 @@ define('SAVE_ORIGINALS', false);
 define('BS_TEXT', 'col-xs-12');
 define('BS_SINGLE_IMAGE', 'col-xs-12');
 define('BS_PAGE', 'col-xs-6 col-sm-4');
-?>

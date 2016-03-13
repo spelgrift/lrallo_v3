@@ -1,4 +1,7 @@
-var contentControls = (function() {
+var $ = require('jquery');
+require('../libs/jquery-ui.sortable');
+
+$(function() {
 	var $contentArea = $('#contentArea');
 	var pageURL = $('a#viewTab').attr('href');
 
@@ -38,7 +41,7 @@ var contentControls = (function() {
 		if(confirm('Are you sure you want to delete this spacer?')){
 			deleteSpacer($thisItem, contentID);
 		}
-	})
+	});
 
 	// Content Sortable
 	$contentArea.sortable({
@@ -83,15 +86,12 @@ var contentControls = (function() {
 		$.ajax({
 			type: 'DELETE',
 			url: pageURL + '/deleteSpacer/' + contentID,
-			dataType: 'json',
-			success: function(data) {
-				if(!data.error) {
-					thisItem.fadeOut(300, function() {
-						$(this).remove();
-					});
-				}
+			success: function() {
+				thisItem.fadeOut(300, function() {
+					$(this).remove();
+				});
 			}
 		});
 	}
 
-})();
+});

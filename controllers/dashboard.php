@@ -19,7 +19,8 @@ class Dashboard extends Controller {
 		$this->view->adminNav = $this->globalModel->adminNavArray('dashboard');
 		$this->view->contentRows = $this->model->renderContentRows($this->model->listContent());
 		$this->view->trashRows = $this->model->renderTrashRows($this->model->listTrash());
-		$this->view->js = array('mustache.min.js', 'dropzone.js', 'events.js', 'adminNav.js', 'addContentDashboard.js', 'sortableNav.js', 'navLinkControls.js', 'contentList.js', 'trash.js');
+		// JS (admin)
+		$this->view->js = array('dashboard.min.js');
 		// Render View
 		$this->view->render('dashboard/index');
 	}

@@ -1,4 +1,7 @@
-var sortableNav = (function() {
+var $ = require('jquery');
+require('../libs/jquery-ui.sortable');
+
+$(function() {
 	// Cache DOM
 	var $mainNav,
 		$navList,
@@ -40,6 +43,6 @@ var sortableNav = (function() {
 			success: function() {
 				// console.log('sorted!');
 			}
-		})
+		});
 	}
-})();
+});

@@ -1,5 +1,6 @@
-var pageSettings = (function() {
+var $ = require('jquery');
 
+$(function() {
 	// Cache DOM
 	var $pageSettings = $('#pageSettings'),
 	$nameInput = $pageSettings.find('#settingsNameInput'),
@@ -101,7 +102,7 @@ var pageSettings = (function() {
 					saveError(data);
 				}
 			}
-		})
+		});
 	}
 
 	function saveSuccess(data) {
@@ -134,7 +135,6 @@ var pageSettings = (function() {
  * UTILITY FUNCTIONS
  *
  */
-
 	function clearMsg(selector, timeout) {
 		if (timeout === undefined) {
 			timeout = 4000;
@@ -164,5 +164,4 @@ var pageSettings = (function() {
 	function reloadNav() {
 		$mainNav.load(baseURL + 'dashboard/reloadNav');
 	}
-	
-})();
+});

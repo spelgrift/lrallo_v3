@@ -1,3 +1,6 @@
+var $ = require('jquery');
+require('./slideMan.js'); // Image slider
+
 $(function() {
 	var gallery = (function() {
 

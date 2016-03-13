@@ -1,9 +1,11 @@
-var trash = (function() {
-/**
- * 
- * CACHE DOM
- * 
- */
+var $ = require('jquery');
+
+$(function() {
+	/**
+	 * 
+	 * CACHE DOM
+	 * 
+	 */
 	var $contentList = $('#contentList'),
 	$contentTypeFilter = $contentList.find('select#filterContentList'),
 	$contentTbody = $contentList.find('tbody'),
@@ -13,21 +15,22 @@ var trash = (function() {
 	$checkAll = $trashList.find('#trashCheckAll'),
 	$mainNav = $('#mainNav').children('ul.navbar-nav');
 
-/**
- * 
- * BIND EVENTS
- * 
- */
+	/**
+	 * 
+	 * BIND EVENTS
+	 * 
+	 */
 	// Trash button clicked
 	$contentList.on('click', '.trashContent', function(ev) {
 		ev.preventDefault();
 		var contentID = $(this).attr('id'),
-		$thisRow = $(this).closest('tr');
+		$thisRow = $(this).closest('tr'),
+		confirmMessage;
 
 		if($thisRow.hasClass('page')) {
-			var confirmMessage = 'Are you sure you want to trash this page? Associated content and subpages will be orphaned';
+			confirmMessage = 'Are you sure you want to trash this page? Associated content and subpages will be orphaned';
 		} else {
-			var confirmMessage = 'Are you sure you want to trash this item?';
+			confirmMessage = 'Are you sure you want to trash this item?';
 		}
 		if(confirm(confirmMessage)) {
 			trashContent(contentID);
@@ -41,9 +44,9 @@ var trash = (function() {
 		$thisRow = $(this).closest('tr');
 
 		if($thisRow.hasClass('page')) {
-			var confirmMessage = 'Are you sure you want to PERMANENTLY DELETE this page? Associated content and subpages will also be deleted. This action cannot be undone.';
+			confirmMessage = 'Are you sure you want to PERMANENTLY DELETE this page? Associated content and subpages will also be deleted. This action cannot be undone.';
 		} else {
-			var confirmMessage = 'Are you sure you want to PERMANENTLY DELETE this item?';
+			confirmMessage = 'Are you sure you want to PERMANENTLY DELETE this item?';
 		}
 		if(confirm(confirmMessage)) {
 			deleteContent(contentID, $thisRow);
@@ -114,11 +117,11 @@ var trash = (function() {
 		reloadTrash();
 	});
 
-/**
- * 
- * MAIN FUNCTIONS
- * 
- */
+	/**
+	 * 
+	 * MAIN FUNCTIONS
+	 * 
+	 */
    // Empty Trash
    function emptyTrash()
    {
@@ -134,7 +137,7 @@ var trash = (function() {
 			 		reloadTrash();
  				}
    		}
-   	})
+   	});
    }
 
  	// Trash content
@@ -149,7 +152,7 @@ var trash = (function() {
  					var $trashedRows = $contentList.find('tr#' +data.affectedRows.join(',tr#'));
 			 		$trashedRows.fadeOut(300, function() {
 			 			$(this).remove();
-			 			if($contentTbody.find('tr').length == 0) {
+			 			if($contentTbody.find('tr').length === 0) {
 							reloadContentList();
 						}
 			 		});
@@ -171,7 +174,7 @@ var trash = (function() {
  				if(!data.error) {
 			 		$thisRow.fadeOut(300, function() {
 			 			$(this).remove();
-			 			if($trashTbody.find('tr').length == 0) {
+			 			if($trashTbody.find('tr').length === 0) {
 							reloadTrash();
 						}
 			 		});
@@ -193,7 +196,7 @@ var trash = (function() {
 			 		var $deletedRows = $trashList.find('tr#' +checkedItems.join(',tr#'));
 			 		$deletedRows.fadeOut(300, function() {
 			 			$(this).remove();
-			 			if($trashTbody.find('tr').length == 0) {
+			 			if($trashTbody.find('tr').length === 0) {
 							reloadTrash();
 						}
 			 		});
@@ -214,7 +217,7 @@ var trash = (function() {
  				if(!data.error) {
 			 		$thisRow.fadeOut(300, function() {
 			 			$(this).remove();
-			 			if($trashTbody.find('tr').length == 0) {
+			 			if($trashTbody.find('tr').length === 0) {
 							reloadTrash();
 						}
 			 		});
@@ -238,7 +241,7 @@ var trash = (function() {
 			 		var $restoredRows = $trashList.find('tr#' +checkedItems.join(',tr#'));
 			 		$restoredRows.fadeOut(300, function() {
 			 			$(this).remove();
-			 			if($trashTbody.find('tr').length == 0) {
+			 			if($trashTbody.find('tr').length === 0) {
 							reloadTrash();
 						}
 			 		});
@@ -250,12 +253,11 @@ var trash = (function() {
  		});
  	}
 
-/**
- * 
- * UTLITY FUNCTIONS
- * 
- */
-
+	/**
+	 * 
+	 * UTLITY FUNCTIONS
+	 * 
+	 */
  	function reloadTrash()
  	{
  		$trashTypeFilter.val('all');
@@ -265,7 +267,7 @@ var trash = (function() {
  	function reloadContentList()
  	{
  		$contentTypeFilter.val('page');
- 		$contentTbody.load(baseURL + 'dashboard/reloadContentList/')
+ 		$contentTbody.load(baseURL + 'dashboard/reloadContentList/');
  	}
 
  	function reloadNav() {
@@ -283,4 +285,4 @@ var trash = (function() {
 		});
 		return checkedItems;
 	}
-})();
+});

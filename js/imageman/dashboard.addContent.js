@@ -1,4 +1,8 @@
-var addContent = (function(){
+var $ = require('jquery');
+var Mustache = require('../libs/mustache.min.js');
+var Dropzone = require('../libs/dropzone.js');
+
+$(function() {
 	/**
 	 * 
 	 * CACHE DOM
@@ -139,7 +143,7 @@ var addContent = (function(){
 
 	// Disable Submit button when no files
 	$galleryDropzone.on("removedfile", function(file) {
-		if($galleryDropzone.files.length == 0) {
+		if($galleryDropzone.files.length === 0) {
 			$submitGal.attr('disabled', 'disabled');
 		}
 	});
@@ -308,4 +312,4 @@ var addContent = (function(){
 			events.emit('reloadNav');
 		});
 	}
-})();
+});

@@ -1,3 +1,7 @@
+var jQuery = require('jquery');
+require('../libs/encapsulatedPlugin');
+
+
 (function($) {
 
 	// Define DOM attribute names to update settings
@@ -115,6 +119,7 @@
 		// Change to a new slide (public method)
 		this.changeSlide = function(newSlide, animate)
 		{
+			var direction, transitionClass, queuedClass;
 			// if animate is not set, it defaults to true
 			if(typeof animate === 'undefined') animate = true;
 			// Make sure an animation is not in progress
@@ -124,9 +129,9 @@
 			clearTimeout(slideTimeout);
 			// Determine direction to slide from
 			if(newSlide > currSlide) {
-				var direction = 'fromRight';
+				direction = 'fromRight';
 			} else {
-				var direction = 'fromLeft';
+				direction = 'fromLeft';
 			}
 
 			// Make sure newSlide is not too high or too low
@@ -139,11 +144,11 @@
 			// Select transition classes based on animation type
 			switch(settings.animationType) {
 				case 'slide' :
-					var transitionClass = 'transition-slide-'+direction,
+					transitionClass = 'transition-slide-'+direction;
 					queuedClass = 'queued-slide-'+direction;
 					break;
 				case 'fade' :
-					var transitionClass = 'transition-fade',
+					transitionClass = 'transition-fade';
 					queuedClass = 'queued-fade';
 					break;
 			}
@@ -183,9 +188,7 @@
 			$currSlide = $_newSlide;
 			currSlide = newSlide;
 		};
-
-
-	}
+	};
 	// Register plugin
 	$.fn.slideMan = function(options) {
 		return $.fn.encapsulatedPlugin('slideMan', slideMan, this, options);

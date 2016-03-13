@@ -1,4 +1,6 @@
-var navLinks = (function() {
+var $ = require('jquery');
+
+$(function() {
 
 /**
  * 
@@ -151,5 +153,4 @@ var navLinks = (function() {
 			events.emit('reloadNav');
 		});
 	}
-
-})();
+});

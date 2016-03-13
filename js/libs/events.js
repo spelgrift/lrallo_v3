@@ -1,5 +1,4 @@
-//events - a super-basic Javascript (publish subscribe) pattern
-var events = {
+window.events = {
 	events: {},
 	on: function(eventName, fn) {
 		this.events[eventName] = this.events[eventName] || [];

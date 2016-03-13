@@ -1,4 +1,6 @@
-var contentResize = (function() {
+var $ = require('jquery');
+
+$(function() {
 	var $contentArea = $('#contentArea');
 	var pageURL = $('a#viewTab').attr('href');
 	var currentScreen;
@@ -126,7 +128,7 @@ var contentResize = (function() {
 			$thisItem.removeClass().addClass(defaultClasses);
 			targetSize = $thisItem.find('select.targetSize').val();
 			target = buildTarget($thisItem, targetSize);
-		})
+		});
 
 		// Save button
 		$thisItem.on('click', '.saveResize', function() {
@@ -180,7 +182,10 @@ var contentResize = (function() {
  	}
 
  	function buildTarget($thisItem, targetSize) {
-		var target = {},
+		var testWidthClass,
+		testOffsetClass,
+		testSize,
+		target = {},
 		classList = $.grep(getClassArray($thisItem), function(a) {
 			return (a !== "contentItem" && a !== "editContent");
 		});
@@ -194,34 +199,31 @@ var contentResize = (function() {
 		if(target.widthClass.length > 0) {
 			target.width = getTarget(target.widthClass, 'width');
 		} else {
-			var testWidthClass, testSize;
 			switch(targetSize) {
 				case "lg":
 					testSize = "md";
 					testWidthClass = getTargetClass(classList, testSize, 'width');
-					if(testWidthClass.length == 0) {
+					if(testWidthClass.length === 0) {
 						testSize = "sm";
 						testWidthClass = getTargetClass(classList, testSize, 'width');
-						if(testWidthClass.length == 0) {
+						if(testWidthClass.length === 0) {
 							testSize = "xs";
 							testWidthClass = getTargetClass(classList, testSize, 'width');
 							break;
 						} else {
 							break;
 						}
-					} else {
-						break;
-					}
+					} 
+					break;
 				case "md":
 					testSize = "sm";
 					testWidthClass = getTargetClass(classList, testSize, 'width');
-					if(testWidthClass.length == 0) {
+					if(testWidthClass.length === 0) {
 						testSize = "xs";
 						testWidthClass = getTargetClass(classList, testSize, 'width');
 						break;
-					} else {
-						break;
 					}
+					break;
 				case "sm":
 					testSize = "xs";
 					testWidthClass = getTargetClass(classList, testSize, 'width');
@@ -233,34 +235,31 @@ var contentResize = (function() {
 		if(target.offsetClass.length > 0) {
 			target.offset = getTarget(target.offsetClass, 'offset');
 		} else {
-			var testOffsetClass, testSize;
 			switch(targetSize) {
 				case "lg":
 					testSize = "md";
 					testOffsetClass = getTargetClass(classList, testSize, 'offset');
-					if(testOffsetClass.length == 0) {
+					if(testOffsetClass.length === 0) {
 						testSize = "sm";
 						testOffsetClass = getTargetClass(classList, testSize, 'offset');
-						if(testOffsetClass.length == 0) {
+						if(testOffsetClass.length === 0) {
 							testSize = "xs";
 							testOffsetClass = getTargetClass(classList, testSize, 'offset');
 							break;
 						} else {
 							break;
 						}
-					} else {
-						break;
-					}
+					} 
+					break;
 				case "md":
 					testSize = "sm";
 					testOffsetClass = getTargetClass(classList, testSize, 'offset');
-					if(testOffsetClass.length == 0) {
+					if(testOffsetClass.length === 0) {
 						testSize = "xs";
 						testOffsetClass = getTargetClass(classList, testSize, 'offset');
 						break;
-					} else {
-						break;
 					}
+					break;
 				case "sm":
 					testSize = "xs";
 					testOffsetClass = getTargetClass(classList, testSize, 'offset');
@@ -292,9 +291,9 @@ var contentResize = (function() {
 	}
 
 	function getTarget(targetClass, type) {
-		if(targetClass.length == 0 && type == 'width') {
+		if(targetClass.length === 0 && type == 'width') {
 			return 12;
-		} else if (targetClass.length == 0 && type == 'offset') {
+		} else if (targetClass.length === 0 && type == 'offset') {
 			return 0;
 		}
 		return Number(targetClass.match(/\d+/)[0]);
@@ -325,4 +324,4 @@ var contentResize = (function() {
  		}
  	}
 
-})();
+});
