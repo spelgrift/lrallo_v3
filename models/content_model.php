@@ -312,7 +312,7 @@ class Content_Model extends Model {
 	}
 
 	// Add Images
-	public function addGalImages($galID, $galURL)
+	public function addGalImages($galID, $galURL, $dashboard = false)
 	{
 		set_time_limit(600);
 		// Make sure some files were uploaded
@@ -321,7 +321,7 @@ class Content_Model extends Model {
 			return false;
 		}
 		// Count images currently in this gallery for position value and filename counter
-		$imgCount = $this->db->countRows('galImage', 'galleryID', $galID);
+		$imgCount = $this->db->countRows('content', "type = 'galImage' AND parentGalID = :galID", array(':galID' => $galID));
 		$position = $imgCount;
 		$paddedCount = str_pad((int) $imgCount, 3, "0", STR_PAD_LEFT);
 		// Image base name
@@ -330,6 +330,8 @@ class Content_Model extends Model {
 		$fileArray = $this->_reArrayFiles($_FILES['file']);
 		// Array to track errors
 		$error = array();
+		// Array to hold successful uploads
+		$savedImages = array();
 		// Iterate over array
 		foreach($fileArray as $file)
 		{
@@ -380,8 +382,9 @@ class Content_Model extends Model {
 				'position' => $position,
 				'author' => $_SESSION['login']
 			));
+			$contentID = $this->db->lastInsertId();
 			$this->db->insert('galImage', array(
-				'contentID' => $this->db->lastInsertId(),
+				'contentID' => $contentID,
 				'name' => $fileName,
 				'original' => $original,
 				'thumb' => $thumb,
@@ -389,21 +392,44 @@ class Content_Model extends Model {
 				'lgVersion' => $lgVersion,
 				'orientation' => $orientation
 			));
+			// Add data for this image to array
+			$savedImages[] = array(
+				'contentID' => $contentID,
+				'imgID' => $this->db->lastInsertId(),
+				'thumb' => URL.$thumb,
+				'smVersion' => URL.$smVersion,
+				'lgVersion' => URL.$lgVersion,
+				'caption' => ''
+			);
 			// Increment filename and position
 			$baseName++;
 			$position++;
 		}
-		// Get Gallery info to return to page
+		// Get Gallery name and contentID
 		$galInfo = $this->db->select("SELECT name, contentID FROM gallery WHERE galleryID = :galleryID", array(':galleryID' => $galID));
-		$returnDetails = array(
-			'name' => $galInfo[0]['name'],
-			'path' => URL.$galURL,
-			'parent' => '-',
-			'type' => 'Gallery',
-			'date' => date('Y/m/d'),
-			'author' => $_SESSION['login'],
-			'contentID' => $galInfo[0]['contentID']
-		);
+		$galName = $galInfo[0]['name'];
+		$galContentID = $galInfo[0]['contentID'];
+
+		// If request came from dashboard, return data for content list
+		if($dashboard)	{
+			$returnDetails = array(
+				'name' => $galName,
+				'path' => URL.$galURL,
+				'parent' => '-',
+				'type' => 'Gallery',
+				'date' => date('Y/m/d'),
+				'author' => $_SESSION['login'],
+				'contentID' => $galContentID
+			);
+		} else {
+			$returnDetails = array(
+				'name' => $galName,
+				'path' => URL.$galURL,
+				'contentID' => $galContentID,
+				'images' => $savedImages
+			);
+		}
+		
 		// Report any errors
 		if(!empty($error)) {
 			$results = array(

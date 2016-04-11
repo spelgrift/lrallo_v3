@@ -101,13 +101,13 @@ class Database extends PDO {
 	/**
 	 * countRows
 	 * @param string $table A table name to check
-	 * @param string $whereField The field in a simple WHERE clause
+	 * @param array $array Parameters to bind
 	 * @param string $whereValue The value in a simple WHERE clause
 	 */
-	public function countRows($table, $whereField, $whereValue)
+	public function countRows($table, $where, $data)
 	{
-		$query = "SELECT * FROM $table WHERE $whereField = :$whereField";
-		if($this->select($query, array(":".$whereField => $whereValue))) {
+		$query = "SELECT * FROM $table WHERE $where";
+		if($this->select($query, $data)) {
 			return $this->rowCount;
 		} else {
 			return 0;

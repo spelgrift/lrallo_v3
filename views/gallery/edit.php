@@ -1,8 +1,14 @@
 <?php 
-// echo "<pre>";
-// print_r($this->galImages);
-// echo "</pre>";
 require 'views/inc/header.php';
+require 'views/inc/addContentForms/addGalImages.php';
+
+// Thumbnail template
+$contentID = '{{contentID}}';
+$imgID = '{{imgID}}';
+$thumb = '{{thumb}}';
+echo "<script type='text/template' id='thumbTemplate'>";
+require 'views/inc/content/adminControls/galImageThumb.php';
+echo "</script>";
 ?>
 
 <div class='row tabPanel active' id='editSequence'>

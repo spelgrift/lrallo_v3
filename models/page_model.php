@@ -35,14 +35,20 @@ class Page_Model extends Model {
  *	updateSettings - Updates page settings. Wasn't that descriptive?
  *
  */
-	public function updateSettings($pageID, $contentID)
+	public function updateSettings($type, $contentID)
 	{
+		// Common attributes
 		$name = $_POST['name'];
 		$url = $_POST['url'];
 		$parent = $_POST['parent'];
 		$nav = $_POST['nav'];
 		$origName = $_POST['origName'];
 		$origURL = $_POST['origURL'];
+
+		// Gallery specific attributes
+		if($type === "gallery") {
+			// $display, etc.
+		}
 
 		// Validate length
 		if($name == ""){
@@ -59,12 +65,12 @@ class Page_Model extends Model {
 		// Make sure name/URL are not taken
 		$query = "SELECT * FROM content WHERE url = :url";
 		if($url != $origURL && $result = $this->db->select($query, array(':url' => $url))){
-			$this->_returnError('A page with that URL already exists.', 'url');
+			$this->_returnError("A $type with that URL already exists.", 'url');
 			return false;
 		}
 		$query = "SELECT * FROM page WHERE name = :name";
 		if($name != $origName && $result = $this->db->select($query, array(':name' => $name))){
-			$this->_returnError('A page with that name already exists.', 'name');
+			$this->_returnError("A $type with that name already exists.", 'name');
 			return false;
 		}
 
@@ -75,8 +81,17 @@ class Page_Model extends Model {
 			'nav' => $nav
 		), "`contentID` = ".$contentID);
 
-		// Page DB Update
-		$this->db->update('page', array('name' => $name), "`pageID` = ".$pageID);
+		// Type DB Update
+		switch($type)
+		{
+			case 'page':
+				$this->db->update('page', array('name' => $name), "`contentID` = ".$contentID);
+				break;
+			case 'gallery':
+				$this->db->update('gallery', array('name' => $name), "`contentID` = ".$contentID);
+				break;
+		}
+		
 
 		$path = $this->_buildPath($url, $parent);
 		$windowPath = DEVPATH . $path . "/edit";

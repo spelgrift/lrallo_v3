@@ -4750,6 +4750,7 @@ button.close {
 }
 .adminThumb img.handle {
   cursor: move;
+  border-radius: 5px;
 }
 .slideshow {
   width: 100%;

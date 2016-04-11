@@ -120,7 +120,6 @@ class Page extends Controller
 				$this->view->templates = $this->contentModel->buildTemplates();
 				// Javascript
 				$this->view->js = array('editPage.min.js');
-				// $this->view->js = array('mustache.min.js', 'dropzone.js', 'adminNav.js', 'pageSettings.js', 'addContentPage.js', 'contentControls.js', 'contentResize.js');
 				// Render view
 				$this->view->render('page/edit');
 				break;
@@ -132,7 +131,6 @@ class Page extends Controller
 				$this->view->galImages = $this->contentModel->getGalImages($this->_pageAttrArray['galleryID']);
 				// Javascript
 				$this->view->js = array('editGal.min.js');
-				// $this->view->js = array('mustache.min.js', 'dropzone.js', 'adminNav.js', 'galleryImgSettings.js');
 				// Render view
 				$this->view->render('gallery/edit');
 				break;
@@ -147,7 +145,7 @@ class Page extends Controller
 	public function updateSettings()
 	{
 		Auth::setAccess();
-		$this->model->updateSettings($this->_pageAttrArray['pageID'], $this->_pageAttrArray['contentID']);
+		$this->model->updateSettings($this->_pageAttrArray['type'], $this->_pageAttrArray['contentID']);
 	}
 
 	public function sortContent()
@@ -210,6 +208,11 @@ class Page extends Controller
  *	EDIT GALLERY METHODS
  *
  */
+	public function addGalImages()
+	{
+		Auth::setAccess();
+		$this->contentModel->addGalImages($this->_pageAttrArray['galleryID'], $this->_pageAttrArray['url']);
+	}
 	public function sortGalImages()
 	{
 		Auth::setAccess();

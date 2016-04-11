@@ -37,7 +37,7 @@ class Dashboard extends Controller {
 
 	public function uploadGalImages()
 	{
-		$this->contentModel->addGalImages($_POST['galID'], $_POST['galURL']);
+		$this->contentModel->addGalImages($_POST['galID'], $_POST['galURL'], true);
 	}
 
 	public function addNavLink()

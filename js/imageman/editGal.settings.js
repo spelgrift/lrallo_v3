@@ -2,14 +2,14 @@ var $ = require('jquery');
 
 $(function() {
 	// Cache DOM
-	var $pageSettings = $('#pageSettings'),
-	$nameInput = $pageSettings.find('#settingsNameInput'),
-	$urlInput = $pageSettings.find('#settingsUrlInput'),
-	$parentSelect = $pageSettings.find('#settingsParentInput'),
-	$navCheck = $pageSettings.find('#settingsNavCheck'),
-	$settingsSubmit = $pageSettings.find('#settingsSubmit'),
-	$trashPage = $pageSettings.find('#settingsTrashPage'),
-	$settingsMsg = $pageSettings.find('#settingsMsg'),
+	var $galSettings = $('#galSettings'),
+	$nameInput = $galSettings.find('#settingsNameInput'),
+	$urlInput = $galSettings.find('#settingsUrlInput'),
+	$parentSelect = $galSettings.find('#settingsParentInput'),
+	$navCheck = $galSettings.find('#settingsNavCheck'),
+	$settingsSubmit = $galSettings.find('#settingsSubmit'),
+	$trashPage = $galSettings.find('#settingsTrashPage'),
+	$settingsMsg = $galSettings.find('#settingsMsg'),
 	$mainNav = $('#mainNav').children('ul.navbar-nav'),
 	$adminNavName = $('#adminNav').find('#adminNavName'),
 	pageURL = $('a#viewTab').attr('href'),
