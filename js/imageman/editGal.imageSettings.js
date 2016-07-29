@@ -2,7 +2,11 @@ var $ = require('jquery');
 require('../libs/jquery-ui.sortable');
 $(function() {
 	var $editSequence = $('#editSequence'),
-	galURL = $('a#viewTab').attr('href');
+	galURL = $('a#viewTab').attr('href'),
+	$imageSettingsModal = $('#galImageSettingsModal'),
+	$settingsThumb = $imageSettingsModal.find('#settingsThumb'),
+	$captionField = $imageSettingsModal.find('#captionField'),
+	$saveCaption = $imageSettingsModal.find('#saveCaption');
 
 
 /*
@@ -31,12 +35,38 @@ $(function() {
 
 	// Trash Image
 	$editSequence.on('click', '.trashImage', trashImage);
+
+	// Image settings button
+	$editSequence.on('click', '.imageOptions', loadSettingsModal);
+
+	// Save Caption
+	$imageSettingsModal.on('click', '#saveCaption', saveCaption);
 	
 /*
  *
  * CORE FUNCTIONS
  *
  */
+ 	function saveCaption(ev) {
+ 		ev.preventDefault();
+ 		var imgID = $(this).attr('data-id'),
+ 		caption = $captionField.val();
+
+ 		$.ajax({
+ 			type: 'POST',
+ 			url: galURL + '/updateCaption/' + imgID,
+ 			data: { caption: caption },
+ 			dataType: 'json',
+ 			success: function(data) {
+ 				if(!data.error) {
+ 					$editSequence.find('img#'+imgID).attr('title', caption);
+ 					$imageSettingsModal.modal('hide');
+ 				}
+ 			}
+ 		});
+
+
+ 	}
  	function trashImage(ev) {
  		ev.preventDefault();
 		var contentID = $(this).attr('id'),
@@ -67,5 +97,20 @@ $(function() {
  			data: order,
  			success: function(){}
  		});
- 	}		
+ 	}	
+
+ 	function loadSettingsModal(ev) {
+ 		ev.preventDefault();
+ 		var imgID = $(this).attr('id'),
+ 		$thisBlock = $(this).closest('.adminThumb'),
+ 		$thisThumb = $thisBlock.find('img'),
+ 		thumbSrc = $thisThumb.attr('src'),
+ 		caption = $thisThumb.attr('title');
+
+ 		$settingsThumb.html('').html("<img src='"+thumbSrc+"' class='img-responsive img-rounded'>");
+ 		$captionField.val('').val(caption);
+ 		$saveCaption.attr('data-id', imgID);
+
+ 		$imageSettingsModal.modal('show');
+ 	}	
 });

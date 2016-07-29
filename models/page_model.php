@@ -5,7 +5,7 @@ class Page_Model extends Model {
 	function __construct(){parent::__construct();}
 
 /**
- *	getPageInfo - Gets page infro from DB, page can be any type (normal page, gallery, video)
+ *	getPageInfo - Gets page info from DB, page can be any type (normal page, gallery, video)
  *	@param string $url The page url
  *	@return mixed, array of page attributes, false on no rows
  *

@@ -2,6 +2,9 @@
 
 <div class='row'>
 <?php
+echo "<pre>";
+print_r($this->pageContent);
+echo "</pre>";
 foreach($this->pageContent as $item)
 {
 	$this->renderContent($item);

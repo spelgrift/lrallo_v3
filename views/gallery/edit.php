@@ -11,6 +11,18 @@ require 'views/inc/content/adminControls/galImageThumb.php';
 echo "</script>";
 ?>
 
+
+<?
+// Image Settings Modal
+require 'views/inc/content/adminControls/galImageSettings.php';
+?>
+
+
+
+<?
+// THUMBS
+?>
+
 <div class='row tabPanel active' id='editSequence'>
 <?php
 // Display sortable thumbnails
@@ -19,12 +31,15 @@ foreach($this->galImages as $image)
 	$contentID = $image['contentID'];
 	$imgID = $image['galImageID'];
 	$thumb = URL.$image['thumb'];
+	$caption = $image['caption'];
 
 	require 'views/inc/content/adminControls/galImageThumb.php';
 }
 ?>
 </div>
-
+<?
+// GALLERY SETTINGS
+?>
 <div class='tabPanel' id='galSettings'>
 	<form class='form-horizontal'>
 		<div class='col-sm-12 text-center'>

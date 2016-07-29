@@ -2,9 +2,14 @@
 
 class View {
 
-	function __construct(){}
+	function __construct()
+	{
+		// Detect Device Size (sm, md, lg)
+		$this->_device = $this->detectDevice();
+	}
 
 	public $adminNav = array();
+	protected $_device = null;
 
 	public function render($name){
 		require 'views/inc/globalHeader.php';
@@ -20,6 +25,16 @@ class View {
 
 		switch($contentObject['type'])
 		{
+			case 'page':
+				$ID = $contentObject['pageID'];
+				$name = $contentObject['name'];
+				$url = $contentObject['url'];
+				$path = URL.$this->pageAttr['path']."/".$url;
+				$cover = $contentObject['cover'];
+
+				require 'views/inc/content/shortcut.php';
+				break;
+
 			case 'text':
 				$textID = $contentObject['textID'];
 				$text = $contentObject['text'];
@@ -29,8 +44,7 @@ class View {
 				break;
 
 			case 'singleImage':
-				$smVersion = $contentObject['smVersion'];
-				$lgVersion = $contentObject['lgVersion'];
+				$image = $contentObject[$this->_device.'Version'];
 
 				require 'views/inc/content/singleImage.php';
 				
@@ -41,6 +55,19 @@ class View {
 
 				break;
 		}
+	}
+
+	public function detectDevice(){
+		require 'libs/Mobile_Detect.php';
+		$detect = new Mobile_Detect;
+		$device = 'lg';
+		if($detect->isMobile()) {
+			$device = 'sm';
+			if($detect->isTablet()) {
+				$device = 'sm';
+			}
+		}
+		return $device;
 	}
 
 	public function buildParentOptions($pageList, $thisParent, $thisID, $subLevel = 0)

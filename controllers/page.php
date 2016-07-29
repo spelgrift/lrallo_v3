@@ -18,6 +18,8 @@ class Page extends Controller
 	private $_pageAttrArray = array('pageID' => 0);
 	private $_pageURL = null; // For building subpage path
 
+	private $_device = null;
+
 /**
  *	index - 		Builds page from DB elements and views.
  *					If method is passed in URL, call it!
@@ -226,6 +228,12 @@ class Page extends Controller
 		{
 			$this->contentModel->trashGalImage($galImageID);
 		}
+	}
+
+	public function updateCaption($galImageID)
+	{
+		Auth::setAccess();
+		$this->contentModel->updateGalCaption($galImageID);
 	}
 
 /**

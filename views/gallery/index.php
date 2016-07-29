@@ -32,8 +32,7 @@ $activeSlide = 0;
 			<?php
 				foreach($this->galImages as $img)
 				{
-					$smVersion = URL.$img['smVersion'];
-					$lgVersion = URL.$img['lgVersion'];
+					$image = URL.$img[$this->_device.'Version'];
 					$position = $img['position'];
 
 					if($position == $activeSlide) {
@@ -42,7 +41,7 @@ $activeSlide = 0;
 						$class = 'slide';
 					}
 
-					echo "<div class='$class' data-order='$position'><img src='$lgVersion'></div>";
+					echo "<div class='$class' data-order='$position'><img src='$image'></div>";
 				}
 			?>
 			</div>

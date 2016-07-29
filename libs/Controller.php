@@ -41,4 +41,6 @@ class Controller {
 	public function loadNav(){
 		$this->view->nav = $this->globalModel->loadNav();
 	}
+
+	
 }

@@ -20,7 +20,7 @@ class Content_Model extends Model {
 	{
 		if($pageid) // PageID passed, get content for that page
 		{
-			$query = "SELECT contentID, type, position, bootstrap FROM content WHERE parentPageID = :parentPageID AND trashed = 0 AND orphaned = 0 ORDER BY position ASC";
+			$query = "SELECT contentID, url, type, position, bootstrap FROM content WHERE parentPageID = :parentPageID AND trashed = 0 AND orphaned = 0 ORDER BY position ASC";
 			if($result = $this->db->select($query, array(':parentPageID' => $pageid)))
 			{
 				foreach($result as $key => $row)
@@ -54,10 +54,20 @@ class Content_Model extends Model {
 	{
 		return array(
 			array(
+				'templateID' => 'pageTemplate',
+				'type' => 'page',
+				'contentID' => "{{contentID}}",
+				'bootstrap' => BS_PAGE,
+				'pageID' => "{{pageID}}",
+				'name' => "{{name}}",
+				'url' => "{{url}}",
+				'cover' => ""
+			),
+			array(
 				'templateID' => 'textTemplate',
 				'type' => 'text',
 				'contentID' => "{{contentID}}",
-				'bootstrap' => 'col-xs-12',
+				'bootstrap' => BS_TEXT,
 				'textID' => "{{textID}}",
 				'text' => "{{&text}}"
 			),
@@ -73,7 +83,6 @@ class Content_Model extends Model {
 				'contentID' => '{{contentID}}',
 				'bootstrap' => '{{bootstrap}}',
 				'smVersion' => '{{smVersion}}',
-				'mdVersion' => '{{mdVersion}}',
 				'lgVersion' => '{{lgVersion}}'
 			)
 		);
@@ -235,6 +244,7 @@ class Content_Model extends Model {
 			'error' => false,
 			'results' => array(
 				'name' => $name,
+				'url' => $url,
 				'path' => URL.$url,
 				'parent' => '-',
 				'type' => 'Page',
@@ -445,6 +455,18 @@ class Content_Model extends Model {
 			);
 		}
 		echo json_encode($results);
+	}
+
+	// Update Gal Image Caption
+
+	public function updateGalCaption($galImageID)
+	{
+		// Get user input
+		$caption = $_POST['caption'];
+
+		// Update DB
+		$this->db->update('galImage', array('caption' => $caption), "`galImageID` = ".$galImageID);
+		echo json_encode(array('error' => false));
 	}
 
 	private function _deleteGalImages($contentID)

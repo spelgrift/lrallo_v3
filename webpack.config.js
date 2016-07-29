@@ -1,6 +1,7 @@
 var debug = process.env.NODE_ENV !== "production",
 path = require('path'),
 webpack = require('webpack'),
+autoprefixer = require('autoprefixer'),
 ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
@@ -33,7 +34,7 @@ module.exports = {
       {
         test: /\.less$/,
         include: path.resolve(__dirname, "less"),
-        loader: ExtractTextPlugin.extract("style-loader", "css-loader!less-loader")
+        loader: ExtractTextPlugin.extract("style-loader", "css-loader!postcss-loader!less-loader")
       },
       { 
         test: /\.(jpg|png|gif|svg)$/,
@@ -41,5 +42,8 @@ module.exports = {
         loader: "file-loader?name=images/[name].[ext]"
       }
     ]
+  },
+  postcss: function() {
+    return [autoprefixer];
   }
 };

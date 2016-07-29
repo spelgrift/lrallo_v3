@@ -18,7 +18,8 @@ $(function() {
 	var $addPageModal = $('#addPageModal'),
 	$pageNameInput = $addPageModal.find('input#newPageName'),
 	$submitPage = $addPageModal.find('button#submitNewPage'),
-	$pageMsg = $addPageModal.find('#pageMsg');
+	$pageMsg = $addPageModal.find('#pageMsg'),
+	pageTemplate = $('#pageTemplate').html();
 
 	// Add Text
 	var $addTextModal = $('#addTextModal'),
@@ -163,7 +164,13 @@ $(function() {
 					// Success
 					$pageNameInput.val("");
 					$addPageModal.modal('hide');
-					// events.js - refresh content, etc.
+					var newPageObject = {
+						contentID : data.results.contentID,
+						pageID : data.results.pageID,
+						name : pageName,
+						url : data.results.url
+					};
+					$contentArea.prepend(Mustache.render(pageTemplate, newPageObject));
 				} else {
 					// Error
 					$pageMsg.html("<p class='text-danger'>"+data.error_msg+"</p>");

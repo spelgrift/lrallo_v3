@@ -14,17 +14,16 @@ Misc
 - Dashboard content list: get HTML out of PHP
 - Dashboard content list: image thumbnails
 - Append date to original image filename to prevent overwrites
+- Medium images served to tablets
 
 Edit Gallery
 - Gal settings
 	- Default display (image/thumbs/photostream)
 	- Auto-slideshow
 	- Privacy
-X Add images
-X Serialize image order on page load/image trash
 - Image settings
-	- Caption
 	- Make gal cover
+- View image
 
 View Gallery
 - Thumbs display
@@ -38,6 +37,7 @@ Page
 	- Cover image
 - Shortcut
 - Slideshow
+	- Show/hide captions
 - Video
 - Text editor
 
