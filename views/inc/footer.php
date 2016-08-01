@@ -16,16 +16,16 @@ else
 	<div class="footer-above">
 		<div class="container">
 			<div class="row">
-			</div>			
+				<div class="col-lg-12">
+					&copy; Footer | <?php echo $loginHtml; ?>
+				</div>
+			</div>
 		</div>
 	</div>
 	<div class="footer-below">
 		<div class="container">
 			<div class="row">
-				<div class="col-lg-12">
-					&copy; Footer | <?php echo $loginHtml; ?>
-				</div>
-			</div>
+			</div>			
 		</div>
 	</div>
 </footer>

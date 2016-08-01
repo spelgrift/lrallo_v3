@@ -25,7 +25,8 @@ $slideshowAttr = $class . " data-sm-speed='" . $this->pageAttr['animationSpeed']
 $activeSlide = 0;
 ?>
 
-<div id='viewer' class='row'>
+<!-- SLIDESHOW VIEW -->
+<div id='viewer' class='row tabPanel active'>
 	<div class='col-xs-12'>
 		<div <? echo $slideshowAttr; ?>>
 			<div class='slides'>
@@ -34,6 +35,7 @@ $activeSlide = 0;
 				{
 					$image = URL.$img[$this->_device.'Version'];
 					$position = $img['position'];
+					$caption = $img['caption'];
 
 					if($position == $activeSlide) {
 						$class = 'slide active';
@@ -41,14 +43,60 @@ $activeSlide = 0;
 						$class = 'slide';
 					}
 
-					echo "<div class='$class' data-order='$position'><img src='$image'></div>";
+					echo "<div class='$class' data-order='$position'><img src='$image' title=\"$caption\"></div>";
 				}
 			?>
 			</div>
 			<div class='arrow arrow-right'></div>
 			<div class='arrow arrow-left'></div>
+			<div class='slideControlBar'>
+				<a href='#' class='sm-button' id='showThumbs'>
+					<? echo file_get_contents("public/images/icon_thumbs.svg"); ?>		
+				</a>
+				<a href='#' class='sm-button' id='showCollage'>
+					<? echo file_get_contents("public/images/icon_collage.svg"); ?>
+				</a>
+			</div>
 		</div>
+	</div>
+	<div class='col-xs-12' id='caption'>
+		<p></p>
+	</div>
+</div>
 
+<!-- THUMBNAIL VIEW -->
+<div id='thumbnails' class='row tabPanel'>
+<?
+// Display thumbnails
+foreach($this->galImages as $image)
+{
+	$contentID = $image['contentID'];
+	$imgID = $image['galImageID'];
+	$thumb = URL.$image['thumb'];
+	$position = $image['position'];
+	$caption = $image['caption'];
+	$adminControls = false;
+
+	require 'views/inc/content/galleryThumb.php';
+}	
+?>
+</div>
+
+<!-- COLLAGE VIEW -->
+<div id='collage' class='row tabPanel flex-images'>
+<?
+// Flex Images
+foreach($this->galImages as $image)
+{
+	$position = $image['position'];
+	$path = URL.$image[$this->_device.'Version'];
+	$caption = $image['caption'];
+	$w = $image['width'];
+	$h = $image['height'];
+
+	echo "<div class='item collageImage thumb' data-slide='$position' data-w='$w' data-h='$h'><div class='hover'></div><img src='$path' title=\"$caption\"></div>";
+}
+?>
 </div>
 
 <?php require 'views/inc/footer.php'; ?>

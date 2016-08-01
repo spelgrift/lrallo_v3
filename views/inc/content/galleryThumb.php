@@ -1,0 +1,16 @@
+<?php
+$attr = '';
+if($adminControls) {
+	$attr = "id='listItem_$contentID'";
+}
+
+echo "<div class='col-xs-4 col-sm-2 thumbnail' $attr>";
+
+$attr = "class='thumb img-responsive' data-slide='$position'";
+if($adminControls) {
+	require 'views/inc/content/adminControls/galThumbControls.php';
+	$attr = "class='thumb handle img-responsive'";
+}
+
+echo "<img $attr src='$thumb' title=\"$caption\">";
+echo "</div>";

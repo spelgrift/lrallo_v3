@@ -15,6 +15,7 @@ Misc
 - Dashboard content list: image thumbnails
 - Append date to original image filename to prevent overwrites
 - Medium images served to tablets
+- Auto logout
 
 Edit Gallery
 - Gal settings
@@ -26,9 +27,6 @@ Edit Gallery
 - View image
 
 View Gallery
-- Thumbs display
-- Photostream display
-- Captions
 - Hover controls
 - Touch controls
 

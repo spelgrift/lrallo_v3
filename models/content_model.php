@@ -264,7 +264,7 @@ class Content_Model extends Model {
 	// Get Gallery images for display on gallery type page
 	public function getGalImages($galID)
 	{
-		$query = "SELECT c.contentID, c.position, g.galImageID, g.thumb, g.smVersion, g.lgVersion, g.caption, g.orientation
+		$query = "SELECT c.contentID, c.position, g.galImageID, g.thumb, g.smVersion, g.lgVersion, g.caption, g.orientation, g.width, g.height
 			FROM content AS c
 			LEFT JOIN galImage AS g ON c.contentID = g.contentID
 			WHERE c.trashed = 0 and c.hidden = 0 and c.parentGalID = :galID
@@ -383,6 +383,8 @@ class Content_Model extends Model {
 			Image::makeDisplayImgs($original, $smVersion, $lgVersion);
 			// Make thumbnail
 			Image::makeThumbnail($smVersion, $thumb);
+			// Get width + height
+			list($imgW, $imgH) = getimagesize($smVersion);
 			// Get orientation
 			$orientation = Image::getOrientation($original);
 			// DB Entries
@@ -400,7 +402,9 @@ class Content_Model extends Model {
 				'thumb' => $thumb,
 				'smVersion' => $smVersion,
 				'lgVersion' => $lgVersion,
-				'orientation' => $orientation
+				'orientation' => $orientation,
+				'width' => $imgW,
+				'height' => $imgH
 			));
 			// Add data for this image to array
 			$savedImages[] = array(

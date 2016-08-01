@@ -4,7 +4,7 @@ require('./libs/bs.collapse.js'); // Bootstrap collapse (for navbar)
 require('./libs/bs.dropdown.js'); // Bootstrap dropdowns
 require('./libs/bs.modal.js'); // Bootstrap modals
 
-require('./imageman/adminNav.js');
+require('./imageman/tabs.js');
 require('./libs/events.js'); 
 
 // Edit page scripts

@@ -14,16 +14,6 @@ $(function() {
 * BIND EVENTS
 *
 */
-	// Show/hide controls on mouseover
-	$editSequence.on({
-		mouseenter: function() {
-			$(this).find('.galImageControls').stop(false,true).fadeIn('fast');
-		},
-		mouseleave: function() {
-			$(this).find('.galImageControls').stop(false,true).fadeOut('fast');
-		}
-	}, '.adminThumb');
-
 	// Sortable
 	$editSequence.sortable({
 		handle: '.handle',
@@ -70,7 +60,7 @@ $(function() {
  	function trashImage(ev) {
  		ev.preventDefault();
 		var contentID = $(this).attr('id'),
-		$thisImage = $(this).closest('.adminThumb');
+		$thisImage = $(this).closest('.thumbnail');
 		if(!confirm('Are you sure you want to trash this image?')) { 
 			return false;
 		}
@@ -102,7 +92,7 @@ $(function() {
  	function loadSettingsModal(ev) {
  		ev.preventDefault();
  		var imgID = $(this).attr('id'),
- 		$thisBlock = $(this).closest('.adminThumb'),
+ 		$thisBlock = $(this).closest('.thumbnail'),
  		$thisThumb = $thisBlock.find('img'),
  		thumbSrc = $thisThumb.attr('src'),
  		caption = $thisThumb.attr('title');

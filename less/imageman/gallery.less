@@ -1,7 +1,9 @@
-// Admin thumbs
-.adminThumb {
+// Thumbnails
+.thumbnail {
 	position: relative;
 	margin-bottom: 10px;
+	overflow: hidden;
+	
 
 	.galImageControls {
 		position: absolute;
@@ -9,7 +11,8 @@
 		right:5px;
 		background-color: white;
 		border-radius: 0 0 0 5px;
-		display:none;
+		opacity:0;
+		transition: opacity 0.3s ease-out; 
 
 		a {
 			display:inline-block;
@@ -22,8 +25,62 @@
 		}
 	}
 
-	img.handle {
-		cursor:move;
+	&:hover>.galImageControls {
+		opacity: 1;
+	}
+
+	img {
+		&.handle {
+			cursor:move;
+		}
+		cursor: pointer;
 		border-radius: 5px;
+	}
+}
+
+// Collage
+.flex-images { 
+	overflow: hidden;
+}
+.flex-images .item {
+	float: left; margin: 2px;
+	// border: 1px solid #eee;
+	box-sizing: content-box;
+	overflow: hidden;
+	position: relative; 
+}
+.flex-images .item img {
+	display: block;
+	width: auto;
+	height: 100%;
+}
+
+// Hover
+.thumbnail, .collageImage {
+	.hover {
+		position:absolute;
+		top:0;
+		right:0;
+		left:0;
+		bottom:0;
+		overflow: hidden;
+		background-color: rgba(0, 0, 0, 0.4);
+		opacity: 0;
+		transition: opacity 200ms ease-in-out;
+
+		&:hover {
+			opacity: 1;
+		}
+	}
+}
+
+// Caption
+#caption p {
+	background: #333;
+	color: white;
+	padding:10px;
+
+	&:empty {
+		padding: 0;
 	}
 }

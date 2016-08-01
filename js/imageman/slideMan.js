@@ -175,6 +175,8 @@ require('../libs/encapsulatedPlugin');
 					removeCSStransition();
 					$_currSlide.removeClass(transitionClass);
 					throttle = false;
+					// Emit slide changed event
+					events.emit('slideChanged');
 					if(settings.autoSlideshow) slideTimeout = setTimeout(nextSlide, settings.slideDuration);
 				}, 10 + settings.speed);
 			} else {
@@ -182,11 +184,16 @@ require('../libs/encapsulatedPlugin');
 				$_currSlide.removeClass('active');
 				$_newSlide.addClass('active').removeClass(queuedClass);
 				throttle = false;
+				// Emit slide changed event
+				events.emit('slideChanged');
 			}
 			
 			// Update currSlide selector and value
 			$currSlide = $_newSlide;
-			currSlide = newSlide;
+			currSlide = parseInt(newSlide);
+			// console.log('current slide: '+currSlide);
+
+
 		};
 	};
 	// Register plugin

@@ -4378,6 +4378,23 @@ button.close {
 .tabPanel.active {
   display: block;
 }
+html {
+  height: 100%;
+}
+body {
+  min-height: 100%;
+  position: relative;
+  padding-bottom: 95px;
+}
+footer {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+}
+footer .footer-above {
+  padding: 25px;
+  background-color: #eeeeee;
+}
 #contentList thead > tr > td,
 #trash thead > tr > td {
   border-bottom: 2px solid #dddddd;
@@ -4687,34 +4704,83 @@ button.close {
 .DZtemplate {
   display: none;
 }
-.adminThumb {
+.thumbnail {
   position: relative;
   margin-bottom: 10px;
+  overflow: hidden;
 }
-.adminThumb .galImageControls {
+.thumbnail .galImageControls {
   position: absolute;
   top: 0;
   right: 5px;
   background-color: white;
   border-radius: 0 0 0 5px;
-  display: none;
+  opacity: 0;
+  -webkit-transition: opacity 0.3s ease-out;
+  transition: opacity 0.3s ease-out;
 }
-.adminThumb .galImageControls a {
+.thumbnail .galImageControls a {
   display: inline-block;
   padding: 5px 10px;
   color: #777;
 }
-.adminThumb .galImageControls a:hover {
+.thumbnail .galImageControls a:hover {
   color: #000;
 }
-.adminThumb img.handle {
-  cursor: move;
+.thumbnail:hover > .galImageControls {
+  opacity: 1;
+}
+.thumbnail img {
+  cursor: pointer;
   border-radius: 5px;
+}
+.thumbnail img.handle {
+  cursor: move;
+}
+.flex-images {
+  overflow: hidden;
+}
+.flex-images .item {
+  float: left;
+  margin: 2px;
+  box-sizing: content-box;
+  overflow: hidden;
+  position: relative;
+}
+.flex-images .item img {
+  display: block;
+  width: auto;
+  height: 100%;
+}
+.thumbnail .hover,
+.collageImage .hover {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  -webkit-transition: opacity 200ms ease-in-out;
+  transition: opacity 200ms ease-in-out;
+}
+.thumbnail .hover:hover,
+.collageImage .hover:hover {
+  opacity: 1;
+}
+#caption p {
+  background: #333;
+  color: white;
+  padding: 10px;
+}
+#caption p:empty {
+  padding: 0;
 }
 .slideshow {
   width: 100%;
   position: relative;
-  padding-top: 66%;
+  padding-top: calc(66.66666667%);
   overflow: hidden;
 }
 .slideshow .slides {
@@ -4750,19 +4816,19 @@ button.close {
 .slideshow .slides .slide.queued-slide-fromRight {
   z-index: 2;
   -webkit-transform: translate(100%, 0);
-  transform: translate(100%, 0);
+          transform: translate(100%, 0);
   opacity: 1;
 }
 .slideshow .slides .slide.queued-slide-fromLeft {
   z-index: 2;
   -webkit-transform: translate(-100%, 0);
-  transform: translate(-100%, 0);
+          transform: translate(-100%, 0);
   opacity: 1;
 }
 .slideshow .slides .slide.transition-slide-fromRight {
   z-index: 2;
   -webkit-transform: translate(-100%, 0);
-  transform: translate(-100%, 0);
+          transform: translate(-100%, 0);
   opacity: 1;
 }
 .slideshow .slides .slide.transition-slide-fromLeft {
@@ -4776,13 +4842,13 @@ button.close {
   width: auto;
 }
 .slideshow .arrow {
-  width: 21px;
-  height: 21px;
+  width: 23px;
+  height: 23px;
   position: absolute;
   top: 50%;
   z-index: 5;
-  border-top: 5px solid #ccc;
-  border-right: 5px solid #ccc;
+  border-top: 7px solid #ccc;
+  border-right: 7px solid #ccc;
   cursor: pointer;
   -webkit-transition: border-color 0.3s ease-out;
   transition: border-color 0.3s ease-out;
@@ -4794,8 +4860,8 @@ button.close {
   position: absolute;
   top: 50%;
   z-index: 3;
-  -webkit-transform: translate(1px, -12px);
-  transform: translate(1px, -12px);
+  -webkit-transform: translate(2px, -13px);
+          transform: translate(2px, -13px);
   border-top: 3px solid #000;
   border-right: 3px solid #000;
   cursor: pointer;
@@ -4804,35 +4870,51 @@ button.close {
   -webkit-transition: opacity 0.2s ease-out;
   transition: opacity 0.2s ease-out;
 }
-.slideshow .arrow:hover:before {
+.slideshow .arrow:hover {
   -webkit-transition: border-color 0.2s ease-out;
   transition: border-color 0.2s ease-out;
-  border-color: #337ab7;
+  border-color: white;
 }
 .slideshow .arrow.arrow-left {
   left: 30px;
   -webkit-transform: rotate(225deg);
-  transform: rotate(225deg);
+          transform: rotate(225deg);
 }
 .slideshow .arrow.arrow-right {
   right: 30px;
   -webkit-transform: rotate(45deg);
-  transform: rotate(45deg);
+          transform: rotate(45deg);
 }
-.flex-images {
-  overflow: hidden;
+.slideshow .slideControlBar {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+          transform: translateX(-50%);
+  z-index: 5;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 12px 5px 9px 5px;
+  opacity: 0;
+  -webkit-transition: opacity 0.2s ease-out;
+  transition: opacity 0.2s ease-out;
+  border-radius: 5px;
 }
-.flex-images .item {
-  float: left;
-  margin: 2px;
-  box-sizing: content-box;
-  overflow: hidden;
-  position: relative;
+.slideshow .slideControlBar a.sm-button {
+  padding: 0 12px;
+  stroke: #ccc;
 }
-.flex-images .item img {
-  display: block;
-  width: auto;
-  height: 100%;
+.slideshow .slideControlBar a.sm-button svg {
+  height: 20px;
+  width: 20px;
+}
+.slideshow .slideControlBar a.sm-button:hover {
+  text-decoration: none;
+  -webkit-transition: stroke 0.2s ease-out;
+  transition: stroke 0.2s ease-out;
+  stroke: white;
+}
+.slideshow:hover .slideControlBar {
+  opacity: 1;
 }
 .shortcut {
   width: 100%;
