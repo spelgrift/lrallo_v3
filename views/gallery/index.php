@@ -2,6 +2,7 @@
 // echo "<pre>";
 // print_r($this->pageAttr);
 // print_r($this->galImages);
+// print_r($this);
 // echo "</pre>";
 
 require 'views/inc/header.php'; 
@@ -23,6 +24,9 @@ $slideshowAttr = $class . " data-sm-speed='" . $this->pageAttr['animationSpeed']
 
 // Set active slide
 $activeSlide = 0;
+if(isset($this->slide) && $this->slide < count($this->galImages)) {
+	$activeSlide = $this->slide;
+}
 ?>
 
 <!-- SLIDESHOW VIEW -->
@@ -94,7 +98,7 @@ foreach($this->galImages as $image)
 	$w = $image['width'];
 	$h = $image['height'];
 
-	echo "<div class='item collageImage thumb' data-slide='$position' data-w='$w' data-h='$h'><div class='hover'></div><img src='$path' title=\"$caption\"></div>";
+	echo "<div class='item collageImage thumb' data-slide='$position' data-w='$w' data-h='$h'><div class='hover' title=\"$caption\"></div><img src='$path'></div>";
 }
 ?>
 </div>

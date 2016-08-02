@@ -410,6 +410,7 @@ class Content_Model extends Model {
 			$savedImages[] = array(
 				'contentID' => $contentID,
 				'imgID' => $this->db->lastInsertId(),
+				'position' => $position,
 				'thumb' => URL.$thumb,
 				'smVersion' => URL.$smVersion,
 				'lgVersion' => URL.$lgVersion,

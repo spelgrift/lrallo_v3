@@ -6,7 +6,7 @@ require 'views/inc/addContentForms/addGalImages.php';
 $contentID = '{{contentID}}';
 $imgID = '{{imgID}}';
 $thumb = '{{thumb}}';
-$position = '0';
+$position = '{{position}}';
 $caption = "";
 $adminControls = true;
 echo "<script type='text/template' id='thumbTemplate'>";

@@ -60,6 +60,27 @@ class Page extends Controller
 				return false;
 			}
 		}
+		// Build view object based on page type
+		$this->_buildIndexView();
+
+		switch($this->_pageAttrArray['type'])
+		{
+			case 'page' :
+				$this->view->render('page/index');
+				break;
+			case 'gallery' :
+				$this->view->render('gallery/index');
+				break;
+		}				
+	}
+
+/**
+ *
+ *	Build Index Views (public page, gallery, video)
+ *
+ */
+	private function _buildIndexView()
+	{
 		// JS (public)
 		$this->view->js = array('public.min.js');
 		// Add view vars and render page based on type
@@ -69,34 +90,44 @@ class Page extends Controller
 		{
 			case 'page' :
 				// Switch if homepage
-				if(!$this->_pageAttrArray['home'])
-				{
+				if(!$this->_pageAttrArray['home']) {
 					// Admin Nav
 					$this->view->adminNav = $this->globalModel->adminNavArray('pageIndex', $this->_pageAttrArray['path']);				
 					// Load content
 					$this->view->pageContent = $this->contentModel->getPageContent($this->_pageAttrArray['pageID']);
-				} 
-				else
-				{
+				} else {
 					// Home Admin Nav
 					$this->view->adminNav = $this->globalModel->adminNavArray('home');
 					// Home content
 					$this->view->pageContent = $this->contentModel->getPageContent();
 				}
-				// Render
-				$this->view->render('page/index');
 				break;
 			case 'gallery' :
 				// Admin nav
 				$this->view->adminNav = $this->globalModel->adminNavArray('galIndex', $this->_pageAttrArray['path']);
 				// Gal Images
 				$this->view->galImages = $this->contentModel->getGalImages($this->_pageAttrArray['galleryID']);
-				// Render
-				$this->view->render('gallery/index');
 				break;
-		}				
+		}		
 	}
 
+/**
+ *
+ *	INDEX METHODS
+ *
+ */
+
+	public function slide($position = 0)
+	{
+		if($this->_pageAttrArray['type'] !== 'gallery') {
+			$this->error();
+			return false;
+		}
+		$this->view->slide = $position;
+		$this->_buildIndexView();
+		// Render
+		$this->view->render('gallery/index');
+	}
 /**
  *
  *	edit - 	Edit a page/gallery/video!

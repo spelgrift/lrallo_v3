@@ -85,7 +85,13 @@ $(function() {
  			url: galURL + '/sortGalImages/',
  			type: 'POST',
  			data: order,
- 			success: function(){}
+ 			success: function() {
+ 				// Update thumbnail links
+ 				$editSequence.find('a.thumbLink').each(function(i) {
+ 					var href = galURL + "/slide/" + i;
+ 					$(this).attr('href', href);
+ 				});
+ 			}
  		});
  	}	
 

@@ -4764,6 +4764,7 @@ footer .footer-above {
   opacity: 0;
   -webkit-transition: opacity 200ms ease-in-out;
   transition: opacity 200ms ease-in-out;
+  cursor: pointer;
 }
 .thumbnail .hover:hover,
 .collageImage .hover:hover {

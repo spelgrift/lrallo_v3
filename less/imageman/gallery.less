@@ -41,18 +41,21 @@
 // Collage
 .flex-images { 
 	overflow: hidden;
-}
-.flex-images .item {
-	float: left; margin: 2px;
-	// border: 1px solid #eee;
-	box-sizing: content-box;
-	overflow: hidden;
-	position: relative; 
-}
-.flex-images .item img {
-	display: block;
-	width: auto;
-	height: 100%;
+
+	.item {
+		float: left; margin: 2px;
+		// border: 1px solid #eee;
+		box-sizing: content-box;
+		overflow: hidden;
+		position: relative;
+
+		img {
+			display: block;
+			width: auto;
+			height: 100%;
+
+		}
+	}
 }
 
 // Hover
@@ -67,6 +70,7 @@
 		background-color: rgba(0, 0, 0, 0.4);
 		opacity: 0;
 		transition: opacity 200ms ease-in-out;
+		cursor:pointer;
 
 		&:hover {
 			opacity: 1;
