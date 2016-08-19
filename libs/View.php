@@ -26,11 +26,23 @@ class View {
 		switch($contentObject['type'])
 		{
 			case 'page':
+				$type = 'page';
 				$ID = $contentObject['pageID'];
 				$name = $contentObject['name'];
 				$url = $contentObject['url'];
 				$path = URL.$this->pageAttr['path']."/".$url;
 				$cover = $contentObject['cover'];
+
+				require 'views/inc/content/shortcut.php';
+				break;
+
+			case 'gallery':
+				$type = 'gallery';
+				$ID = $contentObject['galleryID'];
+				$name = $contentObject['name'];
+				$url = $contentObject['url'];
+				$path = URL.$this->pageAttr['path']."/".$url;
+				$cover = $contentObject['coverPath'];
 
 				require 'views/inc/content/shortcut.php';
 				break;

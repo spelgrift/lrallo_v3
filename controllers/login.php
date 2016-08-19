@@ -7,19 +7,29 @@ class Login extends Controller {
 		$this->view->pageTitle = 'Login';	
 	}
 
-	function index(){
+	public function index($error = false){
+		// JS (public)
+		$this->view->js = array('public.min.js');
+		$this->view->error = $error;
 		$this->view->render('login/index');
 	}
 
-	function run(){
+	public function run(){
 		$this->model->run();
 	}
 
-	function logout()
+	public function runstatic(){
+		$this->model->run(true);
+	}
+
+	public function error(){
+		$this->index(true);
+	}
+
+	public function logout()
 	{
 		Session::destroy();
 		header('location:'. URL);
 		exit;
 	}
-
 }

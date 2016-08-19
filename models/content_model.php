@@ -301,7 +301,8 @@ class Content_Model extends Model {
 			'type' => 'gallery',
 			'url' => $url,
 			'parentPageID' => $parentPageID,
-			'author' => $_SESSION['login']
+			'author' => $_SESSION['login'],
+			'bootstrap' => BS_PAGE
 		));
 		$contentID = $this->db->lastInsertId();
 		// Page DB entry
@@ -330,6 +331,8 @@ class Content_Model extends Model {
 			$this->_returnError("No Files!");
 			return false;
 		}
+		// Check to see if a cover has been created
+		$hasCover = $this->_checkCover($galID);
 		// Count images currently in this gallery for position value and filename counter
 		$imgCount = $this->db->countRows('content', "type = 'galImage' AND parentGalID = :galID", array(':galID' => $galID));
 		$position = $imgCount;
@@ -406,10 +409,24 @@ class Content_Model extends Model {
 				'width' => $imgW,
 				'height' => $imgH
 			));
+			$imgID = $this->db->lastInsertId();
+
+			// Make cover if necessary
+			if(!$hasCover && $orientation == 'landscape')
+			{
+				$coverPath = COVERS.$galURL."_cover.".$fileExt;
+				Image::makeCover($smVersion, $coverPath);
+				$this->db->update('gallery', array(
+					'coverPath' => $coverPath,
+					'coverID' => $imgID
+				), "`galleryID` = ".$galID);
+				$hasCover = true;
+			}
+
 			// Add data for this image to array
 			$savedImages[] = array(
 				'contentID' => $contentID,
-				'imgID' => $this->db->lastInsertId(),
+				'imgID' => $imgID,
 				'position' => $position,
 				'thumb' => URL.$thumb,
 				'smVersion' => URL.$smVersion,
@@ -474,11 +491,33 @@ class Content_Model extends Model {
 		echo json_encode(array('error' => false));
 	}
 
+	// Update Gal Cover
+
+	public function updateGalCover($galID, $galURL, $currentCover, $newCoverImgID)
+	{
+		unlink($currentCover);
+		// Get original image
+		$query = "SELECT original FROM galImage WHERE galImageID = :imgID";
+		if($result = $this->db->select($query, array(':imgID' => $newCoverImgID)))
+		{
+			$srcImg = $result[0]['original'];
+			$coverPath = COVERS.$galURL."_cover.jpg";
+			Image::makeCover($srcImg, $coverPath);
+			$this->db->update('gallery', array(
+				'coverPath' => $coverPath,
+				'coverID' => $newCoverImgID
+			), "`galleryID` = ".$galID);
+			echo json_encode(array('error' => false));
+		}
+	}
+
 	private function _deleteGalImages($contentID)
 	{
-		if($result = $this->db->select("SELECT galleryID FROM gallery WHERE contentID = :contentID", array(':contentID' => $contentID)))
+		if($result = $this->db->select("SELECT galleryID, coverPath FROM gallery WHERE contentID = :contentID", array(':contentID' => $contentID)))
 		{
 			$galleryID = $result[0]['galleryID'];
+			$cover = $result[0]['coverPath'];
+			unlink($cover);
 		} else {
 			return;
 		}
@@ -523,6 +562,20 @@ class Content_Model extends Model {
 				rename($result[0]['original'], $newPath);
 			} else {
 				unlink($result[0]['original']);
+			}
+		}
+	}
+
+	// Returns true if a cover has been created
+	private function _checkCover($galID)
+	{
+		$query = "SELECT coverPath FROM gallery WHERE galID = :galID";
+		if($result = $this->db->select($query, array(':galID' => $galID)))
+		{
+			if($result[0]['coverPath'] == "") {
+				return false;
+			} else {
+				return true;
 			}
 		}
 	}

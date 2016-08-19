@@ -39,7 +39,8 @@
     border-radius: 0 0 0 5px;
     z-index: 100;
 
-    display:none;
+    opacity:0;
+    transition: opacity 0.3s ease-out; 
 
     li{
       display:inline-block;
@@ -56,6 +57,10 @@
         cursor:move;
       }
     }
+  }
+
+  &:hover>ul.contentControlMenu {
+    opacity: 1;
   }
 
   ul.spacerControls {

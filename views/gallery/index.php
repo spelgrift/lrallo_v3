@@ -9,7 +9,7 @@ require 'views/inc/header.php';
 
 // Slideshow display settings
 $class = "class='slideshow";
-if($this->pageAttr['autoSlideshow'] == 1) {
+if($this->pageAttr['autoplay'] == 1) {
 	$class .= ' sm-auto';
 } else {
 	$class .= '';
@@ -22,15 +22,36 @@ if($this->pageAttr['animationType'] == 'slide') {
 $class .= "'";
 $slideshowAttr = $class . " data-sm-speed='" . $this->pageAttr['animationSpeed'] . "' data-sm-duration='" . $this->pageAttr['slideDuration'] . "'";
 
+// Determine which view to show
+$viewerClass = '';
+$thumbsClass = '';
+$collageClass = '';
+switch($this->pageAttr['defaultDisplay'])
+{
+	case 'viewer':
+		$viewerClass = 'active';
+		break;
+	case 'thumbs':
+		$thumbsClass = 'active';
+		break;
+	case 'collage':
+		$collageClass = 'active';
+		break;
+}
+
 // Set active slide
 $activeSlide = 0;
 if(isset($this->slide) && $this->slide < count($this->galImages)) {
+	
 	$activeSlide = $this->slide;
+	$viewerClass = 'active';
+	$thumbsClass = '';
+	$collageClass = '';
 }
 ?>
 
 <!-- SLIDESHOW VIEW -->
-<div id='viewer' class='row tabPanel active'>
+<div id='viewer' class='row tabPanel <? echo $viewerClass; ?>'>
 	<div class='col-xs-12'>
 		<div <? echo $slideshowAttr; ?>>
 			<div class='slides'>
@@ -69,7 +90,7 @@ if(isset($this->slide) && $this->slide < count($this->galImages)) {
 </div>
 
 <!-- THUMBNAIL VIEW -->
-<div id='thumbnails' class='row tabPanel'>
+<div id='thumbnails' class='row tabPanel <? echo $thumbsClass; ?>'>
 <?
 // Display thumbnails
 foreach($this->galImages as $image)
@@ -87,7 +108,7 @@ foreach($this->galImages as $image)
 </div>
 
 <!-- COLLAGE VIEW -->
-<div id='collage' class='row tabPanel flex-images'>
+<div id='collage' class='row tabPanel flex-images <? echo $collageClass; ?>'>
 <?
 // Flex Images
 foreach($this->galImages as $image)

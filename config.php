@@ -7,6 +7,7 @@ define('LIBS', 'libs/');
 define('UPLOADS', 'uploads/');
 define('ORIGINALS', UPLOADS.'originals/');
 define('THUMBS', UPLOADS.'thumbs/');
+define('COVERS', UPLOADS. 'covers/');
 define('DELETED', ORIGINALS.'deleted/');
 
 
@@ -27,6 +28,7 @@ define('GENERAL_HASH_KEY', 'WonderfulWonderful');
 define('SmIMAGE', 1200);
 define('LgIMAGE', 1755);
 define('THUMBSIZE', 300);
+define('COVERASPECT', (2 / 3)); // corresponds to less var
 
 // Save original images on delete (moves them to deleted dir)
 define('SAVE_ORIGINALS', false);

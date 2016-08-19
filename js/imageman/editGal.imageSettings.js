@@ -1,11 +1,25 @@
 var $ = require('jquery');
 require('../libs/jquery-ui.sortable');
 $(function() {
+/*
+*
+* CONFIG
+*
+*/
+	var currentCoverHTML = '<p>This is the gallery cover</p>';
+
+/*
+*
+* CACHE DOM
+*
+*/
 	var $editSequence = $('#editSequence'),
 	galURL = $('a#viewTab').attr('href'),
+	coverID = $editSequence.attr('data-coverID'),
 	$imageSettingsModal = $('#galImageSettingsModal'),
 	$settingsThumb = $imageSettingsModal.find('#settingsThumb'),
 	$captionField = $imageSettingsModal.find('#captionField'),
+	$coverMsg = $imageSettingsModal.find('#coverMsg'),
 	$saveCaption = $imageSettingsModal.find('#saveCaption');
 
 
@@ -28,6 +42,9 @@ $(function() {
 
 	// Image settings button
 	$editSequence.on('click', '.imageOptions', loadSettingsModal);
+
+	// Set Cover button
+	$imageSettingsModal.on('click', '#makeCover', makeCover);
 
 	// Save Caption
 	$imageSettingsModal.on('click', '#saveCaption', saveCaption);
@@ -54,9 +71,25 @@ $(function() {
  				}
  			}
  		});
-
-
  	}
+
+ 	function makeCover(ev) {
+ 		ev.preventDefault();
+ 		var imgID = $(this).attr('data-id');
+
+ 		$.ajax({
+ 			type: 'POST',
+ 			url: galURL + '/newCover/' + imgID,
+ 			dataType: 'json',
+ 			success: function(data) {
+ 				if(!data.error) {
+ 					coverID = imgID;
+ 					$coverMsg.html(currentCoverHTML);
+ 				}
+ 			}
+ 		});
+ 	}
+
  	function trashImage(ev) {
  		ev.preventDefault();
 		var contentID = $(this).attr('id'),
@@ -102,10 +135,16 @@ $(function() {
  		$thisThumb = $thisBlock.find('img'),
  		thumbSrc = $thisThumb.attr('src'),
  		caption = $thisThumb.attr('title');
-
+ 		// Populate thumb and caption field with values for this image
  		$settingsThumb.html('').html("<img src='"+thumbSrc+"' class='img-responsive img-rounded'>");
  		$captionField.val('').val(caption);
  		$saveCaption.attr('data-id', imgID);
+ 		// If image is cover say so, otherwise display button to set this image as cover
+ 		if(imgID == coverID) {
+ 			$coverMsg.html(currentCoverHTML);
+ 		} else {
+ 			$coverMsg.html("<button type='button' id='makeCover' data-id='"+imgID+"' class='btn btn-success'>Set as Gallery Cover</button>");
+ 		}
 
  		$imageSettingsModal.modal('show');
  	}	

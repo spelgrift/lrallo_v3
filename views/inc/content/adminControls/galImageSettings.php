@@ -12,7 +12,7 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<div id='textMsg' class='pull-left'></div>
+				<div id='coverMsg' class='pull-left'></div>
 				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 				<button type="button" id='saveCaption' class="btn btn-primary">Save</button>
 			</div>

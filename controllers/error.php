@@ -5,6 +5,6 @@ class Error extends Controller {
 		$this->view->pageTitle = 'Error';
 	}
 	function index(){
-		$this->view->render('error/index');
+		$this->error();
 	}
 }

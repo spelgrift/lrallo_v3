@@ -17,14 +17,8 @@ Misc
 - Medium images served to tablets
 - Auto logout
 
-Edit Gallery
-- Gal settings
-	- Default display (image/thumbs/photostream)
-	- Auto-slideshow
-	- Privacy
-- Image settings
-	- Make gal cover
-- View image
+Page Settings
+- Privacy
 
 View Gallery
 - Hover controls
@@ -33,6 +27,7 @@ View Gallery
 Page
 - Page settings
 	- Cover image
+- Add gallery
 - Shortcut
 - Slideshow
 	- Show/hide captions

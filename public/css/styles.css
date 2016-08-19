@@ -252,7 +252,7 @@ img {
 }
 hr {
   margin-top: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
   border: 0;
   border-top: 1px solid #eeeeee;
 }
@@ -4508,7 +4508,9 @@ footer .footer-above {
   padding-left: 0;
   border-radius: 0 0 0 5px;
   z-index: 100;
-  display: none;
+  opacity: 0;
+  -webkit-transition: opacity 0.3s ease-out;
+  transition: opacity 0.3s ease-out;
 }
 .contentItem ul.contentControlMenu li {
   display: inline-block;
@@ -4523,6 +4525,9 @@ footer .footer-above {
 }
 .contentItem ul.contentControlMenu li.handle {
   cursor: move;
+}
+.contentItem:hover > ul.contentControlMenu {
+  opacity: 1;
 }
 .contentItem ul.spacerControls {
   position: relative;
@@ -4752,6 +4757,9 @@ footer .footer-above {
   width: auto;
   height: 100%;
 }
+.flex-images .collageImage {
+  display: none;
+}
 .thumbnail .hover,
 .collageImage .hover {
   position: absolute;
@@ -4919,11 +4927,15 @@ footer .footer-above {
 }
 .shortcut {
   width: 100%;
-  padding-top: 66%;
+  padding-top: calc(66.66666667%);
   background-color: #f5f5f5;
   border-radius: 5px;
   overflow: hidden;
   position: relative;
+}
+.shortcut a.coverLink {
+  position: absolute;
+  top: 0;
 }
 .shortcut .shortcutTitleOverlay {
   position: absolute;
@@ -4931,11 +4943,17 @@ footer .footer-above {
   bottom: 0;
   text-align: center;
   padding: 15px;
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.3);
+  -webkit-transition: background-color 0.3s ease-out;
+  transition: background-color 0.3s ease-out;
   color: white;
 }
 .shortcut .shortcutTitleOverlay:hover {
   text-decoration: none;
   color: white;
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.shortcut:hover .shortcutTitleOverlay {
+  color: white;
+  background-color: rgba(0, 0, 0, 0.4);
 }

@@ -11,37 +11,11 @@ $(function() {
  *
  */
 
-	 // Show/hide controls on mouseover
-	$contentArea.on({
-		mouseenter: function() {
-			$(this).find('ul.contentControlMenu').stop(false,true).fadeIn('fast');
-		},
-		mouseleave: function() {
-			$(this).find('ul.contentControlMenu').stop(false,true).fadeOut('fast');
-		}
-	}, '.contentItem');
-
 	// Trash Content
-	$contentArea.on('click', 'a.trashContent', function(ev) {
-		ev.preventDefault();
-		var contentID = $(this).closest('.contentControlMenu').attr('id'),
-		$thisItem = $(this).closest('.contentItem');
-
-		if(confirm('Are you sure you want to trash this item?')){
-			trashContent($thisItem, contentID);
-		}
-	});
+	$contentArea.on('click', 'a.trashContent', trashContent);
 
 	// Delete Spacer
-	$contentArea.on('click', 'a.deleteSpacer', function(ev) {
-		ev.preventDefault();
-		var contentID = $(this).closest('.spacerControls').attr('id'),
-		$thisItem = $(this).closest('.contentItem');
-
-		if(confirm('Are you sure you want to delete this spacer?')){
-			deleteSpacer($thisItem, contentID);
-		}
-	});
+	$contentArea.on('click', 'a.deleteSpacer', deleteSpacer);
 
 	// Content Sortable
 	$contentArea.sortable({
@@ -61,20 +35,26 @@ $(function() {
  			url: pageURL + '/sortContent/',
  			type: 'POST',
  			data: order,
- 			success: function(){
- 				// console.log("sorted!");
- 			}
+ 			success: function(){}
  		});
  	}
 
-	function trashContent(thisItem, contentID) {
+	function trashContent(ev) {
+		ev.preventDefault();
+		var contentID = $(this).closest('.contentControlMenu').attr('id'),
+		$thisItem = $(this).closest('.contentItem');
+
+		if(!confirm('Are you sure you want to trash this item?')){
+			return false;
+		}
+
 		$.ajax({
 			type: 'DELETE',
 			url: pageURL + '/trashContent/' + contentID,
 			dataType: 'json',
 			success: function(data) {
 				if(!data.error) {
-					thisItem.fadeOut(300, function() {
+					$thisItem.fadeOut(300, function() {
 						$(this).remove();
 					});
 				}
@@ -82,12 +62,20 @@ $(function() {
 		});
 	}
 
-	function deleteSpacer(thisItem, contentID) {
+	function deleteSpacer(ev) {
+		ev.preventDefault();
+		var contentID = $(this).closest('.spacerControls').attr('id'),
+		$thisItem = $(this).closest('.contentItem');
+
+		if(!confirm('Are you sure you want to delete this spacer?')){
+			return false;
+		}
+
 		$.ajax({
 			type: 'DELETE',
 			url: pageURL + '/deleteSpacer/' + contentID,
 			success: function() {
-				thisItem.fadeOut(300, function() {
+				$thisItem.fadeOut(300, function() {
 					$(this).remove();
 				});
 			}

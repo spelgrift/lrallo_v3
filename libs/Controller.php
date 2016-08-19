@@ -32,8 +32,10 @@ class Controller {
 		}
 	}
 	
-	public function error($arg = false)
+	public function error()
 	{
+		// JS (public)
+		$this->view->js = array('public.min.js');
 		$this->view->pageTitle = 'Page not found';
 		$this->view->render('error/index');
 	}

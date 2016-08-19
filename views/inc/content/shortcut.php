@@ -7,6 +7,7 @@ if($adminControls){
 ?>
 
 <div <?php echo $attr; ?>>
+
 <?php 
 if($adminControls) {
 	require 'views/inc/content/adminControls/shortcutControls.php';
@@ -19,7 +20,7 @@ if($adminControls) {
 		<?
 		if($cover != "") 
 		{
-			echo "<a href='$path'><img src='".URL.$cover."' class='shortcutCover'></a>";
+			echo "<a class='coverLink' href='$path'><img src='".URL.$cover."' class='shortcutCover img-responsive'></a>";
 		}
 		echo "<a class='shortcutTitleOverlay' href='$path'>$name</a>"; 
 		?>

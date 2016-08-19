@@ -267,6 +267,12 @@ class Page extends Controller
 		$this->contentModel->updateGalCaption($galImageID);
 	}
 
+	public function newCover($galImageID)
+	{
+		Auth::setAccess();
+		$this->contentModel->updateGalCover($this->_pageAttrArray['galleryID'], $this->_pageAttrArray['url'], $this->_pageAttrArray['coverPath'], $galImageID);
+	}
+
 /**
  *	_parseURL - Iterate over url segments, loading each page if it exists,
  *					or testing if there is a method. If there is, break the 

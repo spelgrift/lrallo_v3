@@ -47,7 +47,17 @@ class Page_Model extends Model {
 
 		// Gallery specific attributes
 		if($type === "gallery") {
-			// $display, etc.
+			$animation = $_POST['animation'];
+			$autoplay = $_POST['autoplay'];
+			$duration = $_POST['duration'];
+			$display = $_POST['display'];
+
+			// Validate duration
+			if($duration == "" || !is_numeric($duration))
+			{
+				$this->_returnError('You must enter a number', 'duration');
+				return false;
+			}
 		}
 
 		// Validate length
@@ -88,7 +98,13 @@ class Page_Model extends Model {
 				$this->db->update('page', array('name' => $name), "`contentID` = ".$contentID);
 				break;
 			case 'gallery':
-				$this->db->update('gallery', array('name' => $name), "`contentID` = ".$contentID);
+				$this->db->update('gallery', array(
+					'name' => $name,
+					'autoplay' => $autoplay,
+					'animationType' => $animation,
+					'defaultDisplay' => $display,
+					'slideDuration' => $duration
+				), "`contentID` = ".$contentID);
 				break;
 		}
 		

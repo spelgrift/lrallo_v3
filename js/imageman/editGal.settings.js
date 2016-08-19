@@ -2,19 +2,28 @@ var $ = require('jquery');
 
 $(function() {
 	// Cache DOM
-	var $galSettings = $('#galSettings'),
-	$nameInput = $galSettings.find('#settingsNameInput'),
-	$urlInput = $galSettings.find('#settingsUrlInput'),
-	$parentSelect = $galSettings.find('#settingsParentInput'),
-	$navCheck = $galSettings.find('#settingsNavCheck'),
-	$settingsSubmit = $galSettings.find('#settingsSubmit'),
-	$trashPage = $galSettings.find('#settingsTrashPage'),
-	$settingsMsg = $galSettings.find('#settingsMsg'),
-	$mainNav = $('#mainNav').children('ul.navbar-nav'),
-	$adminNavName = $('#adminNav').find('#adminNavName'),
-	pageURL = $('a#viewTab').attr('href'),
-	origName = $nameInput.val(),
-	origURL = $urlInput.val();
+	var $galSettings 	= $('#galSettings'),
+	// Common attributes
+	$nameInput 			= $galSettings.find('#settingsNameInput'),
+	$urlInput 			= $galSettings.find('#settingsUrlInput'),
+	$parentSelect 		= $galSettings.find('#settingsParentInput'),
+	$navCheck 			= $galSettings.find('#settingsNavCheck'),
+	// Privacy related items
+
+	// Gallery-specific attributes
+	$autoplayCheck		= $galSettings.find('#settingsAutoplayCheck'),
+	$durationInput		= $galSettings.find('#settingsDurationInput'),
+	$animationSelect	= $galSettings.find('#settingsAnimationSelect'),
+	$displayRadio		= $galSettings.find('#settingsDisplayRadio'),
+
+	$settingsSubmit 	= $galSettings.find('#settingsSubmit'),
+	$trashPage 			= $galSettings.find('#settingsTrashPage'),
+	$settingsMsg 		= $galSettings.find('#settingsMsg'),
+	$mainNav 			= $('#mainNav').children('ul.navbar-nav'),
+	$adminNavName 		= $('#adminNav').find('#adminNavName'),
+	pageURL 				= $('a#viewTab').attr('href'),
+	origName 			= $nameInput.val(),
+	origURL 				= $urlInput.val();
 
 	// Bind Events
 
@@ -62,7 +71,10 @@ $(function() {
 			url : $urlInput.val(),
 			parent : $parentSelect.val(),
 			origName : origName,
-			origURL : origURL
+			origURL : origURL,
+			duration : $durationInput.val(),
+			animation : $animationSelect.val(),
+			display : $displayRadio.find("input[name='settingsDisplayRadio']:checked").val()
 		};
 		if($navCheck.prop('checked')) {
 			data.nav = "1";
@@ -70,23 +82,27 @@ $(function() {
 			data.nav = "0";
 		}
 
+		if($autoplayCheck.prop('checked')) {
+			data.autoplay = "1";
+		} else {
+			data.autoplay = "0";
+		}
+
 		// Validate
 		if(data.name.length < 1) {
-			$settingsMsg.html("<p class='text-danger'>Name cannot be blank!</p>");
-			$nameInput.focus();
-			clearMsg($settingsMsg);
+			settingsError($nameInput, "<p class='text-danger'>Name cannot be blank!</p>");
 			return false;
 		}
 		if(data.url.length < 1) {
-			$settingsMsg.html("<p class='text-danger'>URL cannot be blank!</p>");
-			$urlInput.focus();
-			clearMsg($settingsMsg);
+			settingsError($nameInput, "<p class='text-danger'>URL cannot be blank!</p>");
 			return false;
 		}
 		if(!validateURL(data.url)) {
-			$settingsMsg.html("<p class='text-danger'>URL can only contain letters, numbers, dashes (-) and underscores (_).</p>");
-			$urlInput.focus();
-			clearMsg($settingsMsg, 6000);
+			settingsError($nameInput, "<p class='text-danger'>URL can only contain letters, numbers, dashes (-) and underscores (_).</p>");
+			return false;
+		}
+		if(data.duration.length < 1 || !isInt(data.duration)) {
+			settingsError($durationInput, "<p class='text-danger'>You must enter a number.");
 			return false;
 		}
 
@@ -136,6 +152,12 @@ $(function() {
  * UTILITY FUNCTIONS
  *
  */
+ 	function settingsError($toFocus, msg) {
+ 		$settingsMsg.html(msg);
+		$toFocus.focus();
+		clearMsg($settingsMsg);
+ 	}
+
 	function clearMsg(selector, timeout) {
 		if (timeout === undefined) {
 			timeout = 4000;
@@ -154,6 +176,12 @@ $(function() {
 		} else {
 			return false;
 		}
+	}
+
+	function isInt(n) {
+		n = parseInt(n);
+		if(isNaN(n)) { return false; }
+		return Number(n) === n && n % 1 === 0;
 	}
 
 	function makeURL(str) {
