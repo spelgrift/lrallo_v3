@@ -10,7 +10,7 @@ if($adminControls){
 	
 <?php 
 if($adminControls) {
-	require 'views/inc/content/adminControls/spacerControls.php';
+	require 'views/inc/content/spacer/spacerControls.php';
 }
 ?>
 </div>

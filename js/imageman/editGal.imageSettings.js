@@ -22,7 +22,6 @@ $(function() {
 	$coverMsg = $imageSettingsModal.find('#coverMsg'),
 	$saveCaption = $imageSettingsModal.find('#saveCaption');
 
-
 /*
 *
 * BIND EVENTS

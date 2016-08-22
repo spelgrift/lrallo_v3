@@ -2,7 +2,7 @@
 <?
 	switch($type) {
 		case 'page':
-			echo "<li><a class='shortcutSettings' href='#'><i class='fa fa-cog'></i></a></li>";
+			echo "<li><a class='shortcutSettings' data-id='$contentID' data-type='page' href='#'><i class='fa fa-cog'></i></a></li>";
 			break;
 		case 'gallery':
 			echo "<li><a href='$path/edit'><i class='fa fa-cog'></i></a></li>";

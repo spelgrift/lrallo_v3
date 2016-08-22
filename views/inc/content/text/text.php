@@ -4,12 +4,11 @@ if($adminControls){
 } else {
 	$attr = "class='$class'";
 }
-?>
 
-<div <?php echo $attr; ?>>
-<?php 
+echo "<div ".$attr.">";
+
 if($adminControls) {
-	require 'views/inc/content/adminControls/textControls.php';
+	require 'views/inc/content/text/textControls.php';
 	require 'views/inc/content/adminControls/resizeControls.php';
 }
 ?>

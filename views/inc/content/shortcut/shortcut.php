@@ -10,7 +10,7 @@ if($adminControls){
 
 <?php 
 if($adminControls) {
-	require 'views/inc/content/adminControls/shortcutControls.php';
+	require 'views/inc/content/shortcut/shortcutControls.php';
 	require 'views/inc/content/adminControls/resizeControls.php';
 }
 ?>

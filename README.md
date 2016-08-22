@@ -42,3 +42,11 @@ Edit Homepage
 Blog
 
 Video
+
+Activity Log
+
+View tracking/IP statistics
+
+Security
+- Login attempts limit
+- Forgot password

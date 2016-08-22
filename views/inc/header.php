@@ -32,9 +32,9 @@
 		foreach($this->templates as $template)
 		{
 			$templateID = $template['templateID'];
-			echo "<script type='text/template' id='$templateID'>";
+			echo "<div class='DZtemplate' id='$templateID'>";
 			$this->renderContent($template, true);
-			echo "</script>";
+			echo "</div>";
 		}
 	}
 

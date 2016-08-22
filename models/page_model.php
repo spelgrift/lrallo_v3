@@ -35,7 +35,7 @@ class Page_Model extends Model {
  *	updateSettings - Updates page settings. Wasn't that descriptive?
  *
  */
-	public function updateSettings($type, $contentID)
+	public function updateSettings($type, $contentID, $displayName)
 	{
 		// Common attributes
 		$name = $_POST['name'];
@@ -95,7 +95,11 @@ class Page_Model extends Model {
 		switch($type)
 		{
 			case 'page':
-				$this->db->update('page', array('name' => $name), "`contentID` = ".$contentID);
+				$fields = array('name' => $name);
+				if($origName == $displayName) {
+					$fields['displayName'] = $name;
+				}
+				$this->db->update('page', $fields, "`contentID` = ".$contentID);
 				break;
 			case 'gallery':
 				$this->db->update('gallery', array(

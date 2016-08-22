@@ -45,17 +45,15 @@ $(function() {
 		});
 
 		// Bind control click event
-		$mainNav.on('click', '.navLinkControl', function(ev) {
-			ev.preventDefault();
-			var $thisItem = $(this).closest('li'),
-			contentID = $thisItem.attr('data-id');
-			editNavLink($thisItem, contentID);
-		});
+		$mainNav.on('click', '.navLinkControl', editNavLink);
 	}
 
-	function editNavLink($thisItem, contentID)
+	function editNavLink(ev)
 	{
-		var origName = $thisItem.find('a.navLink').html(),
+		ev.preventDefault();
+		var $thisItem = $(this).closest('li'),
+		contentID = $thisItem.attr('data-id'),
+		origName = $thisItem.find('a.navLink').html(),
 		origURL = $thisItem.find('a.navLink').attr('href');
 
 		$editNameInput.val(origName);
@@ -152,5 +150,17 @@ $(function() {
 		$mainNav.load(baseURL + 'dashboard/reloadNav', function() {
 			events.emit('reloadNav');
 		});
+	}
+
+	function clearMsg(selector, timeout) {
+		if (timeout === undefined) {
+			timeout = 4000;
+		}
+		setTimeout(function(){
+			selector.fadeOut('slow', function() {
+				selector.html('');
+				selector.show();
+			});
+		}, timeout);
 	}
 });

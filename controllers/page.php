@@ -178,13 +178,23 @@ class Page extends Controller
 	public function updateSettings()
 	{
 		Auth::setAccess();
-		$this->model->updateSettings($this->_pageAttrArray['type'], $this->_pageAttrArray['contentID']);
+		$this->model->updateSettings($this->_pageAttrArray['type'], $this->_pageAttrArray['contentID'], $this->_pageAttrArray['displayName']);
 	}
 
 	public function sortContent()
 	{
 		Auth::setAccess();
 		$this->contentModel->sortContent();
+	}
+
+	public function trashContent($contentID = false)
+	{
+		Auth::setAccess();
+		if($_SERVER['REQUEST_METHOD'] == "DELETE")
+		{
+			if(!$contentID) $contentID = $this->_pageAttrArray['contentID'];
+			$this->contentModel->trashContent($contentID);
+		}
 	}
 
 	public function saveResize($contentID)
@@ -217,16 +227,6 @@ class Page extends Controller
 		$this->contentModel->addSpacer($this->_pageAttrArray['pageID']);
 	}
 
-	public function trashContent($contentID = false)
-	{
-		Auth::setAccess();
-		if($_SERVER['REQUEST_METHOD'] == "DELETE")
-		{
-			if(!$contentID) $contentID = $this->_pageAttrArray['contentID'];
-			$this->contentModel->trashContent($contentID);
-		}
-	}
-
 	public function deleteSpacer($contentID)
 	{
 		Auth::setAccess();
@@ -234,6 +234,18 @@ class Page extends Controller
 		{
 			$this->contentModel->deleteContent($contentID);
 		}
+	}
+
+	public function updateShortcut($contentID)
+	{
+		Auth::setAccess();
+		$this->contentModel->updateShortcut($contentID);
+	}
+
+	public function updateShortcutCover($contentID, $type)
+	{
+		Auth::setAccess();
+		$this->contentModel->updateShortcutCover($contentID, $type);
 	}
 
 /**

@@ -12,3 +12,4 @@ require('./imageman/editPage.settings.js');
 require('./imageman/editPage.addContent.js');
 require('./imageman/editPage.contentControls.js');
 require('./imageman/editPage.contentResize.js');
+require('./imageman/editPage.shortcutSettings.js');

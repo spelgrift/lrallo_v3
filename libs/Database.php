@@ -35,6 +35,15 @@ class Database extends PDO {
 		}
 	}
 
+	public function selectSingle($table, $field, $where)
+	{
+		$query = "SELECT $field FROM $table WHERE $where";
+		if(!$result = $this->select($query)) {
+			return false;
+		}
+		return $result[0][$field];
+	}
+
 	/**
 	 * delete
 	 * @param string $table The table to delete from

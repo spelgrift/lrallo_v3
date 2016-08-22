@@ -9,7 +9,7 @@ if($adminControls){
 <div <?php echo $attr; ?>>
 <?php 
 if($adminControls) {
-	require 'views/inc/content/adminControls/singleImageControls.php';
+	require 'views/inc/content/singleImage/singleImageControls.php';
 	require 'views/inc/content/adminControls/resizeControls.php';
 }
 ?>

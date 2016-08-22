@@ -59,9 +59,19 @@ class Content_Model extends Model {
 				'contentID' => "{{contentID}}",
 				'bootstrap' => BS_PAGE,
 				'pageID' => "{{pageID}}",
-				'name' => "{{name}}",
+				'displayName' => "{{name}}",
 				'url' => "{{url}}",
 				'cover' => ""
+			),
+			array(
+				'templateID' => 'galleryTemplate',
+				'type' => 'gallery',
+				'contentID' => "{{contentID}}",
+				'bootstrap' => BS_PAGE,
+				'galleryID' => "{{galleryID}}",
+				'name' => "{{name}}",
+				'url' => "{{url}}",
+				'coverPath' => "{{cover}}"
 			),
 			array(
 				'templateID' => 'textTemplate',
@@ -237,6 +247,7 @@ class Content_Model extends Model {
 		// Page DB entry
 		$this->db->insert('page', array(
 			'name' => $name,
+			'displayName' => $name,
 			'contentid' => $contentID
 		));
 		// Success!
@@ -244,6 +255,7 @@ class Content_Model extends Model {
 			'error' => false,
 			'results' => array(
 				'name' => $name,
+				'displayName' => $name,
 				'url' => $url,
 				'path' => URL.$url,
 				'parent' => '-',
@@ -254,6 +266,62 @@ class Content_Model extends Model {
 			)
 		);
 		echo json_encode($results);
+	}
+
+/*
+ *
+ * SHORTCUT TYPE FUNCTIONS
+ *
+ */
+	public function updateShortcut($contentID)
+	{
+		$name = $_POST['name'];
+		$type = $_POST['type'];
+		// Validate length
+		if($name == ""){
+			$this->_returnError('Name cannot be blank');
+			return false;
+		}
+		// Update DB
+		$this->db->update($type, array('displayName' => $name), '`contentID` ='.$contentID);
+		echo json_encode(array('error' => false));
+	}
+
+	public function updateShortcutCover($contentID, $type)
+	{
+		if(!$image = $this->_saveOriginalImage($_FILES)) { return false; }
+		$original = $image['original'];
+		// Get page url and current cover
+		$query = "SELECT c.url, t.coverPath
+			FROM content AS c
+			LEFT JOIN $type AS t ON c.contentID = t.contentID
+			WHERE c.contentID = :contentID";
+		if(!$result = $this->db->select($query, array(':contentID' => $contentID))) {
+			return false;
+		}
+		$oldCover = $result[0]['coverPath'];
+		$url = $result[0]['url'];
+		// Unlink old cover
+		if($oldCover != "") {
+			unlink($oldCover);
+		}
+		// Make cover image
+		$coverPath = COVERS.$url.date('Ymd-his')."_cover.jpg";
+		Image::makeCover($original, $coverPath);
+		// Update DB
+		$this->db->update($type, array(
+			'coverPath' => $coverPath,
+		), "`contentID` = ".$contentID);
+
+		$results = array(
+			'cover' => $coverPath,
+			'url' => ''
+		);
+
+		echo json_encode(array(
+			'error' => false,
+			'results' => $results
+		));
 	}
 
 /*
@@ -589,39 +657,13 @@ class Content_Model extends Model {
 	// Add Single Image
 	public function addSingleImage($parentPageID, $parentUrl = 'frontpage')
 	{
-		// Check if there is a file
-		if(empty($_FILES)) {
-			$this->_returnError("No File!");
+		if(!$image = $this->_saveOriginalImage($_FILES)) {
 			return false;
 		}
 
-		// Check if there is a file error
-		if($_FILES['file']['error'] == 1) {
-			$this->_returnError("File Error!");
-			unlink($_FILES['file']['tmp_name']);
-			return false;
-		}
-		
-		// Check if file is an image (not a very good check, admittedly)
-		if(!preg_match("/\.(gif|jpg|png)$/i", $_FILES['file']['name'])){
-			$this->_returnError("Invalid filetype");
-			unlink($_FILES['file']['tmp_name']);
-			return false;
-		}
-
-		// Great, move ahead with upload!
-		// Get file info
-		$fileTempPath = $_FILES['file']['tmp_name'];
-		$fileName = $_FILES['file']['name'];
-		$fileExt = end(explode(".", $fileName));
-
-		$original = ORIGINALS . $fileName;
-
-		// Attempt to save original file
-		if(!move_uploaded_file($fileTempPath, $original)) {
-			$this->_returnError("Error saving file.");
-			return false;
-		}
+		$original = $image['original'];
+		$fileName = $image['fileName'];
+		$fileExt = $image['fileExt'];
 
 		// Resize to display versions
 		$baseName = $parentUrl . "_" . date("Ymd-his") . "_";
@@ -833,6 +875,49 @@ class Content_Model extends Model {
 	{
 		$url = preg_replace('#[^a-z.0-9_]#i', '_', $str);
 		return strtolower($url);
+	}
+
+	private function _saveOriginalImage($files)
+	{
+		// Check if there is a file
+		if(empty($files)) {
+			$this->_returnError("No File!");
+			return false;
+		}
+
+		// Check if there is a file error
+		if($files['file']['error'] == 1) {
+			$this->_returnError("File Error!");
+			unlink($files['file']['tmp_name']);
+			return false;
+		}
+		
+		// Check if file is an image (not a very good check, admittedly)
+		if(!preg_match("/\.(gif|jpg|png)$/i", $files['file']['name'])){
+			$this->_returnError("Invalid filetype");
+			unlink($files['file']['tmp_name']);
+			return false;
+		}
+
+		// Great, move ahead with upload!
+		// Get file info
+		$fileTempPath = $files['file']['tmp_name'];
+		$fileName = $files['file']['name'];
+		$fileExt = end(explode(".", $fileName));
+
+		$original = ORIGINALS . date("Ymd-his")."_".$fileName;
+
+		// Attempt to save original file
+		if(!move_uploaded_file($fileTempPath, $original)) {
+			$this->_returnError("Error saving file.");
+			return false;
+		}
+
+		return array(
+			'original' => $original,
+			'fileName' => $fileName,
+			'fileExt' => $fileExt
+		);
 	}
 
 	private function _reArrayFiles(&$file_post)

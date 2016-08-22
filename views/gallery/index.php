@@ -102,7 +102,7 @@ foreach($this->galImages as $image)
 	$caption = $image['caption'];
 	$adminControls = false;
 
-	require 'views/inc/content/galleryThumb.php';
+	require 'views/inc/content/galleryImage/galleryThumb.php';
 }	
 ?>
 </div>

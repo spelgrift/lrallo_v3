@@ -1,7 +1,6 @@
 var jQuery = require('jquery');
 require('../libs/encapsulatedPlugin');
 
-
 (function($) {
 
 	// Define DOM attribute names to update settings

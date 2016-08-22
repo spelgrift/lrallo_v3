@@ -28,12 +28,12 @@ class View {
 			case 'page':
 				$type = 'page';
 				$ID = $contentObject['pageID'];
-				$name = $contentObject['name'];
+				$name = $contentObject['displayName'];
 				$url = $contentObject['url'];
 				$path = URL.$this->pageAttr['path']."/".$url;
-				$cover = $contentObject['cover'];
+				$cover = $contentObject['coverPath'];
 
-				require 'views/inc/content/shortcut.php';
+				require 'views/inc/content/shortcut/shortcut.php';
 				break;
 
 			case 'gallery':
@@ -44,26 +44,26 @@ class View {
 				$path = URL.$this->pageAttr['path']."/".$url;
 				$cover = $contentObject['coverPath'];
 
-				require 'views/inc/content/shortcut.php';
+				require 'views/inc/content/shortcut/shortcut.php';
 				break;
 
 			case 'text':
 				$textID = $contentObject['textID'];
 				$text = $contentObject['text'];
 
-				require 'views/inc/content/text.php';
+				require 'views/inc/content/text/text.php';
 
 				break;
 
 			case 'singleImage':
 				$image = $contentObject[$this->_device.'Version'];
 
-				require 'views/inc/content/singleImage.php';
+				require 'views/inc/content/singleImage/singleImage.php';
 				
 				break;
 
 			case 'spacer':
-				require 'views/inc/content/spacer.php';
+				require 'views/inc/content/spacer/spacer.php';
 
 				break;
 		}

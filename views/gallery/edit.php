@@ -10,11 +10,11 @@ $position = '{{position}}';
 $caption = "";
 $adminControls = true;
 echo "<script type='text/template' id='thumbTemplate'>";
-require 'views/inc/content/galleryThumb.php';
+require 'views/inc/content/galleryImage/galleryThumb.php';
 echo "</script>";
 
 // Image Settings Modal
-require 'views/inc/content/adminControls/galImageSettings.php';
+require 'views/inc/content/galleryImage/galImageSettings.php';
 ?>
 
 <!-- EDIT SEQUENCE -->
@@ -30,7 +30,7 @@ foreach($this->galImages as $image)
 	$caption = $image['caption'];
 	$adminControls = true;
 
-	require 'views/inc/content/galleryThumb.php';
+	require 'views/inc/content/galleryImage/galleryThumb.php';
 }
 ?>
 </div>
