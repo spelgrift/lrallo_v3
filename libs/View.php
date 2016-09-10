@@ -47,6 +47,17 @@ class View {
 				require 'views/inc/content/shortcut/shortcut.php';
 				break;
 
+			case 'video':
+				$type = 'video';
+				$ID = $contentObject['videoID'];
+				$name = $contentObject['displayName'];
+				$url = $contentObject['url'];
+				$path = URL.$this->pageAttr['path']."/".$url;
+				$cover = $contentObject['coverPath'];
+
+				require 'views/inc/content/shortcut/shortcut.php';
+				break;
+
 			case 'text':
 				$textID = $contentObject['textID'];
 				$text = $contentObject['text'];

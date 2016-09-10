@@ -7,7 +7,5 @@ require('./libs/bs.modal.js'); // Bootstrap modals
 require('./imageman/tabs.js');
 require('./libs/events.js'); 
 
-// Edit gal scripts
+// Edit video scripts
 require('./imageman/editPage.settings.js');
-require('./imageman/editGal.imageSettings.js');
-require('./imageman/editGal.addImages.js');

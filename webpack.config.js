@@ -10,7 +10,8 @@ module.exports = {
     'public': ["./js/public.js"],
     'dashboard': ["./js/dashboard.js"],
     'editPage': ["./js/editPage.js"],
-    'editGal': ["./js/editGal.js"]
+    'editGal': ["./js/editGal.js"],
+    'editVid': ["./js/editVid.js"]
   },
   output: {
     path: __dirname + "/public/",

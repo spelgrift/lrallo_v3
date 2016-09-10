@@ -25,9 +25,7 @@ $(function() {
  * 
  */
 
-	events.on('reloadNav', function() {
-		initNavLinkControls();
-	});
+	events.on('reloadNav', initNavLinkControls);
 
 /**
  * 

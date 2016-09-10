@@ -71,6 +71,9 @@ class Page extends Controller
 			case 'gallery' :
 				$this->view->render('gallery/index');
 				break;
+			case 'video' :
+				$this->view->render('video/index');
+				break;
 		}				
 	}
 
@@ -83,7 +86,7 @@ class Page extends Controller
 	{
 		// JS (public)
 		$this->view->js = array('public.min.js');
-		// Add view vars and render page based on type
+		// Add view vars based on type
 		$this->view->pageAttr = $this->_pageAttrArray;
 		$this->view->pageTitle = $this->_pageAttrArray['name'];
 		switch($this->_pageAttrArray['type'])
@@ -108,6 +111,9 @@ class Page extends Controller
 				// Gal Images
 				$this->view->galImages = $this->contentModel->getGalImages($this->_pageAttrArray['galleryID']);
 				break;
+			case 'video' :
+				// Admin nav
+				$this->view->adminNav = $this->globalModel->adminNavArray('vidIndex', $this->_pageAttrArray['path']);
 		}		
 	}
 
@@ -167,6 +173,15 @@ class Page extends Controller
 				// Render view
 				$this->view->render('gallery/edit');
 				break;
+			case 'video' :
+				$this->view->pageTitle = "Edit Video | ".$this->_pageAttrArray['name'];
+				// Admin Nav
+				$this->view->adminNav = $this->globalModel->adminNavArray('editVideo', $this->_pageAttrArray['path'], "Edit: " . $this->_pageAttrArray['name']);
+				// Javascript
+				$this->view->js = array('editVid.min.js');
+				// Render view
+				$this->view->render('video/edit');
+				break;
 		}
 	}
 
@@ -178,7 +193,11 @@ class Page extends Controller
 	public function updateSettings()
 	{
 		Auth::setAccess();
-		$this->model->updateSettings($this->_pageAttrArray['type'], $this->_pageAttrArray['contentID'], $this->_pageAttrArray['displayName']);
+		$displayName = '';
+		if($this->_pageAttrArray['type'] == 'page') {
+			$displayName = $this->_pageAttrArray['displayName'];
+		}
+		$this->contentModel->updateSettings($this->_pageAttrArray['type'], $this->_pageAttrArray['contentID'], $displayName);
 	}
 
 	public function sortContent()

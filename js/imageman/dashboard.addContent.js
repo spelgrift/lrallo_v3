@@ -3,11 +3,11 @@ var Mustache = require('../libs/mustache.min.js');
 var Dropzone = require('../libs/dropzone.js');
 
 $(function() {
-	/**
-	 * 
-	 * CACHE DOM
-	 * 
-	 */
+/**
+ * 
+ * CACHE DOM
+ * 
+ */
 	var $contentList = $('#contentList'),
 	$contentTypeFilter = $contentList.find('select#filterContentList'),
 	$mainNav = $('#mainNav').children('ul.navbar-nav'),
@@ -32,6 +32,14 @@ $(function() {
 	$galProgress = $addGalModal.find('#galleryProgress'),
 	$galProcessing = $addGalModal.find('#galleryLoading');
 
+	// Add Video
+	var $addVideoModal = $('#addVideoModal'),
+	$vidNameInput = $addVideoModal.find('input#newVideoName'),
+	$vidNameMsg = $addVideoModal.find('#videoNameMsg'),
+	$vidLinkInput = $addVideoModal.find('input#newVideoLink'),
+	$vidLinkMsg = $addVideoModal.find('#videoLinkMsg'),
+	$submitVid = $addVideoModal.find('#submitNewVideo');
+
 	// Add Nav Link
 	var $addNavLinkModal = $('#addNavLinkModal'),
 	$navLinkNameInput = $addNavLinkModal.find('input#newNavName'),
@@ -39,41 +47,11 @@ $(function() {
 	$submitNavLink = $addNavLinkModal.find('button#submitNewNavLink'),
 	$navLinkMsg = $addNavLinkModal.find('#navLinkMsg');
 
-	/**
-	 * 
-	 * BIND EVENTS
-	 * 
-	 */
-
-	// Display modal based on which type is clicked
-	$addTab.on('click', function(ev) {
-		selectModal($(this).attr('data-id'));
-		ev.preventDefault();
-	});
-
-	// Submit Page
-	$submitPage.on('click', function(ev) {
-		submitPage();
-		ev.preventDefault();
-	});
-
-	// Submit Page
-	$submitGal.on('click', function(ev) {
-		submitGal();
-		ev.preventDefault();
-	});
-
-	// Submit Nav Link
-	$submitNavLink.on('click', function(ev) {
-		submitNavLink();
-		ev.preventDefault();
-	});
-
-	/**
-	 * 
-	 * DROPZONES
-	 * 
-	 */
+/**
+ * 
+ * DROPZONES
+ * 
+ */
 	Dropzone.autoDiscover = false;
 
 	//
@@ -92,8 +70,165 @@ $(function() {
 		dictDefaultMessage : "Drop image files here<br>(or click)"
 	});
 
-	// Handle Dropzone success
-	$galleryDropzone.on("successmultiple", function(files, data) {
+/**
+ * 
+ * BIND EVENTS
+ * 
+ */
+	// Display modal based on which type is clicked
+	$addTab.click(selectModal);
+
+	// Submit Page
+	$submitPage.click(submitPage);
+
+	// Submit Nav Link
+	$submitNavLink.click(submitNavLink);
+
+	// Submit Video
+	$submitVid.click(submitVideo);
+
+	// Submit Gallery
+	$submitGal.click(submitGal);
+
+	// Handle Gallery Dropzone success
+	$galleryDropzone.on("successmultiple", galleryDZsuccess);
+
+	// Update total progress bar
+	$galleryDropzone.on('totaluploadprogress', galleryDZprogress);
+
+	// Enable Submit button when file added
+	$galleryDropzone.on("addedfile", function(file) {
+		$submitGal.removeAttr('disabled');
+	});
+
+	// Disable Submit button when no files
+	$galleryDropzone.on("removedfile", function(file) {
+		if($galleryDropzone.files.length === 0) {
+			$submitGal.attr('disabled', 'disabled');
+		}
+	});
+
+	// Remove files when modal closed
+	$addGalModal.on('hidden.bs.modal', function() {
+		$galleryDropzone.removeAllFiles();
+	});
+
+/**
+ * 
+ * MAIN FUNCTIONS
+ * 
+ */
+	function submitPage(ev) {
+		ev.preventDefault();
+		// Get user input
+		var pageName = $pageNameInput.val();
+		// Validate
+		if(pageName.length < 1) {
+			return error("<p class='text-danger'>You must enter a name!</p>", $pageMsg, $pageNameInput);
+		}
+		// Post to server
+		$.ajax({
+			type: 'POST',
+			url: baseURL + 'dashboard/addPage',
+			data: { name : pageName },
+			dataType: 'json',
+			success: function( data ) {
+				if(!data.error) { // Success
+					$pageNameInput.val("");
+					$addPageModal.modal('hide');
+					if($tableBody.find('tr.placeholderRow').length > 0) {
+						$tableBody.find('tr.placeholderRow').remove();
+					}
+
+					$tableBody.prepend(Mustache.render(pageListTemplate, data.results));
+				} else { // Error
+					$pageMsg.html("<p class='text-danger'>"+data.error_msg+"</p>");
+					$pageNameInput.focus();
+					clearMsg($pageMsg);
+				}
+			}
+		});
+	}
+
+	function submitVideo(ev) {
+		ev.preventDefault();
+		// Get user input
+		var data = {
+			'name' : $vidNameInput.val(),
+			'link' : $vidLinkInput.val()
+		};
+		// Validate
+		if(data.name.length < 1) {
+			return error("You must enter a name!", $vidNameMsg, $vidNameInput);
+		}
+		if(data.link.length < 1) {
+			return error("You must enter a link!", $vidLinkMsg, $vidLinkInput);
+		}
+		// POST
+		$.ajax({
+			type: 'POST',
+			url: baseURL + 'dashboard/addVideo',
+			data: data,
+			dataType: 'json',
+			success: function(data) {
+				if(!data.error) { // Success
+					// Hide modal
+					$addVideoModal.modal('hide');
+					// Switch view to show videos
+					$contentTypeFilter.val('video');
+					events.emit('changeContentFilter', 'video');
+					// Render template
+					$tableBody.prepend(Mustache.render(pageListTemplate, data.results));
+				} else {
+					error(data.error_msg, $vidLinkMsg, $vidLinkInput);
+				}
+			}
+		});
+
+	}
+
+	function submitGal(ev) {
+		ev.preventDefault();
+		// Get user input
+		var galName = $galNameInput.val();
+		// Validate
+		if(galName.length < 1) {
+			return error("<p class='text-danger'>You must enter a name!</p>", $galMsg, $galNameInput);
+		}
+		// Post to server
+		$.ajax({
+			type: 'POST',
+			url: baseURL + 'dashboard/addGallery',
+			data: { name : galName },
+			dataType: 'json',
+			success: function( data ) {
+				if(!data.error) { // Success
+					$galleryDropzone.options.params = {
+						galID : data.results.galID,
+						galURL : data.results.galURL
+					};
+					$galProgress.show();
+					$submitGal.attr('disabled', 'disabled');
+					$galleryDropzone.processQueue();
+				} else { // Error
+					$galMsg.html("<p class='text-danger'>"+data.error_msg+"</p>");
+					$galNameInput.focus();
+					clearMsg($galMsg);
+				}
+			}
+		});
+	}
+
+	function galleryDZprogress(progress) {
+		if(progress < 100) {
+			$galProgress.find('.progress-bar').css('width', progress + '%');
+		} else {
+			$galProgress.hide().find('.progress-bar').css('width', '0%');
+			$galProcessing.show();
+		}
+	}
+
+	function galleryDZsuccess(files, data) {
 		data = JSON.parse(data);
 
 		$galleryDropzone.removeAllFiles();
@@ -124,110 +259,10 @@ $(function() {
 				// Display error and delete gallery
 			}
 		}
-	});
-
-	// Update total progress bar
-	$galleryDropzone.on('totaluploadprogress', function(progress) {
-		if(progress < 100) {
-			$galProgress.find('.progress-bar').css('width', progress + '%');
-		} else {
-			$galProgress.hide().find('.progress-bar').css('width', '0%');
-			$galProcessing.show();
-		}
-	});
-
-	// Enable Submit button when file added
-	$galleryDropzone.on("addedfile", function(file) {
-		$submitGal.removeAttr('disabled');
-	});
-
-	// Disable Submit button when no files
-	$galleryDropzone.on("removedfile", function(file) {
-		if($galleryDropzone.files.length === 0) {
-			$submitGal.attr('disabled', 'disabled');
-		}
-	});
-
-	// Remove files when modal closed
-	$addGalModal.on('hidden.bs.modal', function() {
-		$galleryDropzone.removeAllFiles();
-	});
-
-	/**
-	 * 
-	 * ADD CONTENT FUNCTIONS
-	 * 
-	 */
-	function submitPage() {
-		// Get user input
-		var pageName = $pageNameInput.val();
-		// Validate
-		if(pageName.length < 1) {
-			$pageMsg.html("<p class='text-danger'>You must enter a name!</p>");
-			$pageNameInput.focus();
-			clearMsg($pageMsg);
-			return false;
-		}
-
-		// Post to server
-		$.ajax({
-			type: 'POST',
-			url: baseURL + 'dashboard/addPage',
-			data: { name : pageName },
-			dataType: 'json',
-			success: function( data ) {
-				if(!data.error) { // Success
-					$pageNameInput.val("");
-					$addPageModal.modal('hide');
-					if($tableBody.find('tr.placeholderRow').length > 0) {
-						$tableBody.find('tr.placeholderRow').remove();
-					}
-
-					$tableBody.prepend(Mustache.render(pageListTemplate, data.results));
-				} else { // Error
-					$pageMsg.html("<p class='text-danger'>"+data.error_msg+"</p>");
-					$pageNameInput.focus();
-					clearMsg($pageMsg);
-				}
-			}
-		});
 	}
 
-	function submitGal() {
-		// Get user input
-		var galName = $galNameInput.val();
-		// Validate
-		if(galName.length < 1) {
-			$galMsg.html("<p class='text-danger'>You must enter a name!</p>");
-			$galNameInput.focus();
-			clearMsg($galMsg);
-			return false;
-		}
-		// Post to server
-		$.ajax({
-			type: 'POST',
-			url: baseURL + 'dashboard/addGallery',
-			data: { name : galName },
-			dataType: 'json',
-			success: function( data ) {
-				if(!data.error) { // Success
-					$galleryDropzone.options.params = {
-						galID : data.results.galID,
-						galURL : data.results.galURL
-					};
-					$galProgress.show();
-					$submitGal.attr('disabled', 'disabled');
-					$galleryDropzone.processQueue();
-				} else { // Error
-					$galMsg.html("<p class='text-danger'>"+data.error_msg+"</p>");
-					$galNameInput.focus();
-					clearMsg($galMsg);
-				}
-			}
-		});
-	}
-
-	function submitNavLink() {
+	function submitNavLink(ev) {
+		ev.preventDefault();
 		// Get user input
 		var navLinkName = $navLinkNameInput.val(),
 		navLinkUrl = $navLinkUrlInput.val();
@@ -244,7 +279,6 @@ $(function() {
 			clearMsg($navLinkMsg);
 			return false;
 		}
-
 		// Post to server
 		$.ajax({
 			type: 'POST',
@@ -269,13 +303,14 @@ $(function() {
 		});
 	}
 
-	/**
-	 * 
-	 * HELPER FUNCTIONS
-	 * 
-	 */
-	function selectModal(type) {
-		switch(type) {
+/**
+ * 
+ * HELPER FUNCTIONS
+ * 
+ */
+	function selectModal(ev) {
+		ev.preventDefault();
+		switch($(this).attr('data-id')) {
 			case 'page' :
 				$addPageModal.modal('show');
 				$pageNameInput.val('');
@@ -286,6 +321,11 @@ $(function() {
 				$galNameInput.val('');
 				$galMsg.html('');
 			break;
+			case 'video' :
+				$addVideoModal.modal('show');
+				$vidNameInput.val('');
+				$vidLinkInput.val('');
+			break;
 			case 'navLink' :
 				$addNavLinkModal.modal('show');
 				$navLinkNameInput.val('');
@@ -293,6 +333,13 @@ $(function() {
 				$navLinkMsg.html('');
 			break;
 		}
+	}
+
+	function error(message, $msg, $input) {
+		$msg.html(message);
+		$input.focus();
+		clearMsg($msg);
+		return false;
 	}
 
 	function clearMsg(selector, timeout) {
@@ -312,4 +359,7 @@ $(function() {
 			events.emit('reloadNav');
 		});
 	}
+
+
+
 });

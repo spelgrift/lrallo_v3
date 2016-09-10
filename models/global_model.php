@@ -87,6 +87,14 @@ class Global_Model extends Model {
 					)
 				);
 				break;
+			case 'vidIndex':
+				$adminNav = array(
+					array(
+						'url' => URL. $pageURL."/edit",
+						'name' =>"<i class='fa fa-fw fa-sliders'></i> Edit Video"
+					)
+				);
+				break;
 			case 'editPage' :
 				$adminNav = array(
 					array(
@@ -125,6 +133,30 @@ class Global_Model extends Model {
 							),
 							array(
 								'url' => '#',
+								'name' => 'Image Gallery',
+								'class' => 'addTab',
+								'data-id' => 'gallery'
+							),
+							array(
+								'url' => '#',
+								'name' => 'Slideshow',
+								'class' => 'addTab',
+								'data-id' => 'slideshow'
+							),
+							array(
+								'url' => '#',
+								'name' => 'Video',
+								'class' => 'addTab',
+								'data-id' => 'video'
+							),
+							array(
+								'url' => '#',
+								'name' => 'Shortcut',
+								'class' => 'addTab',
+								'data-id' => 'shortcut'
+							),
+							array(
+								'url' => '#',
 								'name' => 'Spacer',
 								'class' => 'addTab',
 								'data-id' => 'spacer'
@@ -135,13 +167,31 @@ class Global_Model extends Model {
 						'url' => "#", 
 						'name' => "<i class='fa fa-fw fa-wrench'></i> Settings",
 						'class' => 'adminTab',
-						'data-tab' => 'pageSettings'
+						'data-tab' => 'settings'
 					),
 					array(
 						'url' => URL . $pageURL, 
 						'name' => "<i class='fa fa-fw fa-desktop'></i> View Page",
 						'id' => "viewTab"
 					),
+				);
+				break;
+			case 'editVideo' :
+				$adminNav = array(
+					array(
+						'name' => $titleText,
+						'id' => 'adminNavName'
+					),
+					array(
+						'url' => "#", 
+						'name' => "<i class='fa fa-fw fa-wrench'></i> Settings",
+						'class' => 'adminTab active'
+					),
+					array(
+						'url' => URL . $pageURL, 
+						'name' => "<i class='fa fa-fw fa-desktop'></i> View Video",
+						'id' => "viewTab"
+					)
 				);
 				break;
 			case 'editGallery' :
@@ -167,7 +217,7 @@ class Global_Model extends Model {
 						'url' => "#", 
 						'name' => "<i class='fa fa-fw fa-wrench'></i> Settings",
 						'class' => 'adminTab',
-						'data-tab' => 'galSettings'
+						'data-tab' => 'settings'
 					),
 					array(
 						'url' => URL . $pageURL, 

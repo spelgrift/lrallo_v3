@@ -30,6 +30,11 @@ class Dashboard extends Controller {
 		$this->contentModel->addPage();
 	}
 
+	public function addVideo()
+	{
+		$this->contentModel->addVideo();
+	}
+
 	public function addGallery()
 	{
 		$this->contentModel->addGallery();

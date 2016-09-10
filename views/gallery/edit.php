@@ -36,7 +36,7 @@ foreach($this->galImages as $image)
 </div>
 
 <!-- SETTINGS -->
-<div class='tabPanel' id='galSettings'>
+<div class='tabPanel' id='settings' data-type='gallery'>
 	<form class='form-horizontal'>
 		<div class='col-sm-12 text-center'>
 			<h3>Settings</h3>

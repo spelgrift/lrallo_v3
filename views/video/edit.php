@@ -1,30 +1,22 @@
 <?php 
+require 'views/inc/header.php'; 
+$link = $this->pageAttr['link'];
+$source = $this->pageAttr['source'];
 // echo "<pre>";
 // print_r($this->pageAttr);
 // echo "</pre>";
-require 'views/inc/header.php';
-require 'views/inc/addContentForms/addPage.php';
-require 'views/inc/addContentForms/addText.php';
-require 'views/inc/addContentForms/addImage.php';
-require 'views/inc/addContentForms/addSpacer.php';
-require 'views/inc/content/shortcut/shortcutSettings.php';
 ?>
 
-<div class='row tabPanel active' id='contentArea'>
-<?php
-foreach($this->pageContent as $item)
-{
-	$this->renderContent($item, true);
-}
-?>
-</div>
+<form class='form-horizontal' id='settings' data-type='video'>
+<!-- 	<div class='col-sm-6 col-sm-offset-3' id='previewEmbed'>
+	<? // require 'views/inc/content/video/video.php'; ?>
+	</div> -->
 
-<div class='tabPanel' id='settings' data-type='page'>
-	<form class='form-horizontal'>
-		<div class='col-sm-12 text-center'>
+	<div class='col-sm-12 text-center'>
 			<h3>Settings</h3>
 		</div>
 
+		<!-- Name -->
 		<div class='form-group'>
 			<label for='settingsNameInput' class='col-sm-2 col-sm-offset-1 control-label'>Name</label>
 			<div class='col-sm-6'>
@@ -32,6 +24,7 @@ foreach($this->pageContent as $item)
 			</div>
 		</div>
 
+		<!-- URL -->
 		<div class='form-group'>
 			<label for='settingsUrlInput' class='col-sm-2 col-sm-offset-1 control-label'>URL</label>
 			<div class='col-sm-6'>
@@ -39,6 +32,7 @@ foreach($this->pageContent as $item)
 			</div>
 		</div>
 
+		<!-- Parent -->
 		<div class='form-group'>
 			<label for='settingsParentInput' class='col-sm-2 col-sm-offset-1 control-label'>Parent</label>
 			<div class='col-sm-6'>
@@ -55,6 +49,7 @@ foreach($this->pageContent as $item)
 			</div>
 		</div>
 
+		<!-- Nav -->
 		<div class='form-group'>
 			<label for='settingsNavCheck' class='col-sm-2 col-sm-offset-1 control-label'>Nav</label>
 			<div class='col-sm-6'>
@@ -72,15 +67,34 @@ foreach($this->pageContent as $item)
 					</label>
       		</div>
 			</div>
+			<div class='col-sm-6 col-sm-offset-3'><hr></div>
 		</div>
 
+		<!-- Link -->
+		<div class='form-group'>
+			<label for='settingsLinkInput' class='col-sm-2 col-sm-offset-1 control-label'>Source Link</label>
+			<div class='col-sm-6'>
+				<input id='settingsLinkInput' type='text' class='form-control' placeholder='Vimeo or Youtube Link' value="<?php echo $this->pageAttr['postedLink']; ?>">
+			</div>
+		</div>
+
+		<!-- Description -->
+		<div class='form-group'>
+			<label for='settingsDescInput' class='col-sm-2 col-sm-offset-1 control-label'>Description</label>
+			<div class='col-sm-6'>
+				<textarea id='settingsDescInput' class='form-control' rows='3'placeholder='Video Description'><?php echo $this->pageAttr['description']; ?></textarea>
+			</div>	
+			<div class='col-sm-6 col-sm-offset-3'><hr></div>
+		</div>
+
+		<!-- SUBMIT -->
 		<div class='form-group'>
 			<div class='col-sm-6 col-sm-offset-3'>
 				<a id='settingsSubmit' class='btn btn-primary' >Save Changes</a>
-				<a id='settingsTrashPage' class='btn btn-danger'>Trash Page</a>
+				<a id='settingsTrashPage' class='btn btn-danger'>Trash Gallery</a>
 			</div>
 		</div>
 		<div id='settingsMsg' class='col-sm-6 col-sm-offset-3'></div>
-	</form>
-</div>
-<?php require 'views/inc/footer.php'; ?>
+</form>
+
+<? require 'views/inc/footer.php'; ?>

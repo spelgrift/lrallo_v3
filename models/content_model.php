@@ -46,6 +46,102 @@ class Content_Model extends Model {
 		}		
 	}
 
+/**
+ *	updateSettings - Updates page settings. Wasn't that descriptive?
+ *
+ */
+	public function updateSettings($type, $contentID, $displayName = "")
+	{
+		// Common attributes
+		$name = $_POST['name'];
+		$url = $_POST['url'];
+		$parent = $_POST['parent'];
+		$nav = $_POST['nav'];
+		$origName = $_POST['origName'];
+		$origURL = $_POST['origURL'];
+
+		// Type specific attributes
+		switch($type) {
+			case 'gallery':
+				$animation = $_POST['animation'];
+				$autoplay = $_POST['autoplay'];
+				$duration = $_POST['duration'];
+				$display = $_POST['display'];
+
+				// Validate duration
+				if($duration == "" || !is_numeric($duration))
+				{
+					$this->_returnError('You must enter a number', 'duration');
+					return false;
+				}
+			break;
+			case 'video':
+				$postedLink = $_POST['link'];
+				$description = $_POST['description'];
+
+				// Validate link
+				if(!$vidArray = $this->_processVideoLink($postedLink)) {
+					return false;
+				}
+			break;
+		}
+
+		// Process Name and URL
+		if(!$url = $this->_processNameUrl($type, $name, $url, $origName, $origURL)) {
+			return false;
+		}
+
+		// Content DB Update
+		$this->db->update('content', array(
+			'url' => $url,
+			'parentPageID' => $parent,
+			'nav' => $nav
+		), "`contentID` = ".$contentID);
+
+		// Type DB Update
+		switch($type)
+		{
+			case 'page':
+				$fields = array('name' => $name);
+				if($origName == $displayName) {
+					$fields['displayName'] = $name;
+				}
+				$this->db->update('page', $fields, "`contentID` = ".$contentID);
+			break;
+			case 'gallery':
+				$this->db->update('gallery', array(
+					'name' => $name,
+					'autoplay' => $autoplay,
+					'animationType' => $animation,
+					'defaultDisplay' => $display,
+					'slideDuration' => $duration
+				), "`contentID` = ".$contentID);
+			break;
+			case 'video':
+				$this->db->update('video', array(
+					'name' => $name,
+					'description' => $description,
+					'source' => $vidArray['source'],
+					'link' => $vidArray['link'],
+					'postedLink' => $vidArray['postedLink']
+				), "`contentID` = ".$contentID);
+			break;
+		}
+		
+
+		$path = $this->_buildPath($url, $parent);
+		$windowPath = DEVPATH . $path . "/edit";
+		$viewPath = URL . $path;
+
+		echo json_encode(array(
+			'error' => false,
+			'name' => $name,
+			'url' => $url,
+			'windowPath' => $windowPath,
+			'viewPath' => $viewPath
+		));
+	}
+
 	/**
 	 *	buildTemplates - Populate array with mustache tags
 	 *	@return array
@@ -61,7 +157,7 @@ class Content_Model extends Model {
 				'pageID' => "{{pageID}}",
 				'displayName' => "{{name}}",
 				'url' => "{{url}}",
-				'cover' => ""
+				'coverPath' => ""
 			),
 			array(
 				'templateID' => 'galleryTemplate',
@@ -221,20 +317,11 @@ class Content_Model extends Model {
 	// Add Page
 	public function addPage($parentPageID = "0")
 	{
-		$name = $_POST['name'];
-		// Validate length
-		if($name == ""){
-			$this->_returnError('You must enter a name!');
+		if(!$nameArray = $this->_processName($_POST['name'], 'page')) {
 			return false;
 		}
-		// Create URL friendly string
-		$url = $this->_makeURL($name);
-
-		// Make sure name/URL is not taken
-		if(!$this->_checkTaken($url)){
-			$this->_returnError('A page with this name already exists!');
-			return false;
-		}
+		$url = $nameArray['url'];
+		$name = $nameArray['name'];
 		// Content DB entry
 		$this->db->insert('content', array(
 			'type' => 'page',
@@ -326,6 +413,107 @@ class Content_Model extends Model {
 
 /*
  *
+ * VIDEO TYPE FUNCTIONS
+ *
+ */
+	// Add Video
+	public function addVideo($parentPageID = "0")
+	{
+		if(!$nameArray = $this->_processName($_POST['name'], 'page')) {
+			return false;
+		}
+		$url = $nameArray['url'];
+		$name = $nameArray['name'];
+
+		if(!$vidArray = $this->_processVideoLink($_POST['link'])) {
+			return false;
+		}
+
+		// Content DB entry
+		$this->db->insert('content', array(
+			'type' => 'video',
+			'url' => $url,
+			'parentPageID' => $parentPageID,
+			'author' => $_SESSION['login'],
+			'bootstrap' => BS_PAGE
+		));
+		$contentID = $this->db->lastInsertId();
+		// Page DB entry
+		$this->db->insert('video', array(
+			'name' => $name,
+			'displayName' => $name,
+			'contentid' => $contentID,
+			'source' => $vidArray['source'],
+			'link' => $vidArray['link'],
+			'postedLink' => $vidArray['postedLink']
+		));
+		// Success!
+		$results = array(
+			'error' => false,
+			'results' => array(
+				'name' => $name,
+				'displayName' => $name,
+				'url' => $url,
+				'path' => URL.$url,
+				'parent' => '-',
+				'type' => 'Page',
+				'date' => date('Y/m/d'),
+				'author' => $_SESSION['login'],
+				'contentID' => $contentID
+			)
+		);
+		echo json_encode($results);
+	}
+
+	// Process Video Link
+	private function _processVideoLink($postedLink)
+	{
+		// Validate length
+		if($postedLink == ""){
+			$this->_returnError('You must enter a link!');
+			return false;
+		}
+
+		if(strpos($postedLink, 'vimeo')) {
+			$source = 'vimeo';
+		} else if(strpos($postedLink, 'you')) {
+			$source = 'youtube';
+		} else {
+			$this->_returnError('Invalid link');
+			return false;
+		}
+
+		switch($source) {
+			case 'vimeo':
+				$link = end(explode("/", $postedLink));
+				if(!is_numeric($link)) {
+					$this->_returnError('Invalid link');
+					return false;
+				}	
+			break;
+			case 'youtube':
+				if(strpos($postedLink, 'watch')) {
+					$delimiter = "=";
+				} else {
+					$delimiter = "/";
+				}
+				$link = end(explode($delimiter, $postedLink));
+				if(strlen($link) != 11) {
+					$this->_returnError('Invalid link');
+					return false;
+				}
+			break;
+		}
+
+		return array(
+			'source' => $source,
+			'link' => $link,
+			'postedLink' => $postedLink
+		);
+	}
+	
+/*
+ *
  * GALLERY TYPE FUNCTIONS
  *
  */
@@ -350,20 +538,11 @@ class Content_Model extends Model {
 	// Add Gallery
 	public function addGallery($parentPageID = "0")
 	{
-		$name = $_POST['name'];
-		// Validate length
-		if($name == ""){
-			$this->_returnError('You must enter a name!');
+		if(!$nameArray = $this->_processName($_POST['name'], 'gallery')) {
 			return false;
 		}
-		// Create URL friendly string
-		$url = preg_replace('#[^a-z.0-9_]#i', '_', $name);
-		$url = strtolower($url);
-		// Make sure name/URL is not taken
-		if(!$this->_checkTaken($url)){
-			$this->_returnError('A gallery (or page) with this name already exists');
-			return false;
-		}
+		$url = $nameArray['url'];
+		$name = $nameArray['name'];
 		// Content DB entry
 		$this->db->insert('content', array(
 			'type' => 'gallery',
@@ -875,6 +1054,57 @@ class Content_Model extends Model {
 	{
 		$url = preg_replace('#[^a-z.0-9_]#i', '_', $str);
 		return strtolower($url);
+	}
+
+	// For making new pages
+	private function _processName($name, $type)
+	{
+		// Validate length
+		if($name == ""){
+			$this->_returnError('You must enter a name!');
+			return false;
+		}
+		// Create URL friendly string
+		$url = $this->_makeURL($name);
+
+		// Make sure name/URL is not taken
+		if(!$this->_checkTaken($url)){
+			$this->_returnError("A $type with this name already exists!");
+			return false;
+		}
+		return array(
+			'name' => $name,
+			'url' => $url
+		);
+	}
+
+	// For updating settings
+	private function _processNameUrl($type, $name, $url, $origName, $origURL)
+	{
+		// Validate length
+		if($name == ""){
+			$this->_returnError('Name cannot be blank!', 'name');
+			return false;
+		}
+		if($url == ""){
+			$this->_returnError('URL cannot be blank!', 'url');
+			return false;
+		}
+		// Make sure URL uses correct characters
+		$url = preg_replace('#[^a-z.0-9_]#i', '_', $url);
+
+		// Make sure name/URL are not taken
+		$query = "SELECT * FROM content WHERE url = :url";
+		if($url != $origURL && $result = $this->db->select($query, array(':url' => $url))){
+			$this->_returnError("A $type with that URL already exists.", 'url');
+			return false;
+		}
+		$query = "SELECT * FROM $type WHERE name = :name";
+		if($name != $origName && $result = $this->db->select($query, array(':name' => $name))){
+			$this->_returnError("A $type with that name already exists.", 'name');
+			return false;
+		}
+		return $url;
 	}
 
 	private function _saveOriginalImage($files)

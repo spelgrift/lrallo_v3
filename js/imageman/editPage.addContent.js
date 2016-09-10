@@ -3,11 +3,11 @@ var Mustache = require('../libs/mustache.min.js');
 var Dropzone = require('../libs/dropzone.js');
 
 $(function() {
-	/**
-	 * 
-	 * CACHE DOM
-	 * 
-	 */
+/**
+ * 
+ * CACHE DOM
+ * 
+ */
 	var $contentArea = $('#contentArea');
 	var $addTab = $('a.addTab');
 	var pageURL = $('a#viewTab').attr('href');
@@ -26,7 +26,7 @@ $(function() {
 	$addTextArea = $addTextModal.find('#newTextArea'),
 	$submitText = $addTextModal.find('button#submitNewText'),
 	$textMsg = $addTextModal.find('#textMsg'),
-	textTemplate = $('#textTemplate').html();
+	textTemplate = $('#textTemplate').html().replace('amp;', '');
 
 	// Add Single  Image
 	var $addImageModal = $('#addImageModal'),
@@ -40,48 +40,11 @@ $(function() {
 	$submitSpacer = $addSpacerModal.find('button#submitNewSpacer'),
 	spacerTemplate = $('#spacerTemplate').html();
 
-	/**
-	 * 
-	 * BIND EVENTS
-	 * 
-	 */
-
-	// Display modal based on which type is clicked
-	$addTab.on('click', function(ev) {
-		selectModal($(this).attr('data-id'));
-		ev.preventDefault();
-	});
-
-	// Submit Page
-	$submitPage.on('click', function(ev) {
-		submitPage();
-		ev.preventDefault();
-	});
-
-	// Submit Text
-
-	$submitText.on('click', function(ev) {
-		submitText();
-		ev.preventDefault();
-	});
-
-	// Submit Single Image
-	$submitImage.on('click', function(ev) {
-		$singleImgDropzone.processQueue();
-		ev.preventDefault();
-	});
-
-	// Submit Spacer
-	$submitSpacer.on('click', function(ev) {
-		submitSpacer();
-		ev.preventDefault();
-	});
-
-	/**
-	 * 
-	 * DROPZONES
-	 * 
-	 */
+/**
+ * 
+ * DROPZONES
+ * 
+ */
 	Dropzone.autoDiscover = false;
 
 	//
@@ -98,19 +61,36 @@ $(function() {
 		dictDefaultMessage : "Drop file here to upload<br>(or click)"
 	});
 
-	// Handle Dropzone success
-	$singleImgDropzone.on("success", function(file, data) {
-		data = JSON.parse(data);
-		if(!data.error) { // Success!
-			// Hide modal
-			$addImageModal.modal('hide');
-			// Render template
-			$(Mustache.render(singleImgTemplate, data.results)).hide().prependTo($contentArea).fadeIn('slow');
-		} else { // Error!		
-			$singleImgDropzone.emit("error", file, data.error_msg);
-		}
+/**
+ * 
+ * BIND EVENTS
+ * 
+ */
 
+	// Display modal based on which type is clicked
+	$addTab.click(selectModal);
+
+	// Submit Page
+	$submitPage.click(submitPage);
+
+	// Submit Text
+	$submitText.click(submitText);
+
+	// Submit Spacer
+	$submitSpacer.click(submitSpacer);
+
+	// Submit Single Image
+	$submitImage.click(function(ev) {
+		ev.preventDefault();
+		$singleImgDropzone.processQueue();
 	});
+
+	//
+	// SINGLE IMAGE DROPZONE EVENTS
+	//
+
+	// Handle Dropzone success
+	$singleImgDropzone.on("success", singleImgDZsuccess);
 
 	// Enable Submit button when file added
 	$singleImgDropzone.on("addedfile", function(file) {
@@ -136,12 +116,13 @@ $(function() {
 
 	
 
-	/**
-	 * 
-	 * ADD CONTENT FUNCTIONS
-	 * 
-	 */
-	function submitPage() {
+/**
+ * 
+ * MAIN FUNCTIONS
+ * 
+ */
+	function submitPage(ev) {
+		ev.preventDefault();
 		// Get user input
 		var pageName = $pageNameInput.val();
 		// Validate
@@ -220,7 +201,20 @@ $(function() {
 		});
 	}
 
-	function submitSpacer() {
+	function singleImgDZsuccess(file, data) {
+		data = JSON.parse(data);
+		if(!data.error) { // Success!
+			// Hide modal
+			$addImageModal.modal('hide');
+			// Render template
+			$(Mustache.render(singleImgTemplate, data.results)).hide().prependTo($contentArea).fadeIn('slow');
+		} else { // Error!		
+			$singleImgDropzone.emit("error", file, data.error_msg);
+		}
+	}
+
+	function submitSpacer(ev) {
+		ev.preventDefault();
 		// Post to server
 		$.ajax({
 			type: 'POST',
@@ -238,12 +232,14 @@ $(function() {
 		});
 	}
 
-	/**
-	 * 
-	 * HELPER FUNCTIONS
-	 * 
-	 */
-	function selectModal(type) {
+/**
+ * 
+ * HELPER FUNCTIONS
+ * 
+ */
+	function selectModal(ev) {
+		ev.preventDefault();
+		var type = $(this).attr('data-id');
 		switch(type) {
 			case 'text' :
 				$addTextModal.modal('show');
@@ -274,6 +270,5 @@ $(function() {
 			});
 		}, timeout);
 	}
-
 
 });

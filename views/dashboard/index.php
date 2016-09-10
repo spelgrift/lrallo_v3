@@ -5,6 +5,7 @@
 require 'views/inc/header.php'; 
 require 'views/inc/addContentForms/addPage.php';
 require 'views/inc/addContentForms/addGallery.php';
+require 'views/inc/addContentForms/addVideoDashboard.php';
 require 'views/inc/addContentForms/addNavLink.php';
 ?>
 
@@ -67,6 +68,7 @@ require 'views/inc/addContentForms/addNavLink.php';
 				<option value='all'>All Content</option>
 				<option value='page' selected>Pages</option>
 				<option value='gallery' >Galleries</option>
+				<option value='video'>Videos</option>
 				<option value='text'>Text</option>
 				<option value='singleImage'>Images</option>
 			</select>
@@ -102,6 +104,7 @@ require 'views/inc/addContentForms/addNavLink.php';
 				<option value='page'>Pages</option>
 				<option value='gallery'>Galleries</option>
 				<option value='galImage'>Gallery Images</option>
+				<option vlaue='video'>Videos</option>
 				<option value='text'>Text</option>
 				<option value='singleImage'>Images</option>
 				<option value='navLink'>Nav Links</option>

@@ -87,8 +87,19 @@ class Dashboard_Model extends Model {
 						$typeArray['name'] = $result[0]['name'];
 
 						$typeArray['subContent'] = $this->_getContentArrayRecursive($type, $typeArray['pageID'], $typeArray['path']);
-						break;
+					break;
+					case "video" :
+						// Append trailing / to path if item has a parent page
+						if(strlen($path) > 0) {	$path = $path . "/";	}
 
+						$typeArray['url'] = $row['url'];
+						$typeArray['path'] = $path . $row['url'];
+
+						$result = $this->db->select("SELECT videoID, name FROM video WHERE contentID = '".$row['contentID']."'");
+
+						$typeArray['videoID'] = $result[0]['videoID'];
+						$typeArray['name'] = $result[0]['name'];
+					break;
 					case "gallery" :
 						// Append trailing / to path if item has a parent page
 						if(strlen($path) > 0) {	$path = $path . "/";	}
@@ -100,8 +111,7 @@ class Dashboard_Model extends Model {
 
 						$typeArray['galleryID'] = $result[0]['galleryID'];
 						$typeArray['name'] = $result[0]['name'];
-						break;
-
+					break;
 					case "text" :
 						$typeArray['path'] = $path;
 
@@ -109,8 +119,7 @@ class Dashboard_Model extends Model {
 
 						$typeArray['textID'] = $result[0]['textID'];
 						$typeArray['text'] = $result[0]['text'];
-						break;
-
+					break;
 					case "singleImage" :
 						$typeArray['path'] = $path;
 
@@ -118,7 +127,7 @@ class Dashboard_Model extends Model {
 
 						$typeArray['singleImageID'] = $result[0]['singleImageID'];
 						$typeArray['name'] = $result[0]['name'];
-						break;
+					break;
 				}
 
 				$returnArray[] = $typeArray;
@@ -169,7 +178,13 @@ class Dashboard_Model extends Model {
 				$rowClass = 'contentListRow page visible';
 				$parentLink = "<a href='".URL.$path."'>$name</a>";
 			break;
-
+			case "video" :
+				$name = $row['name'];
+				$nameTd = "<td class='listName'><span class='listPad'>$pad</span><a href='".URL.$path."'>$name</a></td>";
+				$type = 'Video';
+				$rowClass = 'contentListRow video';
+				$parentLink = "<a href='".URL.$path."'>$name</a>";
+			break;
 			case "gallery" :
 				$name = $row['name'];
 				$nameTd = "<td class='listName'><span class='listPad'>$pad</span><a href='".URL.$path."'>$name</a></td>";
