@@ -225,25 +225,50 @@ class Page extends Controller
 	public function addPage()
 	{
 		Auth::setAccess();
-		$this->contentModel->addPage($this->_pageAttrArray['pageID']);
+		$this->_loadTypeContentModel('page');
+		$this->pageContentModel->addPage($this->_pageAttrArray['pageID']);
+	}
+
+	public function addVideo()
+	{
+		Auth::setAccess();
+		$this->_loadTypeContentModel('video');
+		$this->videoContentModel->addVideo($this->_pageAttrArray['pageID']);
+	}
+
+	public function addGallery()
+	{
+		Auth::setAccess();
+		$this->_loadTypeContentModel('gallery');
+		$this->galleryContentModel->addGallery($this->_pageAttrArray['pageID']);
+	}
+
+	public function uploadGalImages()
+	{
+		Auth::setAccess();
+		$this->_loadTypeContentModel('gallery');
+		$this->galleryContentModel->addGalImages($_POST['galID'], $_POST['galURL']);
 	}
 
 	public function addText()
 	{
 		Auth::setAccess();
-		$this->contentModel->addText($this->_pageAttrArray['pageID']);
+		$this->_loadTypeContentModel('text');
+		$this->textContentModel->addText($this->_pageAttrArray['pageID']);
 	}
 
 	public function addSingleImage()
 	{
 		Auth::setAccess();
-		$this->contentModel->addSingleImage($this->_pageAttrArray['pageID'], $this->_pageAttrArray['url']);
+		$this->_loadTypeContentModel('image');
+		$this->imageContentModel->addSingleImage($this->_pageAttrArray['pageID'], $this->_pageAttrArray['url']);
 	}
 
 	public function addSpacer()
 	{
 		Auth::setAccess();
-		$this->contentModel->addSpacer($this->_pageAttrArray['pageID']);
+		$this->_loadTypeContentModel('page');
+		$this->pageContentModel->addSpacer($this->_pageAttrArray['pageID']);
 	}
 
 	public function deleteSpacer($contentID)
@@ -258,13 +283,15 @@ class Page extends Controller
 	public function updateShortcut($contentID)
 	{
 		Auth::setAccess();
-		$this->contentModel->updateShortcut($contentID);
+		$this->_loadTypeContentModel('shortcut');
+		$this->shortcutContentModel->updateShortcut($contentID);
 	}
 
 	public function updateShortcutCover($contentID, $type)
 	{
 		Auth::setAccess();
-		$this->contentModel->updateShortcutCover($contentID, $type);
+		$this->_loadTypeContentModel('shortcut');
+		$this->shortcutContentModel->updateShortcutCover($contentID, $type);
 	}
 
 /**
@@ -275,7 +302,8 @@ class Page extends Controller
 	public function addGalImages()
 	{
 		Auth::setAccess();
-		$this->contentModel->addGalImages($this->_pageAttrArray['galleryID'], $this->_pageAttrArray['url']);
+		$this->_loadTypeContentModel('gallery');
+		$this->galleryContentModel->addGalImages($this->_pageAttrArray['galleryID'], $this->_pageAttrArray['url']);
 	}
 	public function sortGalImages()
 	{
@@ -283,25 +311,18 @@ class Page extends Controller
 		$this->contentModel->sortContent();
 	}
 
-	public function trashGalImage($galImageID)
-	{
-		Auth::setAccess();
-		if($_SERVER['REQUEST_METHOD'] == "DELETE")
-		{
-			$this->contentModel->trashGalImage($galImageID);
-		}
-	}
-
 	public function updateCaption($galImageID)
 	{
 		Auth::setAccess();
-		$this->contentModel->updateGalCaption($galImageID);
+		$this->_loadTypeContentModel('gallery');
+		$this->galleryContentModel->updateGalCaption($galImageID);
 	}
 
 	public function newCover($galImageID)
 	{
 		Auth::setAccess();
-		$this->contentModel->updateGalCover($this->_pageAttrArray['galleryID'], $this->_pageAttrArray['url'], $this->_pageAttrArray['coverPath'], $galImageID);
+		$this->_loadTypeContentModel('gallery');
+		$this->galleryContentModel->updateGalCover($this->_pageAttrArray['galleryID'], $this->_pageAttrArray['url'], $this->_pageAttrArray['coverPath'], $galImageID);
 	}
 
 /**

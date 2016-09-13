@@ -142,9 +142,7 @@ $(function() {
 
 					$tableBody.prepend(Mustache.render(pageListTemplate, data.results));
 				} else { // Error
-					$pageMsg.html("<p class='text-danger'>"+data.error_msg+"</p>");
-					$pageNameInput.focus();
-					clearMsg($pageMsg);
+					error(data.error_msg, $pageMsg, $pageNameInput);
 				}
 			}
 		});
@@ -184,7 +182,6 @@ $(function() {
 				}
 			}
 		});
-
 	}
 
 	function submitGal(ev) {
@@ -193,7 +190,7 @@ $(function() {
 		var galName = $galNameInput.val();
 		// Validate
 		if(galName.length < 1) {
-			return error("<p class='text-danger'>You must enter a name!</p>", $galMsg, $galNameInput);
+			return error("You must enter a name!", $galMsg, $galNameInput);
 		}
 		// Post to server
 		$.ajax({
@@ -211,9 +208,7 @@ $(function() {
 					$submitGal.attr('disabled', 'disabled');
 					$galleryDropzone.processQueue();
 				} else { // Error
-					$galMsg.html("<p class='text-danger'>"+data.error_msg+"</p>");
-					$galNameInput.focus();
-					clearMsg($galMsg);
+					error(data.error_msg, $galMsg, $galNameInput);
 				}
 			}
 		});
@@ -246,9 +241,9 @@ $(function() {
 		} else { // Error!		
 			if(data.hasOwnProperty('error_details')) {
 				
-				$galMsg.html("<p class='text-danger'>"+data.error_msg+"</p>");
+				$galMsg.html(data.error_msg);
 				$.each(data.error_details, function() {
-					$galMsg.append("<p class='text-danger'>"+this.name+" : "+this.error+"</p>");
+					$galMsg.append(this.name+" : "+this.error+"<br>");
 				});
 				// Switch view to show galleries
 				$contentTypeFilter.val('gallery');
@@ -268,16 +263,10 @@ $(function() {
 		navLinkUrl = $navLinkUrlInput.val();
 		// Validate
 		if(navLinkName.length < 1) {
-			$navLinkMsg.html("<p class='text-danger'>You must enter a name.</p>");
-			$navLinkNameInput.focus();
-			clearMsg($navLinkMsg);
-			return false;
+			return error('You must enter a name', $navLinkMsg, $navLinkNameInput);
 		}
 		if(navLinkUrl.length < 1) {
-			$navLinkMsg.html("<p class='text-danger'>You must enter a url</p>");
-			$navLinkUrlInput.focus();
-			clearMsg($navLinkMsg);
-			return false;
+			return error('You must enter a url', $navLinkMsg, $navLinkUrlInput);
 		}
 		// Post to server
 		$.ajax({
@@ -295,9 +284,7 @@ $(function() {
 					$addNavLinkModal.modal('hide');
 					reloadNav();	
 				} else { // Error
-					$navLinkMsg.html("<p class='text-danger'>"+data.error_msg+"</p>");
-					$navLinkNameInput.focus();
-					clearMsg($navLinkMsg);
+					error(data.error_msg, $navLinkMsg, $navLinkNameInput);
 				}
 			}
 		});

@@ -19,7 +19,7 @@
 			<div class="modal-footer">
 				<div class='row'>
 					<div class='col-sm-8'>
-						<div id='galleryMsg' class='pull-left text-left'></div>
+						<p id='galleryMsg' class='pull-left text-danger text-left'></p>
 						<div id='galleryProgress' class='progress active' role='progressbar' aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
 							<div class="progress-bar" style="width:0%;" data-dz-uploadprogress></div>
 						</div>

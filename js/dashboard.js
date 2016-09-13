@@ -6,6 +6,7 @@ require('./libs/bs.modal.js'); // Bootstrap modals
 
 require('./imageman/tabs.js');
 require('./libs/events.js'); 
+require('./imageman/timeout.js');
 
 // Dashboard scripts
 require('./imageman/dashboard.contentList.js');

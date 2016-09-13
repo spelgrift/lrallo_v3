@@ -31,6 +31,22 @@ class Controller {
 			}
 		}
 	}
+
+/**
+ *	_loadTypeContentModel - Loads the content model for given content type
+ *									Creates an instance of the model in the class at
+ *									$this->[type]ContentModel
+ * @param string $type 	 -	The content type
+ *
+ */
+	protected function _loadTypeContentModel($type)
+	{
+		$this->loadModel("content_models/".$type."_content", false);
+		$varName = $type."ContentModel";
+		$className = ucfirst($type)."_Content_Model";
+		$this->$varName = new $className;
+	}
+
 	
 	public function error()
 	{

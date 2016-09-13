@@ -5,7 +5,8 @@ require('./libs/bs.dropdown.js'); // Bootstrap dropdowns
 require('./libs/bs.modal.js'); // Bootstrap modals
 
 require('./imageman/tabs.js');
-require('./libs/events.js'); 
+require('./libs/events.js');
+require('./imageman/timeout.js');
 
 // Edit page scripts
 require('./imageman/editPage.settings.js');

@@ -22,8 +22,9 @@ class View {
 		$class = "contentItem ".$contentObject['bootstrap'];
 		$id = "listItem_".$contentObject['contentID'];
 		$contentID = $contentObject['contentID'];
+		$type = $contentObject['type'];
 
-		switch($contentObject['type'])
+		switch($type)
 		{
 			case 'page':
 				$type = 'page';

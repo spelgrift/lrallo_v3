@@ -91,7 +91,7 @@ $source = $this->pageAttr['source'];
 		<div class='form-group'>
 			<div class='col-sm-6 col-sm-offset-3'>
 				<a id='settingsSubmit' class='btn btn-primary' >Save Changes</a>
-				<a id='settingsTrashPage' class='btn btn-danger'>Trash Gallery</a>
+				<a id='settingsTrashPage' class='btn btn-danger'>Trash Video</a>
 			</div>
 		</div>
 		<div id='settingsMsg' class='col-sm-6 col-sm-offset-3'></div>

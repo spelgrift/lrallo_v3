@@ -5,7 +5,7 @@
 require 'views/inc/header.php'; 
 require 'views/inc/addContentForms/addPage.php';
 require 'views/inc/addContentForms/addGallery.php';
-require 'views/inc/addContentForms/addVideoDashboard.php';
+require 'views/inc/addContentForms/addVideo.php';
 require 'views/inc/addContentForms/addNavLink.php';
 ?>
 

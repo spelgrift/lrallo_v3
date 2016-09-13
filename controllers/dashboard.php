@@ -27,32 +27,36 @@ class Dashboard extends Controller {
 
 	public function addPage()
 	{
-		$this->contentModel->addPage();
+		$this->_loadTypeContentModel('page');
+		$this->pageContentModel->addPage();
 	}
 
 	public function addVideo()
 	{
-		$this->contentModel->addVideo();
+		$this->_loadTypeContentModel('video');
+		$this->videoContentModel->addVideo();
 	}
 
 	public function addGallery()
 	{
-		$this->contentModel->addGallery();
+		$this->_loadTypeContentModel('gallery');
+		$this->galleryContentModel->addGallery();
 	}
 
 	public function uploadGalImages()
 	{
-		$this->contentModel->addGalImages($_POST['galID'], $_POST['galURL'], true);
+		$this->_loadTypeContentModel('gallery');
+		$this->galleryContentModel->addGalImages($_POST['galID'], $_POST['galURL'], true);
 	}
 
 	public function addNavLink()
 	{
-		$this->contentModel->addNavLink();
+		$this->model->addNavLink();
 	}
 
 	public function editNavLink($contentID)
 	{
-		$this->contentModel->editNavLink($contentID);
+		$this->model->editNavLink($contentID);
 	}
 
 	public function trashNavLink($contentID)

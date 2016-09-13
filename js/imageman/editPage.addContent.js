@@ -21,6 +21,25 @@ $(function() {
 	$pageMsg = $addPageModal.find('#pageMsg'),
 	pageTemplate = $('#pageTemplate').html();
 
+	// Add Gallery
+	var $addGalModal = $('#addGalModal'),
+	$galNameInput = $addGalModal.find('input#newGalName'),
+	galDZtemplate = $('#galDZTemplate').html(),
+	$submitGal = $addGalModal.find('button#submitNewGal'),
+	$galMsg = $addGalModal.find('#galleryMsg'),
+	$galProgress = $addGalModal.find('#galleryProgress'),
+	$galProcessing = $addGalModal.find('#galleryLoading'),
+	galleryTemplate = $('#galleryTemplate').html();
+
+	// Add Video Page
+	var $addVideoModal = $('#addVideoModal'),
+	$vidNameInput = $addVideoModal.find('input#newVideoName'),
+	$vidNameMsg = $addVideoModal.find('#videoNameMsg'),
+	$vidLinkInput = $addVideoModal.find('input#newVideoLink'),
+	$vidLinkMsg = $addVideoModal.find('#videoLinkMsg'),
+	$submitVid = $addVideoModal.find('#submitNewVideo'),
+	videoTemplate = $('#videoTemplate').html();
+
 	// Add Text
 	var $addTextModal = $('#addTextModal'),
 	$addTextArea = $addTextModal.find('#newTextArea'),
@@ -61,6 +80,22 @@ $(function() {
 		dictDefaultMessage : "Drop file here to upload<br>(or click)"
 	});
 
+	//
+	// Gallery Dropzone
+	//
+	var $galleryDropzone = new Dropzone('div.addGalleryDropzone', {
+		url : pageURL + '/uploadGalImages/',
+		autoProcessQueue : false,
+		uploadMultiple : true,
+		parallelUploads: 50,
+		maxFilesize : 3,
+		acceptedFiles : "image/*,.jpg,.JPG",
+		thumbnailWidth : 125,
+		thumbnailHeight : 125,
+		previewTemplate : galDZtemplate,
+		dictDefaultMessage : "Drop image files here<br>(or click)"
+	});
+
 /**
  * 
  * BIND EVENTS
@@ -72,6 +107,12 @@ $(function() {
 
 	// Submit Page
 	$submitPage.click(submitPage);
+
+	// Submit Gallery
+	$submitGal.click(submitGal);
+
+	// Submit Video
+	$submitVid.click(submitVideo);
 
 	// Submit Text
 	$submitText.click(submitText);
@@ -86,15 +127,21 @@ $(function() {
 	});
 
 	//
-	// SINGLE IMAGE DROPZONE EVENTS
+	// DROPZONE EVENTS
 	//
 
 	// Handle Dropzone success
 	$singleImgDropzone.on("success", singleImgDZsuccess);
 
+	$galleryDropzone.on("successmultiple", galleryDZsuccess);
+
 	// Enable Submit button when file added
 	$singleImgDropzone.on("addedfile", function(file) {
 		$submitImage.removeAttr('disabled');
+	});
+
+	$galleryDropzone.on("addedfile", function(file) {
+		$submitGal.removeAttr('disabled');
 	});
 
 	// Disable Submit button when no files
@@ -104,15 +151,30 @@ $(function() {
 		}
 	});
 
-	// Remove file if more than 1 added
-	$singleImgDropzone.on("maxfilesexceeded", function(file) {
-		this.removeFile(file);
+	$galleryDropzone.on("removedfile", function(file) {
+		if($galleryDropzone.files.length === 0) {
+			$submitGal.attr('disabled', 'disabled');
+			$galProcessing.hide();
+		}
 	});
 
 	// Remove files when modal closed
 	$addImageModal.on('hidden.bs.modal', function() {
 		$singleImgDropzone.removeAllFiles();
 	});
+
+	$addGalModal.on('hidden.bs.modal', function() {
+		$galleryDropzone.removeAllFiles();
+	});
+
+	// Remove file if more than 1 added (Single Image)
+	$singleImgDropzone.on("maxfilesexceeded", function(file) {
+		this.removeFile(file);
+	});
+
+	// Update total progress bar (Gallery)
+	$galleryDropzone.on('totaluploadprogress', galleryDZprogress);
+
 
 	
 
@@ -127,10 +189,7 @@ $(function() {
 		var pageName = $pageNameInput.val();
 		// Validate
 		if(pageName.length < 1) {
-			$pageMsg.html("<p class='text-danger'>You must enter a name!</p>");
-			$pageNameInput.focus();
-			clearMsg($pageMsg);
-			return false;
+			return error('You must enter a name', $pageMsg, $pageNameInput);
 		}
 		// Check if taken here?
 
@@ -141,36 +200,116 @@ $(function() {
 			data: { name : pageName },
 			dataType: 'json',
 			success: function( data ) {
-				if(!data.error) {
-					// Success
+				if(!data.error) { // Success
 					$pageNameInput.val("");
 					$addPageModal.modal('hide');
-					var newPageObject = {
-						contentID : data.results.contentID,
-						pageID : data.results.pageID,
-						name : pageName,
-						url : data.results.url
-					};
-					$contentArea.prepend(Mustache.render(pageTemplate, newPageObject));
-				} else {
-					// Error
-					$pageMsg.html("<p class='text-danger'>"+data.error_msg+"</p>");
-					$pageNameInput.focus();
-					clearMsg($pageMsg);
+					$contentArea.prepend(Mustache.render(pageTemplate, data.results));
+				} else { // Error
+					error(data.error_msg, $pageMsg, $pageNameInput);
 				}
 			}
 		});
 	}
 
-	function submitText() {
+	function submitVideo(ev) {
+		ev.preventDefault();
+		// Get user input
+		var data = {
+			'name' : $vidNameInput.val(),
+			'link' : $vidLinkInput.val()
+		};
+		// Validate
+		if(data.name.length < 1) {
+			return error("You must enter a name!", $vidNameMsg, $vidNameInput);
+		}
+		if(data.link.length < 1) {
+			return error("You must enter a link!", $vidLinkMsg, $vidLinkInput);
+		}
+		// POST
+		$.ajax({
+			type: 'POST',
+			url: pageURL + '/addVideo',
+			data: data,
+			dataType: 'json',
+			success: function(data) {
+				if(!data.error) { // Success
+					// Hide modal
+					$addVideoModal.modal('hide');
+					$contentArea.prepend(Mustache.render(videoTemplate, data.results));
+				} else {
+					error(data.error_msg, $vidLinkMsg, $vidLinkInput);
+				}
+			}
+		});
+	}
+
+	function submitGal(ev) {
+		ev.preventDefault();
+		// Get user input
+		var galName = $galNameInput.val();
+		// Validate
+		if(galName.length < 1) {
+			return error("You must enter a name!", $galMsg, $galNameInput);
+		}
+		// Post to server
+		$.ajax({
+			type: 'POST',
+			url: pageURL + '/addGallery',
+			data: { name : galName },
+			dataType: 'json',
+			success: function( data ) {
+				if(!data.error) { // Success
+					$galleryDropzone.options.params = {
+						galID : data.results.galID,
+						galURL : data.results.galURL
+					};
+					$galProgress.show();
+					$submitGal.attr('disabled', 'disabled');
+					$galleryDropzone.processQueue();
+				} else { // Error
+					error(data.error_msg, $galMsg, $galNameInput);
+				}
+			}
+		});
+	}
+
+	function galleryDZprogress(progress) {
+		if(progress < 100) {
+			$galProgress.find('.progress-bar').css('width', progress + '%');
+		} else {
+			$galProgress.hide().find('.progress-bar').css('width', '0%');
+			$galProcessing.show();
+		}
+	}
+
+	function galleryDZsuccess(files, data) {
+		data = JSON.parse(data);
+
+		$galleryDropzone.removeAllFiles();
+		$galNameInput.val('');
+		$galProcessing.hide();
+
+		if(!data.error) { // Success
+			$addGalModal.modal('hide');
+			$contentArea.prepend(Mustache.render(galleryTemplate, data.results));
+		} else { // Error!
+			if(data.hasOwnProperty('error_details')) {
+				$galMsg.html(data.error_msg);
+				$.each(data.error_details, function() {
+					$galMsg.append(this.name+" : "+this.error+"<br>");
+				});
+				$contentArea.prepend(Mustache.render(galleryTemplate, data.results));
+			}
+		}
+	}
+
+	function submitText(ev) {
+		ev.preventDefault();
 		// Get user input
 		var newText = $addTextArea.val();
 		// Validate
 		if(newText.length < 1) {
-			$textMsg.html("<p class='text-danger'>Please enter some text!</p>");
-			$addTextArea.focus();
-			clearMsg($textMsg);
-			return false;
+			return error('Please enter some text', $textMsg, $addTextArea);
 		}
 		// Post to server
 		$.ajax({
@@ -179,8 +318,7 @@ $(function() {
 			data: { text : newText },
 			dataType: 'json',
 			success: function( data ) {
-				if(!data.error) {
-					// Success
+				if(!data.error) { // Success
 					$addTextArea.val('');
 					$addTextModal.modal('hide');
 					var newTextObject = {
@@ -189,13 +327,8 @@ $(function() {
 						text : newText
 					};
 					$contentArea.prepend(Mustache.render(textTemplate, newTextObject));
-
-					// events.js - refresh content, etc.
-				} else {
-					// Error
-					$textMsg.html("<p class='text-danger'>"+data.error_msg+"</p>");
-					$addTextArea.focus();
-					clearMsg($textMsg);
+				} else { // Error
+					error(data.error_msg, $textMsg, $addTextArea);
 				}
 			}
 		});
@@ -244,19 +377,29 @@ $(function() {
 			case 'text' :
 				$addTextModal.modal('show');
 			break;
-
 			case 'page' :
 				$addPageModal.modal('show');
 			break;
-
+			case 'gallery' :
+				$addGalModal.modal('show');
+			break;
+			case 'video' :
+				$addVideoModal.modal('show');
+			break;
 			case 'spacer' :
 				$addSpacerModal.modal('show');
 			break;
-
 			case 'singleImage' :
 				$addImageModal.modal('show');
 			break;
 		}
+	}
+
+	function error(message, $msg, $input) {
+		$msg.html(message);
+		$input.focus();
+		clearMsg($msg);
+		return false;
 	}
 
 	function clearMsg(selector, timeout) {

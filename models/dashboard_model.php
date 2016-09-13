@@ -16,7 +16,68 @@ class Dashboard_Model extends Model {
 			}
 		}
 	}
+/*
+ *
+ * NAV LINK TYPE FUNCTIONS
+ *
+ */
 
+	// Add NavLink
+	public function addNavLink()
+	{
+		// Validate
+		$form = new Form();
+		$form ->post('name')
+				->val('blank')
+				->post('url')
+				->val('blank');
+		if(!$form->submit()) { // Error
+			$error = $form->fetchError();
+			$this->_returnError(reset($error), key($error));
+			return false;
+		}
+		$data = $form->fetch(); // Form passed
+
+		// Content DB entry
+		$this->db->insert('content', array(
+			'type' => 'navLink',
+			'url' => $data['url'],
+			'parentPageID' => 0,
+			'author' => $_SESSION['login'],
+			'nav' => 1
+		));
+
+		// NavLink DB entry
+		$this->db->insert('navLink', array(
+			'name' => $data['name'],
+			'contentid' => $this->db->lastInsertId()
+		));
+
+		echo json_encode(array('error' => false));
+	}
+
+	// Edit NavLink
+	public function editNavLink($contentID)
+	{
+		// Validate
+		$form = new Form();
+		$form ->post('name')
+				->val('blank')
+				->post('url')
+				->val('blank');
+		if(!$form->submit()) { // Error
+			$error = $form->fetchError();
+			$this->_returnError(reset($error), key($error));
+			return false;
+		}
+		$data = $form->fetch(); // Form passed
+
+		// Update Content DB Entry
+		$this->db->update('content', array('url' => $data['url']), "`contentID` = ".$contentID);
+		$this->db->update('navLink', array('name' => $data['name']), "`contentID` = " .$contentID);
+		echo json_encode(array('error' => false));
+	}
+	
 /**
  *	listContent - Builds array of all non-trashed content with subContent as sub-arrays
  *	@return array 
@@ -275,6 +336,12 @@ class Dashboard_Model extends Model {
 						$typeArray['pageID'] = $result[0]['pageID'];
 						$typeArray['name'] = $result[0]['name'];
 						break;
+					case "video" :
+						$result = $this->db->select("SELECT videoID, name FROM video WHERE contentID = '".$row['contentID']."'");
+
+						$typeArray['videoID'] = $result[0]['videoID'];
+						$typeArray['name'] = $result[0]['name'];
+						break;
 					case "gallery" :
 						$result = $this->db->select("SELECT galleryID, name FROM gallery WHERE contentID = '".$row['contentID']."'");
 
@@ -333,6 +400,12 @@ class Dashboard_Model extends Model {
 					$nameTd = "<td class='listName'>$name</td>";
 					$type = 'Page';
 					$rowClass = 'contentListRow page visible';
+				break;
+				case "video" :
+					$name = $row['name'];
+					$nameTd = "<td class='listName'>$name</td>";
+					$type = 'Video';
+					$rowClass = 'contentListRow video visible';
 				break;
 				case "gallery" :
 					$name = $row['name'];

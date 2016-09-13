@@ -19,7 +19,7 @@
 						<input type='text' class='form-control' id='newNavUrl' placeholder='http://...'>
 					</div>
 				</form>
-				<div id='navLinkMsg'></div>
+				<p class='text-danger' id='navLinkMsg'></p>
 			</div>
 
 			<div class="modal-footer">

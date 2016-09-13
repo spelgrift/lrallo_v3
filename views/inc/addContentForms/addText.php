@@ -14,7 +14,7 @@
 			</div>
 
 			<div class="modal-footer">
-				<div id='textMsg' class='pull-left'></div>
+				<p id='textMsg' class='text-danger pull-left'></p>
 				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 				<button type="button" id='submitNewText' class="btn btn-primary">Add Text</button>
 			</div>

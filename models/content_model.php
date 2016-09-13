@@ -2,16 +2,18 @@
 
 class Content_Model extends Model {
 
-	function __construct(){parent::__construct();}
+	function __construct() { parent::__construct(); }
 
 /*
  *
- * GENERAL FUNCTIONS - FOR ALL CONTENT TYPES
+ *
+ * PAGE RENDERING METHODS
+ *
  *
  */
 	
 	/**
-	 *	getPageContent
+	 *	getPageContent - Returns array of content attributes
 	 *	@param string $pageid 
 	 *	@return array
 	 *
@@ -46,10 +48,104 @@ class Content_Model extends Model {
 		}		
 	}
 
-/**
- *	updateSettings - Updates page settings. Wasn't that descriptive?
+	/**
+	 *	getGalImages - Returns array of images to display on gallery type page
+	 *	@param string $pageid 
+	 *	@return array
+	 *
+	 */
+	public function getGalImages($galID)
+	{
+		$query = "SELECT c.contentID, c.position, g.galImageID, g.thumb, g.smVersion, g.lgVersion, g.caption, g.orientation, g.width, g.height
+			FROM content AS c
+			LEFT JOIN galImage AS g ON c.contentID = g.contentID
+			WHERE c.trashed = 0 and c.hidden = 0 and c.parentGalID = :galID
+			ORDER BY c.position ASC";
+		if($result = $this->db->select($query, array(':galID' => $galID)))
+		{
+			return $result;
+		}
+		else
+		{
+			return array();
+		}
+	}
+
+	/**
+	 *	buildTemplates - Populate array with mustache tags
+	 *	@return array
+	 *
+	 */
+	public function buildTemplates()
+	{
+		return array(
+			array(
+				'templateID' => 'pageTemplate',
+				'type' => 'page',
+				'contentID' => "{{contentID}}",
+				'bootstrap' => BS_PAGE,
+				'pageID' => "{{pageID}}",
+				'displayName' => "{{name}}",
+				'url' => "{{url}}",
+				'coverPath' => ""
+			),
+			array(
+				'templateID' => 'videoTemplate',
+				'type' => 'video',
+				'contentID' => "{{contentID}}",
+				'bootstrap' => BS_PAGE,
+				'videoID' => "{{videoID}}",
+				'displayName' => "{{name}}",
+				'url' => "{{url}}",
+				'coverPath' => ""
+			),
+			array(
+				'templateID' => 'galleryTemplate',
+				'type' => 'gallery',
+				'contentID' => "{{contentID}}",
+				'bootstrap' => BS_PAGE,
+				'galleryID' => "{{galleryID}}",
+				'name' => "{{name}}",
+				'url' => "{{url}}",
+				'coverPath' => "{{coverPath}}"
+			),
+			array(
+				'templateID' => 'textTemplate',
+				'type' => 'text',
+				'contentID' => "{{contentID}}",
+				'bootstrap' => BS_TEXT,
+				'textID' => "{{textID}}",
+				'text' => "{{&text}}"
+			),
+			array(
+				'templateID' => 'spacerTemplate',
+				'type' => 'spacer',
+				'contentID' => "{{contentID}}",
+				'bootstrap' => 'col-xs-12'
+			),
+			array(
+				'templateID' => 'singleImgTemplate',
+				'type' => 'singleImage',
+				'contentID' => '{{contentID}}',
+				'bootstrap' => '{{bootstrap}}',
+				'smVersion' => '{{smVersion}}',
+				'lgVersion' => '{{lgVersion}}'
+			)
+		);
+	}
+
+/*
+ *
+ *
+ * API BACKEND METHODS
+ *
  *
  */
+
+	/**
+	 *	updateSettings - Updates page settings. Wasn't that descriptive?
+	 *
+	 */
 	public function updateSettings($type, $contentID, $displayName = "")
 	{
 		// Common attributes
@@ -59,7 +155,6 @@ class Content_Model extends Model {
 		$nav = $_POST['nav'];
 		$origName = $_POST['origName'];
 		$origURL = $_POST['origURL'];
-
 		// Type specific attributes
 		switch($type) {
 			case 'gallery':
@@ -67,7 +162,6 @@ class Content_Model extends Model {
 				$autoplay = $_POST['autoplay'];
 				$duration = $_POST['duration'];
 				$display = $_POST['display'];
-
 				// Validate duration
 				if($duration == "" || !is_numeric($duration))
 				{
@@ -78,26 +172,22 @@ class Content_Model extends Model {
 			case 'video':
 				$postedLink = $_POST['link'];
 				$description = $_POST['description'];
-
 				// Validate link
 				if(!$vidArray = $this->_processVideoLink($postedLink)) {
 					return false;
 				}
 			break;
 		}
-
 		// Process Name and URL
 		if(!$url = $this->_processNameUrl($type, $name, $url, $origName, $origURL)) {
 			return false;
 		}
-
 		// Content DB Update
 		$this->db->update('content', array(
 			'url' => $url,
 			'parentPageID' => $parent,
 			'nav' => $nav
 		), "`contentID` = ".$contentID);
-
 		// Type DB Update
 		switch($type)
 		{
@@ -127,12 +217,9 @@ class Content_Model extends Model {
 				), "`contentID` = ".$contentID);
 			break;
 		}
-		
-
 		$path = $this->_buildPath($url, $parent);
 		$windowPath = DEVPATH . $path . "/edit";
 		$viewPath = URL . $path;
-
 		echo json_encode(array(
 			'error' => false,
 			'name' => $name,
@@ -141,59 +228,10 @@ class Content_Model extends Model {
 			'viewPath' => $viewPath
 		));
 	}
-
 	/**
-	 *	buildTemplates - Populate array with mustache tags
-	 *	@return array
+	 *	trashContent - Marks content item with the 'trashed' flag
+	 *
 	 */
-	public function buildTemplates()
-	{
-		return array(
-			array(
-				'templateID' => 'pageTemplate',
-				'type' => 'page',
-				'contentID' => "{{contentID}}",
-				'bootstrap' => BS_PAGE,
-				'pageID' => "{{pageID}}",
-				'displayName' => "{{name}}",
-				'url' => "{{url}}",
-				'coverPath' => ""
-			),
-			array(
-				'templateID' => 'galleryTemplate',
-				'type' => 'gallery',
-				'contentID' => "{{contentID}}",
-				'bootstrap' => BS_PAGE,
-				'galleryID' => "{{galleryID}}",
-				'name' => "{{name}}",
-				'url' => "{{url}}",
-				'coverPath' => "{{cover}}"
-			),
-			array(
-				'templateID' => 'textTemplate',
-				'type' => 'text',
-				'contentID' => "{{contentID}}",
-				'bootstrap' => BS_TEXT,
-				'textID' => "{{textID}}",
-				'text' => "{{&text}}"
-			),
-			array(
-				'templateID' => 'spacerTemplate',
-				'type' => 'spacer',
-				'contentID' => "{{contentID}}",
-				'bootstrap' => 'col-xs-12'
-			),
-			array(
-				'templateID' => 'singleImgTemplate',
-				'type' => 'singleImage',
-				'contentID' => '{{contentID}}',
-				'bootstrap' => '{{bootstrap}}',
-				'smVersion' => '{{smVersion}}',
-				'lgVersion' => '{{lgVersion}}'
-			)
-		);
-	}
-
 	public function trashContent($contentID, $dashboard = false)
 	{
 		$timestamp = date('Y-m-d H:i:s');
@@ -222,13 +260,18 @@ class Content_Model extends Model {
 		}		
 	}
 
+	/**
+	 *	deleteContent - Deletes content DB reference and associated files
+	 *
+	 */
 	public function deleteContent($contentID)
 	{
 		// Get content type
 		if($result = $this->db->select("SELECT type FROM content WHERE contentID = :contentID", array(':contentID' => $contentID)))
 		{
+			$type = $result[0]['type'];
 			// Switch on content type
-			switch($result[0]['type'])
+			switch($type)
 			{
 				case 'page' :
 					// If item is a page, delete orphaned content
@@ -239,6 +282,12 @@ class Content_Model extends Model {
 							$this->deleteContent($row['contentID'], true);
 						}
 					}
+					// Delete cover image files
+					$this->_deleteCoverImage($type, $contentID);
+					break;
+				case 'video' :
+					// Delete cover image files
+					$this->_deleteCoverImage($type, $contentID);
 					break;
 				case 'gallery' :
 					// Delete image files
@@ -262,6 +311,10 @@ class Content_Model extends Model {
 		return false;
 	}
 
+	/**
+	 *	emptyTrash - Deletes all trashed content items 
+	 *
+	 */
 	public function emptyTrash()
 	{
 		if($result = $this->db->select("SELECT contentID FROM content WHERE trashed = 1"))
@@ -274,6 +327,10 @@ class Content_Model extends Model {
 		}
 	}
 
+	/**
+	 *	restoreContent - Removes 'trashed' flag from given content item
+	 *
+	 */
 	public function restoreContent($contentID)
 	{
 		// Get content type
@@ -291,6 +348,10 @@ class Content_Model extends Model {
 		return false;
 	}
 
+	/**
+	 *	sortContent - updates position data
+	 *
+	 */
 	public function sortContent()
 	{
 		if(isset($_POST['listItem']))
@@ -302,6 +363,10 @@ class Content_Model extends Model {
 		}
 	}
 
+	/**
+	 *	saveResize - Saves bootstrap classes to DB
+	 *
+	 */
 	public function saveResize($contentID)
 	{
 		$this->db->update('content', array('bootstrap' => $_POST['classes']), "`contentID` = " . $contentID);
@@ -310,451 +375,21 @@ class Content_Model extends Model {
 
 /*
  *
- * PAGE TYPE FUNCTIONS
+ *
+ * FILE DELETION METHODS (private)
+ *
  *
  */
 
-	// Add Page
-	public function addPage($parentPageID = "0")
+	private function _deleteCoverImage($type, $contentID)
 	{
-		if(!$nameArray = $this->_processName($_POST['name'], 'page')) {
-			return false;
-		}
-		$url = $nameArray['url'];
-		$name = $nameArray['name'];
-		// Content DB entry
-		$this->db->insert('content', array(
-			'type' => 'page',
-			'url' => $url,
-			'parentPageID' => $parentPageID,
-			'author' => $_SESSION['login'],
-			'bootstrap' => BS_PAGE
-		));
-		$contentID = $this->db->lastInsertId();
-		// Page DB entry
-		$this->db->insert('page', array(
-			'name' => $name,
-			'displayName' => $name,
-			'contentid' => $contentID
-		));
-		// Success!
-		$results = array(
-			'error' => false,
-			'results' => array(
-				'name' => $name,
-				'displayName' => $name,
-				'url' => $url,
-				'path' => URL.$url,
-				'parent' => '-',
-				'type' => 'Page',
-				'date' => date('Y/m/d'),
-				'author' => $_SESSION['login'],
-				'contentID' => $contentID
-			)
-		);
-		echo json_encode($results);
-	}
-
-/*
- *
- * SHORTCUT TYPE FUNCTIONS
- *
- */
-	public function updateShortcut($contentID)
-	{
-		$name = $_POST['name'];
-		$type = $_POST['type'];
-		// Validate length
-		if($name == ""){
-			$this->_returnError('Name cannot be blank');
-			return false;
-		}
-		// Update DB
-		$this->db->update($type, array('displayName' => $name), '`contentID` ='.$contentID);
-		echo json_encode(array('error' => false));
-	}
-
-	public function updateShortcutCover($contentID, $type)
-	{
-		if(!$image = $this->_saveOriginalImage($_FILES)) { return false; }
-		$original = $image['original'];
-		// Get page url and current cover
-		$query = "SELECT c.url, t.coverPath
-			FROM content AS c
-			LEFT JOIN $type AS t ON c.contentID = t.contentID
-			WHERE c.contentID = :contentID";
-		if(!$result = $this->db->select($query, array(':contentID' => $contentID))) {
-			return false;
-		}
-		$oldCover = $result[0]['coverPath'];
-		$url = $result[0]['url'];
-		// Unlink old cover
-		if($oldCover != "") {
-			unlink($oldCover);
-		}
-		// Make cover image
-		$coverPath = COVERS.$url.date('Ymd-his')."_cover.jpg";
-		Image::makeCover($original, $coverPath);
-		// Update DB
-		$this->db->update($type, array(
-			'coverPath' => $coverPath,
-		), "`contentID` = ".$contentID);
-
-		$results = array(
-			'cover' => $coverPath,
-			'url' => ''
-		);
-
-		echo json_encode(array(
-			'error' => false,
-			'results' => $results
-		));
-	}
-
-/*
- *
- * VIDEO TYPE FUNCTIONS
- *
- */
-	// Add Video
-	public function addVideo($parentPageID = "0")
-	{
-		if(!$nameArray = $this->_processName($_POST['name'], 'page')) {
-			return false;
-		}
-		$url = $nameArray['url'];
-		$name = $nameArray['name'];
-
-		if(!$vidArray = $this->_processVideoLink($_POST['link'])) {
-			return false;
-		}
-
-		// Content DB entry
-		$this->db->insert('content', array(
-			'type' => 'video',
-			'url' => $url,
-			'parentPageID' => $parentPageID,
-			'author' => $_SESSION['login'],
-			'bootstrap' => BS_PAGE
-		));
-		$contentID = $this->db->lastInsertId();
-		// Page DB entry
-		$this->db->insert('video', array(
-			'name' => $name,
-			'displayName' => $name,
-			'contentid' => $contentID,
-			'source' => $vidArray['source'],
-			'link' => $vidArray['link'],
-			'postedLink' => $vidArray['postedLink']
-		));
-		// Success!
-		$results = array(
-			'error' => false,
-			'results' => array(
-				'name' => $name,
-				'displayName' => $name,
-				'url' => $url,
-				'path' => URL.$url,
-				'parent' => '-',
-				'type' => 'Page',
-				'date' => date('Y/m/d'),
-				'author' => $_SESSION['login'],
-				'contentID' => $contentID
-			)
-		);
-		echo json_encode($results);
-	}
-
-	// Process Video Link
-	private function _processVideoLink($postedLink)
-	{
-		// Validate length
-		if($postedLink == ""){
-			$this->_returnError('You must enter a link!');
-			return false;
-		}
-
-		if(strpos($postedLink, 'vimeo')) {
-			$source = 'vimeo';
-		} else if(strpos($postedLink, 'you')) {
-			$source = 'youtube';
-		} else {
-			$this->_returnError('Invalid link');
-			return false;
-		}
-
-		switch($source) {
-			case 'vimeo':
-				$link = end(explode("/", $postedLink));
-				if(!is_numeric($link)) {
-					$this->_returnError('Invalid link');
-					return false;
-				}	
-			break;
-			case 'youtube':
-				if(strpos($postedLink, 'watch')) {
-					$delimiter = "=";
-				} else {
-					$delimiter = "/";
-				}
-				$link = end(explode($delimiter, $postedLink));
-				if(strlen($link) != 11) {
-					$this->_returnError('Invalid link');
-					return false;
-				}
-			break;
-		}
-
-		return array(
-			'source' => $source,
-			'link' => $link,
-			'postedLink' => $postedLink
-		);
-	}
-	
-/*
- *
- * GALLERY TYPE FUNCTIONS
- *
- */
-	// Get Gallery images for display on gallery type page
-	public function getGalImages($galID)
-	{
-		$query = "SELECT c.contentID, c.position, g.galImageID, g.thumb, g.smVersion, g.lgVersion, g.caption, g.orientation, g.width, g.height
-			FROM content AS c
-			LEFT JOIN galImage AS g ON c.contentID = g.contentID
-			WHERE c.trashed = 0 and c.hidden = 0 and c.parentGalID = :galID
-			ORDER BY c.position ASC";
-		if($result = $this->db->select($query, array(':galID' => $galID)))
-		{
-			return $result;
-		}
-		else
-		{
-			return array();
-		}
-	}
-
-	// Add Gallery
-	public function addGallery($parentPageID = "0")
-	{
-		if(!$nameArray = $this->_processName($_POST['name'], 'gallery')) {
-			return false;
-		}
-		$url = $nameArray['url'];
-		$name = $nameArray['name'];
-		// Content DB entry
-		$this->db->insert('content', array(
-			'type' => 'gallery',
-			'url' => $url,
-			'parentPageID' => $parentPageID,
-			'author' => $_SESSION['login'],
-			'bootstrap' => BS_PAGE
-		));
-		$contentID = $this->db->lastInsertId();
-		// Page DB entry
-		$this->db->insert('gallery', array(
-			'name' => $name,
-			'contentid' => $contentID
-		));
-		$galID = $this->db->lastInsertId();
-		// Success! (Return only galID and contentID for subsequent image upload)
-		$results = array(
-			'error' => false,
-			'results' => array(
-				'galID' => $galID,
-				'galURL' => $url
-			)
-		);
-		echo json_encode($results);
-	}
-
-	// Add Images
-	public function addGalImages($galID, $galURL, $dashboard = false)
-	{
-		set_time_limit(600);
-		// Make sure some files were uploaded
-		if(empty($_FILES)) {
-			$this->_returnError("No Files!");
-			return false;
-		}
-		// Check to see if a cover has been created
-		$hasCover = $this->_checkCover($galID);
-		// Count images currently in this gallery for position value and filename counter
-		$imgCount = $this->db->countRows('content', "type = 'galImage' AND parentGalID = :galID", array(':galID' => $galID));
-		$position = $imgCount;
-		$paddedCount = str_pad((int) $imgCount, 3, "0", STR_PAD_LEFT);
-		// Image base name
-		$baseName = $galURL."_".$paddedCount;
-		// Reorder file array into one that makes sense
-		$fileArray = $this->_reArrayFiles($_FILES['file']);
-		// Array to track errors
-		$error = array();
-		// Array to hold successful uploads
-		$savedImages = array();
-		// Iterate over array
-		foreach($fileArray as $file)
-		{
-			// Check if there was a file error
-			if($file['error'] == 1) {
-				$error[] = array('name' => $file['name'], 'error' => 'File Error');
-				continue;
+		if($result = $this->db->select("SELECT coverPath, coverOriginal FROM $type WHERE contentID = :contentID", array(':contentID' => $contentID))){
+			$cover = $result[0]['coverPath'];
+			$original = $result[0]['coverOriginal'];
+			if(file_exists($cover)) {
+				unlink($cover);
+				unlink($original);
 			}
-			// Make sure file is an image
-			if(!preg_match("/\.(gif|jpg|png)$/i", $file['name'])){
-				$error[] = array('name' => $file['name'], 'error' => 'Invalid Type');
-				unlink($file['tmp_name']);
-				continue;
-			}
-			// Get file Info
-			$fileTempPath = $file['tmp_name'];
-			$fileName = $file['name'];
-			$fileExt = end(explode(".", $fileName));
-			$original = ORIGINALS . $fileName;
-			// Attempt to save original file
-			if(!move_uploaded_file($fileTempPath, $original)) {
-				$error[] = array('name' => $fileName, 'error' => 'Error Saving File');
-				continue;
-			}
-			// Check if name exists, if so, increment file name until a unique one is found
-			$f = false;
-			while(!$f) {
-				$testName = UPLOADS.$baseName."_sm.".$fileExt;
-				if(!file_exists($testName)){
-					$smVersion = UPLOADS.$baseName."_sm.".$fileExt;
-					$lgVersion = UPLOADS.$baseName."_lg.".$fileExt;
-					$thumb = THUMBS.$baseName."_thumb.".$fileExt;
-					$f = true;
-				} else {
-					$baseName++;
-				}
-			}
-			// Make display versions
-			Image::makeDisplayImgs($original, $smVersion, $lgVersion);
-			// Make thumbnail
-			Image::makeThumbnail($smVersion, $thumb);
-			// Get width + height
-			list($imgW, $imgH) = getimagesize($smVersion);
-			// Get orientation
-			$orientation = Image::getOrientation($original);
-			// DB Entries
-			$this->db->insert('content', array(
-				'type' => 'galImage',
-				'parentGalID' => $galID,
-				'position' => $position,
-				'author' => $_SESSION['login']
-			));
-			$contentID = $this->db->lastInsertId();
-			$this->db->insert('galImage', array(
-				'contentID' => $contentID,
-				'name' => $fileName,
-				'original' => $original,
-				'thumb' => $thumb,
-				'smVersion' => $smVersion,
-				'lgVersion' => $lgVersion,
-				'orientation' => $orientation,
-				'width' => $imgW,
-				'height' => $imgH
-			));
-			$imgID = $this->db->lastInsertId();
-
-			// Make cover if necessary
-			if(!$hasCover && $orientation == 'landscape')
-			{
-				$coverPath = COVERS.$galURL."_cover.".$fileExt;
-				Image::makeCover($smVersion, $coverPath);
-				$this->db->update('gallery', array(
-					'coverPath' => $coverPath,
-					'coverID' => $imgID
-				), "`galleryID` = ".$galID);
-				$hasCover = true;
-			}
-
-			// Add data for this image to array
-			$savedImages[] = array(
-				'contentID' => $contentID,
-				'imgID' => $imgID,
-				'position' => $position,
-				'thumb' => URL.$thumb,
-				'smVersion' => URL.$smVersion,
-				'lgVersion' => URL.$lgVersion,
-				'caption' => ''
-			);
-			// Increment filename and position
-			$baseName++;
-			$position++;
-		}
-		// Get Gallery name and contentID
-		$galInfo = $this->db->select("SELECT name, contentID FROM gallery WHERE galleryID = :galleryID", array(':galleryID' => $galID));
-		$galName = $galInfo[0]['name'];
-		$galContentID = $galInfo[0]['contentID'];
-
-		// If request came from dashboard, return data for content list
-		if($dashboard)	{
-			$returnDetails = array(
-				'name' => $galName,
-				'path' => URL.$galURL,
-				'parent' => '-',
-				'type' => 'Gallery',
-				'date' => date('Y/m/d'),
-				'author' => $_SESSION['login'],
-				'contentID' => $galContentID
-			);
-		} else {
-			$returnDetails = array(
-				'name' => $galName,
-				'path' => URL.$galURL,
-				'contentID' => $galContentID,
-				'images' => $savedImages
-			);
-		}
-		
-		// Report any errors
-		if(!empty($error)) {
-			$results = array(
-				'error' => true,
-				'error_msg' => 'There were errors with your upload, however some files may have saved correctly. See the error list below.',
-				'error_details' => $error,
-				'results' => $returnDetails
-			);
-		} else {
-			$results = array(
-				'error' => false,
-				'results' => $returnDetails
-			);
-		}
-		echo json_encode($results);
-	}
-
-	// Update Gal Image Caption
-
-	public function updateGalCaption($galImageID)
-	{
-		// Get user input
-		$caption = $_POST['caption'];
-
-		// Update DB
-		$this->db->update('galImage', array('caption' => $caption), "`galImageID` = ".$galImageID);
-		echo json_encode(array('error' => false));
-	}
-
-	// Update Gal Cover
-
-	public function updateGalCover($galID, $galURL, $currentCover, $newCoverImgID)
-	{
-		unlink($currentCover);
-		// Get original image
-		$query = "SELECT original FROM galImage WHERE galImageID = :imgID";
-		if($result = $this->db->select($query, array(':imgID' => $newCoverImgID)))
-		{
-			$srcImg = $result[0]['original'];
-			$coverPath = COVERS.$galURL."_cover.jpg";
-			Image::makeCover($srcImg, $coverPath);
-			$this->db->update('gallery', array(
-				'coverPath' => $coverPath,
-				'coverID' => $newCoverImgID
-			), "`galleryID` = ".$galID);
-			echo json_encode(array('error' => false));
 		}
 	}
 
@@ -813,84 +448,6 @@ class Content_Model extends Model {
 		}
 	}
 
-	// Returns true if a cover has been created
-	private function _checkCover($galID)
-	{
-		$query = "SELECT coverPath FROM gallery WHERE galID = :galID";
-		if($result = $this->db->select($query, array(':galID' => $galID)))
-		{
-			if($result[0]['coverPath'] == "") {
-				return false;
-			} else {
-				return true;
-			}
-		}
-	}
-
-/*
- *
- * SINGLE IMAGE TYPE FUNCTIONS
- *
- */
-
-	// Add Single Image
-	public function addSingleImage($parentPageID, $parentUrl = 'frontpage')
-	{
-		if(!$image = $this->_saveOriginalImage($_FILES)) {
-			return false;
-		}
-
-		$original = $image['original'];
-		$fileName = $image['fileName'];
-		$fileExt = $image['fileExt'];
-
-		// Resize to display versions
-		$baseName = $parentUrl . "_" . date("Ymd-his") . "_";
-		$smVersion = UPLOADS . $baseName . "sm." . $fileExt;
-		$lgVersion = UPLOADS . $baseName . "lg." . $fileExt;
-
-		Image::makeDisplayImgs($original, $smVersion, $lgVersion);
-
-		// Get orientation and set bootstrap value accordingly
-		$orientation = Image::getOrientation($original);
-		if($orientation == 'portrait') {
-			$bootstrap = 'col-xs-12 col-sm-6';
-		} else {
-			$bootstrap = 'col-xs-12';
-		}
-
-		// Content DB Entry
-		$this->db->insert('content', array(
-			'type' => 'singleImage',
-			'parentPageID' => $parentPageID,
-			'author' => $_SESSION['login'],
-			'bootstrap' => $bootstrap
-		));
-		$contentID = $this->db->lastInsertId();
-
-		// Single Image DB Entry
-		$this->db->insert('singleImage', array(
-			'contentID' => $contentID,
-			'name' => $fileName,
-			'original' => $original,
-			'smVersion' => $smVersion,
-			'lgVersion' => $lgVersion,
-			'orientation' => $orientation
-		));
-
-		// Success!
-		$results = array(
-			'error' => false,
-			'results' => array(
-				'contentID' => $contentID,
-				'bootstrap' => $bootstrap,
-				'smVersion' => $smVersion,
-				'lgVersion' => $lgVersion
-			)
-		);
-		echo json_encode($results);	
-	}
-
 	private function _deleteSingleImgFiles($contentID)
 	{
 		if($result = $this->db->select("SELECT name, original, smVersion, lgVersion FROM singleImage WHERE contentID = :contentID", array(':contentID' => $contentID)))
@@ -908,156 +465,23 @@ class Content_Model extends Model {
 			}
 		}
 	}
-/*
- *
- * NAV LINK TYPE FUNCTIONS
- *
- */
-
-	// Add NavLink
-	public function addNavLink()
-	{
-		// Validate
-		$form = new Form();
-		$form ->post('name')
-				->val('blank')
-				->post('url')
-				->val('blank');
-		if(!$form->submit()) { // Error
-			$error = $form->fetchError();
-			$this->_returnError(reset($error), key($error));
-			return false;
-		}
-		$data = $form->fetch(); // Form passed
-
-		// Content DB entry
-		$this->db->insert('content', array(
-			'type' => 'navLink',
-			'url' => $data['url'],
-			'parentPageID' => 0,
-			'author' => $_SESSION['login'],
-			'nav' => 1
-		));
-
-		// NavLink DB entry
-		$this->db->insert('navLink', array(
-			'name' => $data['name'],
-			'contentid' => $this->db->lastInsertId()
-		));
-
-		echo json_encode(array('error' => false));
-	}
-
-	// Edit NavLink
-	public function editNavLink($contentID)
-	{
-		// Validate
-		$form = new Form();
-		$form ->post('name')
-				->val('blank')
-				->post('url')
-				->val('blank');
-		if(!$form->submit()) { // Error
-			$error = $form->fetchError();
-			$this->_returnError(reset($error), key($error));
-			return false;
-		}
-		$data = $form->fetch(); // Form passed
-
-		// Update Content DB Entry
-		$this->db->update('content', array('url' => $data['url']), "`contentID` = ".$contentID);
-		$this->db->update('navLink', array('name' => $data['name']), "`contentID` = " .$contentID);
-		echo json_encode(array('error' => false));
-	}
-
-/**
- *
- *	TEXT TYPE FUNCTIONS
- *
- */
-
-	// Add Text
-
-	public function addText($parentPageID)
-	{
-		$text = $_POST['text'];
-
-		// Validate length
-		if($text == ""){ 
-			$this->_returnError('Please enter some text!');
-			return false;
-		}
-
-		// Advance positions of existing content
-		$this->_advanceContentPositions($parentPageID);
-
-		// Content DB entry
-		$this->db->insert('content', array(
-			'type' => 'text',
-			'parentPageID' => $parentPageID,
-			'author' => $_SESSION['login'],
-			'bootstrap' => BS_TEXT
-		));
-		$contentID = $this->db->lastInsertId();
-
-		// Text DB entry
-		$this->db->insert('text', array(
-			'text' => $text,
-			'contentid' => $contentID
-		));
-		$textID = $this->db->lastInsertId();
-
-		$results = array(
-			'error' => false,
-			'results' => array(
-				'contentID' => $contentID,
-				'textID' => $textID
-			)
-		);
-		echo json_encode($results);
-	}
-
-/**
- *
- *	SPACER TYPE FUNCTIONS
- *
- */
-	
-	// Add Spacer
-
-	public function addSpacer($parentPageID)
-	{
-		// Advance positions of existing content
-		$this->_advanceContentPositions($parentPageID);
-
-		// Content DB entry
-		$this->db->insert('content', array(
-			'type' => 'spacer',
-			'parentPageID' => $parentPageID,
-			'bootstrap' => 'col-xs-12'
-		));
-		$contentID = $this->db->lastInsertId();
-
-		$results = array(
-			'error' => false,
-			'results' => array('contentID' => $contentID)
-		);
-		echo json_encode($results);
-	}
 
 /*
  *
- * UTILITY FUNCTIONS
+ *
+ * UTILITY METHODS (protected, used by type classes)
+ *
  *
  */
-	private function _makeURL($str)
+
+	protected function _makeURL($str)
 	{
 		$url = preg_replace('#[^a-z.0-9_]#i', '_', $str);
 		return strtolower($url);
 	}
 
 	// For making new pages
-	private function _processName($name, $type)
+	protected function _processName($name, $type)
 	{
 		// Validate length
 		if($name == ""){
@@ -1079,7 +503,7 @@ class Content_Model extends Model {
 	}
 
 	// For updating settings
-	private function _processNameUrl($type, $name, $url, $origName, $origURL)
+	protected function _processNameUrl($type, $name, $url, $origName, $origURL)
 	{
 		// Validate length
 		if($name == ""){
@@ -1107,7 +531,7 @@ class Content_Model extends Model {
 		return $url;
 	}
 
-	private function _saveOriginalImage($files)
+	protected function _saveOriginalImage($files)
 	{
 		// Check if there is a file
 		if(empty($files)) {
@@ -1150,7 +574,7 @@ class Content_Model extends Model {
 		);
 	}
 
-	private function _reArrayFiles(&$file_post)
+	protected function _reArrayFiles(&$file_post)
 	{
 		$file_array = array();
 		$file_count = count($file_post['name']);
@@ -1163,14 +587,14 @@ class Content_Model extends Model {
 		return $file_array;
 	}
 
-	private function _checkTaken($url) {
+	protected function _checkTaken($url) {
 		if($result = $this->db->select("SELECT contentID FROM content WHERE url = :url", array(':url' => $url))){
 			return false;
 		}
 		return true;
 	}
 
-	private function _advanceContentPositions($parentPageID = 0)
+	protected function _advanceContentPositions($parentPageID = 0)
 	{
 		if ($result = $this->db->select("SELECT position, contentID FROM content WHERE parentPageID = '".$parentPageID."'"))
 		{
@@ -1182,7 +606,7 @@ class Content_Model extends Model {
 		}
 	}
 
-	private function _orphanContent($parentPageID, $trashedID, $affectedRows)
+	protected function _orphanContent($parentPageID, $trashedID, $affectedRows)
 	{
 		if($result = $this->db->select("SELECT contentID FROM content WHERE parentPageID = ".$parentPageID))
 		{

@@ -1,5 +1,5 @@
 <?php
-// Paths (ensure to leave on trailing /)
+// Paths (leave on trailing /)
 define('URL', 'http://kate.sampelgrift.com/ts/imageman/');
 define('DEVPATH', '/ts/imageman/'); // Remove for production!
 
@@ -9,7 +9,6 @@ define('ORIGINALS', UPLOADS.'originals/');
 define('THUMBS', UPLOADS.'thumbs/');
 define('COVERS', UPLOADS. 'covers/');
 define('DELETED', ORIGINALS.'deleted/');
-
 
 // Database Login
 define('dbTYPE', 'mysql');

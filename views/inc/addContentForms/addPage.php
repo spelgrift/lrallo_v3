@@ -13,7 +13,7 @@
 						<input type='text' class='form-control' id='newPageName' placeholder='Page Name'>
 					</div>
 				</form>
-				<div id='pageMsg'></div>
+				<p class='text-danger' id='pageMsg'></p>
 			</div>
 
 			<div class="modal-footer">

@@ -115,13 +115,25 @@ class Global_Model extends Model {
 						'items' => array(
 							array(
 								'url' => '#',
-								'name' => 'Subpage',
+								'name' => 'Page',
 								'class' => 'addTab',
 								'data-id' => 'page'
 							),
 							array(
 								'url' => '#',
-								'name' => 'Text',
+								'name' => 'Gallery Page',
+								'class' => 'addTab',
+								'data-id' => 'gallery'
+							),
+							array(
+								'url' => '#',
+								'name' => 'Video Page',
+								'class' => 'addTab',
+								'data-id' => 'video'
+							),
+							array(
+								'url' => '#',
+								'name' => 'Text/HTML',
 								'class' => 'addTab',
 								'data-id' => 'text'
 							),
@@ -133,21 +145,15 @@ class Global_Model extends Model {
 							),
 							array(
 								'url' => '#',
-								'name' => 'Image Gallery',
-								'class' => 'addTab',
-								'data-id' => 'gallery'
-							),
-							array(
-								'url' => '#',
 								'name' => 'Slideshow',
 								'class' => 'addTab',
 								'data-id' => 'slideshow'
 							),
 							array(
 								'url' => '#',
-								'name' => 'Video',
+								'name' => 'Embedded Video',
 								'class' => 'addTab',
-								'data-id' => 'video'
+								'data-id' => 'embedVideo'
 							),
 							array(
 								'url' => '#',

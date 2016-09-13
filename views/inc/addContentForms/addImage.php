@@ -12,7 +12,7 @@
 			</div>
 
 			<div class="modal-footer">
-				<div id='imageMsg' class='pull-left'></div>
+				<p id='imageMsg' class='text-danger pull-left'></p>
 				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 				<button type="button" id='submitNewImage' class="btn btn-primary" disabled>Upload Image</button>
 			</div>
