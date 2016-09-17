@@ -4578,10 +4578,10 @@ footer .footer-above {
 .contentItem .resizeContentControls p {
   font-size: .8em;
 }
-#galleryLoading {
+.imageProcessing {
   display: none;
 }
-#galleryLoading img.loading {
+.imageProcessing img.loading {
   margin-right: 8px;
 }
 .dropzone {

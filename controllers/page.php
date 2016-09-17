@@ -134,6 +134,12 @@ class Page extends Controller
 		// Render
 		$this->view->render('gallery/index');
 	}
+
+	public function loadSlides($galleryID)
+	{
+		$this->view->images = $this->contentModel->getGalImages($galleryID);
+		$this->view->render('inc/content/slideshow/slides', false);
+	}
 /**
  *
  *	edit - 	Edit a page/gallery/video!
@@ -157,6 +163,9 @@ class Page extends Controller
 				$this->view->pageContent = $this->contentModel->getPageContent($this->_pageAttrArray['pageID']);
 				// Templates
 				$this->view->templates = $this->contentModel->buildTemplates();
+				// Gallery and Video list for embedding
+				$this->view->galleryArray = $this->contentModel->listContent('gallery');
+				$this->view->videoArray = $this->contentModel->listContent('video');
 				// Javascript
 				$this->view->js = array('editPage.min.js');
 				// Render view
@@ -243,11 +252,27 @@ class Page extends Controller
 		$this->galleryContentModel->addGallery($this->_pageAttrArray['pageID']);
 	}
 
+	public function addSSgallery()
+	{
+		Auth::setAccess();
+		$this->_loadTypeContentModel('gallery');
+		$this->galleryContentModel->addGallery($this->_pageAttrArray['pageID'], true);
+	}
+
 	public function uploadGalImages()
 	{
 		Auth::setAccess();
 		$this->_loadTypeContentModel('gallery');
 		$this->galleryContentModel->addGalImages($_POST['galID'], $_POST['galURL']);
+	}
+
+	public function addSlideshow($galleryID)
+	{
+		Auth::setAccess();
+		$this->_loadTypeContentModel('gallery');
+		$result = $this->galleryContentModel->addSlideshow($this->_pageAttrArray['pageID'], $galleryID);
+		echo json_encode($result);
+
 	}
 
 	public function addText()

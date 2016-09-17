@@ -9,5 +9,6 @@ require('./libs/events.js');
 
 require('./imageman/login.js'); // Handle login
 require('./imageman/gallery.js'); // Public Gallery view
+require('./imageman/slideshows.js');
 
 

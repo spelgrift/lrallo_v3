@@ -36,3 +36,4 @@ define('SAVE_ORIGINALS', false);
 define('BS_TEXT', 'col-xs-12');
 define('BS_SINGLE_IMAGE', 'col-xs-12');
 define('BS_PAGE', 'col-xs-6 col-sm-4');
+define('BS_SLIDESHOW', 'col-xs-12 col-sm-8');

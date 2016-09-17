@@ -68,6 +68,7 @@ require 'views/inc/addContentForms/addNavLink.php';
 				<option value='all'>All Content</option>
 				<option value='page' selected>Pages</option>
 				<option value='gallery' >Galleries</option>
+				<option value='slideshow' >Slideshows</option>
 				<option value='video'>Videos</option>
 				<option value='text'>Text</option>
 				<option value='singleImage'>Images</option>
@@ -104,6 +105,7 @@ require 'views/inc/addContentForms/addNavLink.php';
 				<option value='page'>Pages</option>
 				<option value='gallery'>Galleries</option>
 				<option value='galImage'>Gallery Images</option>
+				<option value='slideshow' >Slideshows</option>
 				<option vlaue='video'>Videos</option>
 				<option value='text'>Text</option>
 				<option value='singleImage'>Images</option>

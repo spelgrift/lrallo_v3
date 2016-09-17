@@ -34,6 +34,10 @@ class Content_Model extends Model {
 							$result[$key][$typeKey] = $value;
 						}
 					}
+
+					if($row['type'] == 'slideshow') {
+						$result[$key]['images'] = $this->getGalImages($result[$key]['galleryID']);
+					}
 				}
 				return $result;
 			}
@@ -69,6 +73,139 @@ class Content_Model extends Model {
 		{
 			return array();
 		}
+	}
+
+/**
+ *	listContent - 	Builds array of all non-trashed content of given type
+ *						with subContent as sub-arrays
+ *	@return array 
+ *
+ */
+	public function listContent($type = 'all')
+	{
+		return $this->_getContentArrayRecursive($type, "0");
+	}
+
+	private function _getContentArrayRecursive($type, $parentPageID, $path = "")
+	{
+		// Build WHERE clause based on type
+		if($type === 'all')
+		{
+			$type = array(
+				'page',
+				'singleImage',
+				'gallery',
+				'slideshow',
+				'video',
+				'text',
+				'embedded-video',
+				'shortcut'
+			);
+		} else if(is_string($type)) {
+			$type = array($type);
+		}
+		$where = "";
+		foreach($type as $str) {
+			$where .= "type = '$str' OR ";
+		}
+		$where = rtrim($where, 'OR ') . " ";
+
+		// If pages are included in the requested types, group content by parent page
+		if(in_array('page', $type))
+		{
+			$parentCondition = "AND parentPageID = $parentPageID";
+		} else {
+			$parentCondition = "";
+		}
+		// Create empty array
+		$returnArray = array();
+		// Get content results from DB
+		if($result = $this->db->select("SELECT contentID, url, type, parentPageID, author, `date` FROM content WHERE trashed = '0' $parentCondition AND ( $where ) ORDER BY contentID DESC"))
+		{
+			foreach($result as $row)
+			{
+				// Add attributes common to all types
+				$typeArray = array(
+					'contentID' => $row['contentID'],
+					'type' => $row['type'],
+					'parentPageID' => $row['parentPageID'],
+					'date' => $row['date'],
+					'author' => $row['author']
+				);
+				// Switch by type
+				switch($row['type'])
+				{
+					case "page" :
+						// Append trailing / to path if item has a parent page
+						if(strlen($path) > 0) {	$path = $path . "/";	}
+
+						$typeArray['url'] = $row['url'];
+						$typeArray['path'] = $path . $row['url'];
+
+						$result = $this->db->select("SELECT pageID, name FROM page WHERE contentID = '".$row['contentID']."'");
+
+						$typeArray['pageID'] = $result[0]['pageID'];
+						$typeArray['name'] = $result[0]['name'];
+
+						$typeArray['subContent'] = $this->_getContentArrayRecursive($type, $typeArray['pageID'], $typeArray['path']);
+					break;
+					case "video" :
+						// Append trailing / to path if item has a parent page
+						if(strlen($path) > 0) {	$path = $path . "/";	}
+
+						$typeArray['url'] = $row['url'];
+						$typeArray['path'] = $path . $row['url'];
+
+						$result = $this->db->select("SELECT videoID, name FROM video WHERE contentID = '".$row['contentID']."'");
+
+						$typeArray['videoID'] = $result[0]['videoID'];
+						$typeArray['name'] = $result[0]['name'];
+					break;
+					case "gallery" :
+						// Append trailing / to path if item has a parent page
+						if(strlen($path) > 0) {	$path = $path . "/";	}
+
+						$typeArray['url'] = $row['url'];
+						$typeArray['path'] = $path . $row['url'];
+
+						$result = $this->db->select("SELECT galleryID, name FROM gallery WHERE contentID = '".$row['contentID']."'");
+
+						$typeArray['galleryID'] = $result[0]['galleryID'];
+						$typeArray['name'] = $result[0]['name'];
+					break;
+					case "slideshow" :
+						$typeArray['path'] = $path;
+
+						$query = "SELECT g.name
+						FROM slideshow AS s
+						LEFT JOIN gallery as g ON s.galleryID = g.galleryID
+						WHERE s.contentID = '".$row['contentID']."'";
+						$result = $this->db->select($query);
+
+						$typeArray['name'] = $result[0]['name'];
+					break;
+					case "text" :
+						$typeArray['path'] = $path;
+
+						$result = $this->db->select("SELECT `textID`, `text` FROM `text` WHERE contentID = '".$row['contentID']."'");
+
+						$typeArray['textID'] = $result[0]['textID'];
+						$typeArray['text'] = $result[0]['text'];
+					break;
+					case "singleImage" :
+						$typeArray['path'] = $path;
+
+						$result = $this->db->select("SELECT singleImageID, name FROM singleImage WHERE contentID = '".$row['contentID']."'");
+
+						$typeArray['singleImageID'] = $result[0]['singleImageID'];
+						$typeArray['name'] = $result[0]['name'];
+					break;
+				}
+
+				$returnArray[] = $typeArray;
+			}
+		}
+		return $returnArray;
 	}
 
 	/**
@@ -108,6 +245,18 @@ class Content_Model extends Model {
 				'name' => "{{name}}",
 				'url' => "{{url}}",
 				'coverPath' => "{{coverPath}}"
+			),
+			array(
+				'templateID' => 'slideshowTemplate',
+				'type' => 'slideshow',
+				'contentID' => '{{contentID}}',
+				'bootstrap' => BS_SLIDESHOW,
+				'slideshowID' => "{{slideshowID}}",
+				'galleryID' => "{{galleryID}}",
+				'autoplay' => "0",
+				'animationType' => "slide",
+				'animationSpeed' => "500",
+				'slideDuration' => "3000"
 			),
 			array(
 				'templateID' => 'textTemplate',

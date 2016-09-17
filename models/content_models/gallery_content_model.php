@@ -5,13 +5,17 @@ class Gallery_Content_Model extends Content_Model {
 	function __construct(){parent::__construct();}
 
 	// Add Gallery
-	public function addGallery($parentPageID = "0")
+	public function addGallery($parentPageID = "0", $slideshow = false)
 	{
 		if(!$nameArray = $this->_processName($_POST['name'], 'gallery')) {
 			return false;
 		}
 		$url = $nameArray['url'];
 		$name = $nameArray['name'];
+		if($slideshow) {
+			$ssParent = $parentPageID;
+			$parentPageID = "0";
+		}
 		// Content DB entry
 		$this->db->insert('content', array(
 			'type' => 'gallery',
@@ -24,18 +28,59 @@ class Gallery_Content_Model extends Content_Model {
 		// Page DB entry
 		$this->db->insert('gallery', array(
 			'name' => $name,
-			'contentid' => $contentID
+			'contentID' => $contentID
 		));
 		$galID = $this->db->lastInsertId();
-		// Success! (Return only galID and contentID for subsequent image upload)
-		$results = array(
+		// If this is a slideshow, make the slideshow!
+		if($slideshow) {
+			$ss = $this->addSlideshow($ssParent, $galID);
+			$results = array(
+				'error' => false,
+				'results' => array(
+					'galID' => $galID,
+					'galURL' => $url,
+					'ssID' => $ss['results']['slideshowID'],
+					'contentID' => $ss['results']['contentID']
+				)
+			);
+		} else { // Otherwise just return gallery info for image upload
+			$results = array(
+				'error' => false,
+				'results' => array(
+					'galID' => $galID,
+					'galURL' => $url
+				)
+			);
+		}
+		echo json_encode($results);
+	}
+
+	// Add Slideshow
+	public function addSlideshow($parentPageID, $galID)
+	{
+		// Content DB entry
+		$this->db->insert('content', array(
+			'type' => 'slideshow',
+			'parentPageID' => $parentPageID,
+			'author' => $_SESSION['login'],
+			'bootstrap' => BS_SLIDESHOW
+		));
+		$contentID = $this->db->lastInsertId();
+		// SS DB entry
+		$this->db->insert('slideshow', array(
+			'contentID' => $contentID,
+			'galleryID' => $galID
+		));
+		$ssID = $this->db->lastInsertId();
+		$result = array(
 			'error' => false,
 			'results' => array(
-				'galID' => $galID,
-				'galURL' => $url
+				'slideshowID' => $ssID,
+				'contentID' => $contentID,
+				'galleryID' => $galID
 			)
 		);
-		echo json_encode($results);
+		return $result;
 	}
 
 	// Add Images

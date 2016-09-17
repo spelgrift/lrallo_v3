@@ -78,124 +78,7 @@ class Dashboard_Model extends Model {
 		echo json_encode(array('error' => false));
 	}
 	
-/**
- *	listContent - Builds array of all non-trashed content with subContent as sub-arrays
- *	@return array 
- *
- */
-	public function listContent($type = 'all')
-	{
-		return $this->_getContentArrayRecursive($type, "0");
-	}
 
-	private function _getContentArrayRecursive($type, $parentPageID, $path = "")
-	{
-		// Build WHERE clause based on type
-		if($type === 'all')
-		{
-			$type = array(
-				'page',
-				'singleImage',
-				'gallery',
-				'slideshow',
-				'video',
-				'text',
-				'embedded-video',
-				'shortcut'
-			);
-		}
-		$where = "";
-		foreach($type as $str) {
-			$where .= "type = '$str' OR ";
-		}
-		$where = rtrim($where, 'OR ') . " ";
-
-		// If pages are included in the requested types, group content by parent page
-		if(in_array('page', $type))
-		{
-			$parentCondition = "AND parentPageID = $parentPageID";
-		} else {
-			$parentCondition = "";
-		}
-		// Create empty array
-		$returnArray = array();
-		// Get content results from DB
-		if($result = $this->db->select("SELECT contentID, url, type, parentPageID, author, `date` FROM content WHERE trashed = '0' $parentCondition AND ( $where ) ORDER BY contentID DESC"))
-		{
-			foreach($result as $row)
-			{
-				// Add attributes common to all types
-				$typeArray = array(
-					'contentID' => $row['contentID'],
-					'type' => $row['type'],
-					'parentPageID' => $row['parentPageID'],
-					'date' => $row['date'],
-					'author' => $row['author']
-				);
-				// Switch by type
-				switch($row['type'])
-				{
-					case "page" :
-						// Append trailing / to path if item has a parent page
-						if(strlen($path) > 0) {	$path = $path . "/";	}
-
-						$typeArray['url'] = $row['url'];
-						$typeArray['path'] = $path . $row['url'];
-
-						$result = $this->db->select("SELECT pageID, name FROM page WHERE contentID = '".$row['contentID']."'");
-
-						$typeArray['pageID'] = $result[0]['pageID'];
-						$typeArray['name'] = $result[0]['name'];
-
-						$typeArray['subContent'] = $this->_getContentArrayRecursive($type, $typeArray['pageID'], $typeArray['path']);
-					break;
-					case "video" :
-						// Append trailing / to path if item has a parent page
-						if(strlen($path) > 0) {	$path = $path . "/";	}
-
-						$typeArray['url'] = $row['url'];
-						$typeArray['path'] = $path . $row['url'];
-
-						$result = $this->db->select("SELECT videoID, name FROM video WHERE contentID = '".$row['contentID']."'");
-
-						$typeArray['videoID'] = $result[0]['videoID'];
-						$typeArray['name'] = $result[0]['name'];
-					break;
-					case "gallery" :
-						// Append trailing / to path if item has a parent page
-						if(strlen($path) > 0) {	$path = $path . "/";	}
-
-						$typeArray['url'] = $row['url'];
-						$typeArray['path'] = $path . $row['url'];
-
-						$result = $this->db->select("SELECT galleryID, name FROM gallery WHERE contentID = '".$row['contentID']."'");
-
-						$typeArray['galleryID'] = $result[0]['galleryID'];
-						$typeArray['name'] = $result[0]['name'];
-					break;
-					case "text" :
-						$typeArray['path'] = $path;
-
-						$result = $this->db->select("SELECT `textID`, `text` FROM `text` WHERE contentID = '".$row['contentID']."'");
-
-						$typeArray['textID'] = $result[0]['textID'];
-						$typeArray['text'] = $result[0]['text'];
-					break;
-					case "singleImage" :
-						$typeArray['path'] = $path;
-
-						$result = $this->db->select("SELECT singleImageID, name FROM singleImage WHERE contentID = '".$row['contentID']."'");
-
-						$typeArray['singleImageID'] = $result[0]['singleImageID'];
-						$typeArray['name'] = $result[0]['name'];
-					break;
-				}
-
-				$returnArray[] = $typeArray;
-			}
-		}
-		return $returnArray;
-	}
 
 /**
  *	renderContentRows - Renders html to go into <tbody> on page load and content list reload
@@ -253,7 +136,13 @@ class Dashboard_Model extends Model {
 				$rowClass = 'contentListRow gallery';
 				$parentLink = "<a href='".URL.$path."'>$name</a>";
 			break;
-
+			case "slideshow" :
+				$name = $row['name'];
+				$nameTd = $nameTd = "<td><span class='listPad'>$pad</span>$name</td>";
+				$type = 'Slideshow';
+				$rowClass = 'contentListRow slideshow';
+				$parentLink = "<a href='".URL.$path."'>$name</a>";
+			break;
 			case "text" :
 				$trimmedText = substr(htmlentities($row['text']), 0, 25).'...';
 				$nameTd = "<td><span class='listPad'>$pad</span>$trimmedText</td>";
@@ -352,6 +241,14 @@ class Dashboard_Model extends Model {
 						$result = $this->db->select("SELECT name FROM galImage WHERE contentID = '".$row['contentID']."'");
 						$typeArray['name'] = $result[0]['name'];
 						break;
+					case "slideshow" :
+						$query = "SELECT g.name
+						FROM slideshow AS s
+						LEFT JOIN gallery as g ON s.galleryID = g.galleryID
+						WHERE s.contentID = '".$row['contentID']."'";
+						$result = $this->db->select($query);
+						$typeArray['name'] = $result[0]['name'];
+						break;
 					case "text" :
 						$result = $this->db->select("SELECT `textID`, `text` FROM `text` WHERE contentID = '".$row['contentID']."'");
 
@@ -417,6 +314,11 @@ class Dashboard_Model extends Model {
 					$nameTd = "<td>".$row['name']."</td>";
 					$type = 'Gallery Image';
 					$rowClass = 'contentListRow galImage visible';
+				break;
+				case 'slideshow' :
+					$nameTd = "<td>".$row['name']."</td>";
+					$type = 'Slideshow';
+					$rowClass = 'contentListRow slideshow visible';
 				break;
 				case "text" :
 					$trimmedText = substr(htmlentities($row['text']), 0, 25).'...';

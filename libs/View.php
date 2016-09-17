@@ -11,10 +11,15 @@ class View {
 	public $adminNav = array();
 	protected $_device = null;
 
-	public function render($name){
-		require 'views/inc/globalHeader.php';
+	public function render($name, $headers = true){
+		if($headers) {
+			require 'views/inc/globalHeader.php';
+		}
 		require 'views/' . $name . '.php';
-		require 'views/inc/globalFooter.php';
+		if($headers) {
+			require 'views/inc/globalFooter.php';
+		}
+		
 	}
 
 	public function renderContent($contentObject = array(), $adminControls = false)
@@ -48,6 +53,18 @@ class View {
 				require 'views/inc/content/shortcut/shortcut.php';
 				break;
 
+			case 'slideshow':
+				$type = 'slideshow';
+				$ID = $contentObject['slideshowID'];
+				$autoplay = $contentObject['autoplay'];
+				$animationType = $contentObject['animationType'];
+				$animationSpeed = $contentObject['animationSpeed'];
+				$slideDuration = $contentObject['slideDuration'];
+				$galleryID = $contentObject['galleryID'];
+
+				require 'views/inc/content/slideshow/slideshow.php';
+				break;
+			
 			case 'video':
 				$type = 'video';
 				$ID = $contentObject['videoID'];
