@@ -14,6 +14,7 @@ require('./imageman/editPage.settings.js');
 require('./imageman/editPage.addContent.js');
 require('./imageman/editPage.addPage.js');
 require('./imageman/editPage.addVideo.js');
+require('./imageman/editPage.addEmbedVideo.js');
 require('./imageman/editPage.addGallery.js');
 require('./imageman/editPage.addSlideshow.js');
 require('./imageman/editPage.addText.js');

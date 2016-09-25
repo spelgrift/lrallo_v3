@@ -28,74 +28,38 @@ class View {
 		$id = "listItem_".$contentObject['contentID'];
 		$contentID = $contentObject['contentID'];
 		$type = $contentObject['type'];
-
+		$ID = isset($contentObject[$type.'ID']) ? $contentObject[$type.'ID'] : '';
 		switch($type)
 		{
 			case 'page':
-				$type = 'page';
-				$ID = $contentObject['pageID'];
-				$name = $contentObject['displayName'];
-				$url = $contentObject['url'];
-				$path = URL.$this->pageAttr['path']."/".$url;
-				$cover = $contentObject['coverPath'];
-
-				require 'views/inc/content/shortcut/shortcut.php';
-				break;
-
 			case 'gallery':
-				$type = 'gallery';
-				$ID = $contentObject['galleryID'];
-				$name = $contentObject['name'];
+			case 'video':
+				$name = ($type == 'gallery') ? $contentObject['name'] : $contentObject['displayName'];
 				$url = $contentObject['url'];
 				$path = URL.$this->pageAttr['path']."/".$url;
 				$cover = $contentObject['coverPath'];
-
-				require 'views/inc/content/shortcut/shortcut.php';
+				$type = 'shortcut';
 				break;
-
 			case 'slideshow':
-				$type = 'slideshow';
-				$ID = $contentObject['slideshowID'];
 				$autoplay = $contentObject['autoplay'];
 				$animationType = $contentObject['animationType'];
 				$animationSpeed = $contentObject['animationSpeed'];
 				$slideDuration = $contentObject['slideDuration'];
 				$galleryID = $contentObject['galleryID'];
-
-				require 'views/inc/content/slideshow/slideshow.php';
 				break;
-			
-			case 'video':
-				$type = 'video';
-				$ID = $contentObject['videoID'];
-				$name = $contentObject['displayName'];
-				$url = $contentObject['url'];
-				$path = URL.$this->pageAttr['path']."/".$url;
-				$cover = $contentObject['coverPath'];
-
-				require 'views/inc/content/shortcut/shortcut.php';
-				break;
-
+			case 'embeddedVideo' :
+				$source = $contentObject['source'];
+				$link = $contentObject['link'];
+				break; 
 			case 'text':
 				$textID = $contentObject['textID'];
 				$text = $contentObject['text'];
-
-				require 'views/inc/content/text/text.php';
-
 				break;
-
 			case 'singleImage':
 				$image = $contentObject[$this->_device.'Version'];
-
-				require 'views/inc/content/singleImage/singleImage.php';
-				
-				break;
-
-			case 'spacer':
-				require 'views/inc/content/spacer/spacer.php';
-
 				break;
 		}
+		require "views/inc/content/$type/$type".".php";
 	}
 
 	public function detectDevice(){

@@ -15,6 +15,7 @@ $(function() {
 	$addGalModal 		= $('#addGalModal'),
 	$addSSModal 		= $('#addSSModal'),
 	$addVideoModal 	= $('#addVideoModal'),
+	$addEVModal 		= $('#addEmbedVideoModal'),
 	$addTextModal 		= $('#addTextModal'),
 	$addImageModal 	= $('#addImageModal'),
 	$addSpacerModal 	= $('#addSpacerModal'),
@@ -55,6 +56,9 @@ $(function() {
 			break;
 			case 'video' :
 				$addVideoModal.modal('show');
+			break;
+			case 'embedVideo' :
+				$addEVModal.modal('show');
 			break;
 			case 'spacer' :
 				$addSpacerModal.modal('show');

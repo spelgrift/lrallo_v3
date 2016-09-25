@@ -38,6 +38,12 @@ class Content_Model extends Model {
 					if($row['type'] == 'slideshow') {
 						$result[$key]['images'] = $this->getGalImages($result[$key]['galleryID']);
 					}
+					if($row['type'] == 'embeddedVideo') {
+						$query = "SELECT source, link FROM video WHERE videoID = :videoID";
+						$vidArray = $this->db->select($query, array(':videoID' => $result[$key]['videoID']));
+						$result[$key]['source'] = $vidArray[0]['source'];
+						$result[$key]['link'] = $vidArray[0]['link'];
+					}
 				}
 				return $result;
 			}
@@ -98,7 +104,7 @@ class Content_Model extends Model {
 				'slideshow',
 				'video',
 				'text',
-				'embedded-video',
+				'embeddedVideo',
 				'shortcut'
 			);
 		} else if(is_string($type)) {
@@ -133,55 +139,46 @@ class Content_Model extends Model {
 					'author' => $row['author']
 				);
 				// Switch by type
-				switch($row['type'])
+				$thisType = $row['type'];
+				switch($thisType)
 				{
-					case "page" :
-						// Append trailing / to path if item has a parent page
-						if(strlen($path) > 0) {	$path = $path . "/";	}
-
-						$typeArray['url'] = $row['url'];
-						$typeArray['path'] = $path . $row['url'];
-
-						$result = $this->db->select("SELECT pageID, name FROM page WHERE contentID = '".$row['contentID']."'");
-
-						$typeArray['pageID'] = $result[0]['pageID'];
-						$typeArray['name'] = $result[0]['name'];
-
-						$typeArray['subContent'] = $this->_getContentArrayRecursive($type, $typeArray['pageID'], $typeArray['path']);
-					break;
+					case "page":
+					case "gallery":
 					case "video" :
 						// Append trailing / to path if item has a parent page
-						if(strlen($path) > 0) {	$path = $path . "/";	}
-
+						if(strlen($path) > 0) {	
+							$path = $path . "/";	
+						}
+						// Create/save path + url
 						$typeArray['url'] = $row['url'];
 						$typeArray['path'] = $path . $row['url'];
 
-						$result = $this->db->select("SELECT videoID, name FROM video WHERE contentID = '".$row['contentID']."'");
+						$query = "SELECT ".$thisType."ID, name FROM ".$thisType." WHERE contentID = :contentID";
+						$result = $this->db->select($query, array(':contentID' => $row['contentID']));
 
-						$typeArray['videoID'] = $result[0]['videoID'];
+						$typeArray[$thisType.'ID'] = $result[0][$thisType.'ID'];
 						$typeArray['name'] = $result[0]['name'];
+
+						// If page, get subcontent
+						if($thisType == "page") {
+							$typeArray['subContent'] = $this->_getContentArrayRecursive($type, $typeArray['pageID'], $typeArray['path']);
+						}
 					break;
-					case "gallery" :
-						// Append trailing / to path if item has a parent page
-						if(strlen($path) > 0) {	$path = $path . "/";	}
-
-						$typeArray['url'] = $row['url'];
-						$typeArray['path'] = $path . $row['url'];
-
-						$result = $this->db->select("SELECT galleryID, name FROM gallery WHERE contentID = '".$row['contentID']."'");
-
-						$typeArray['galleryID'] = $result[0]['galleryID'];
-						$typeArray['name'] = $result[0]['name'];
-					break;
+					case "embeddedVideo" :
 					case "slideshow" :
 						$typeArray['path'] = $path;
 
-						$query = "SELECT g.name
-						FROM slideshow AS s
-						LEFT JOIN gallery as g ON s.galleryID = g.galleryID
-						WHERE s.contentID = '".$row['contentID']."'";
-						$result = $this->db->select($query);
+						$evQuery = "SELECT v.name
+							FROM embeddedVideo AS e
+							LEFT JOIN video AS v ON e.videoID = v.videoID
+							WHERE e.contentID = :contentID";
+						$svQuery = "SELECT g.name
+							FROM slideshow AS s
+							LEFT JOIN gallery as g ON s.galleryID = g.galleryID
+							WHERE s.contentID = :contentID";
+						$query = ($thisType == "slideshow") ? $svQuery : $evQuery;
 
+						$result = $this->db->select($query, array(':contentID' => $row['contentID']));
 						$typeArray['name'] = $result[0]['name'];
 					break;
 					case "text" :
@@ -235,6 +232,15 @@ class Content_Model extends Model {
 				'displayName' => "{{name}}",
 				'url' => "{{url}}",
 				'coverPath' => ""
+			),
+			array(
+				'templateID' => 'evTemplate',
+				'type' => 'embeddedVideo',
+				'contentID' => "{{contentID}}",
+				'bootstrap' => BS_VIDEO,
+				'embeddedVideoID' => "{{evID}}",
+				'source' => '',
+				'link' => ''
 			),
 			array(
 				'templateID' => 'galleryTemplate',

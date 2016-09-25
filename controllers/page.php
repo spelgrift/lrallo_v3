@@ -245,6 +245,19 @@ class Page extends Controller
 		$this->videoContentModel->addVideo($this->_pageAttrArray['pageID']);
 	}
 
+	public function addEmbedVideo($videoID = false)
+	{
+		Auth::setAccess();
+		$this->_loadTypeContentModel('video');
+		if($videoID) {
+			if($result = $this->videoContentModel->addEmbedVideo($this->_pageAttrArray['pageID'], $videoID)) {
+				echo json_encode($result);
+			}
+		} else {
+			$this->videoContentModel->addVideo($this->_pageAttrArray['pageID'], true);
+		}
+	}
+
 	public function addGallery()
 	{
 		Auth::setAccess();
@@ -270,9 +283,9 @@ class Page extends Controller
 	{
 		Auth::setAccess();
 		$this->_loadTypeContentModel('gallery');
-		$result = $this->galleryContentModel->addSlideshow($this->_pageAttrArray['pageID'], $galleryID);
-		echo json_encode($result);
-
+		if($result = $this->galleryContentModel->addSlideshow($this->_pageAttrArray['pageID'], $galleryID)){
+			echo json_encode($result);
+		}
 	}
 
 	public function addText()

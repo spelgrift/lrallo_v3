@@ -70,6 +70,7 @@ require 'views/inc/addContentForms/addNavLink.php';
 				<option value='gallery' >Galleries</option>
 				<option value='slideshow' >Slideshows</option>
 				<option value='video'>Videos</option>
+				<option value='embeddedVideo'>Embedded Videos</option>
 				<option value='text'>Text</option>
 				<option value='singleImage'>Images</option>
 			</select>

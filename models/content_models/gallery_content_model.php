@@ -58,6 +58,11 @@ class Gallery_Content_Model extends Content_Model {
 	// Add Slideshow
 	public function addSlideshow($parentPageID, $galID)
 	{
+		// Make sure gal exists
+		if(!$this->db->select("SELECT name FROM gallery WHERE galleryID = :galID", array(':galID' => $galID))) {
+			$this->_returnError("Gallery doesn't exist");
+			return false;
+		}
 		// Content DB entry
 		$this->db->insert('content', array(
 			'type' => 'slideshow',

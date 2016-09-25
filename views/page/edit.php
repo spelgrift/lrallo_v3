@@ -7,6 +7,7 @@ require 'views/inc/addContentForms/addPage.php';
 require 'views/inc/addContentForms/addGallery.php';
 require 'views/inc/addContentForms/addSlideshow.php';
 require 'views/inc/addContentForms/addVideo.php';
+require 'views/inc/addContentForms/addEmbedVideo.php';
 require 'views/inc/addContentForms/addText.php';
 require 'views/inc/addContentForms/addImage.php';
 require 'views/inc/addContentForms/addSpacer.php';

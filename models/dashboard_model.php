@@ -112,67 +112,38 @@ class Dashboard_Model extends Model {
 		$path = $row['path'];
 		$date = date('Y/m/d', strtotime($row['date']));
 		$author = $row['author'];
-		// Switch based on type
-		switch($row['type'])
-		{
-			case "page" :
-				$name = $row['name'];
-				$nameTd = "<td class='listName'><span class='listPad'>$pad</span><a href='".URL.$path."'>$name</a></td>";
-				$type = 'Page';
-				$rowClass = 'contentListRow page visible';
-				$parentLink = "<a href='".URL.$path."'>$name</a>";
-			break;
-			case "video" :
-				$name = $row['name'];
-				$nameTd = "<td class='listName'><span class='listPad'>$pad</span><a href='".URL.$path."'>$name</a></td>";
-				$type = 'Video';
-				$rowClass = 'contentListRow video';
-				$parentLink = "<a href='".URL.$path."'>$name</a>";
-			break;
-			case "gallery" :
-				$name = $row['name'];
-				$nameTd = "<td class='listName'><span class='listPad'>$pad</span><a href='".URL.$path."'>$name</a></td>";
-				$type = 'Gallery';
-				$rowClass = 'contentListRow gallery';
-				$parentLink = "<a href='".URL.$path."'>$name</a>";
-			break;
-			case "slideshow" :
-				$name = $row['name'];
-				$nameTd = $nameTd = "<td><span class='listPad'>$pad</span>$name</td>";
-				$type = 'Slideshow';
-				$rowClass = 'contentListRow slideshow';
-				$parentLink = "<a href='".URL.$path."'>$name</a>";
-			break;
-			case "text" :
-				$trimmedText = substr(htmlentities($row['text']), 0, 25).'...';
-				$nameTd = "<td><span class='listPad'>$pad</span>$trimmedText</td>";
-				$type = 'Text';
-				$rowClass = 'contentListRow text';
-			break;
+		$type = $row['type'];
 
-			case "singleImage":
-				$name = $row['name'];
-				$nameTd = "<td><span class='listPad'>$pad</span>$name</td>";
-				$type = 'Single Image';
-				$rowClass = 'contentListRow singleImage';
-			break;
+		// Set name if there is one, if not (text), use the first few characters
+		$name = (isset($row['name'])) ? $row['name'] : substr(htmlentities($row['text']), 0, 25).'...';
+		// If it is a page/gal/video, make the name a link
+		if($type == 'page' || $type == 'gallery' || $type == 'video') {
+			$nameTd = "<td class='listName'><span class='listPad'>$pad</span><a href='".URL.$path."'>$name</a></td>";
+		} else {
+			$nameTd = "<td><span class='listPad'>$pad</span>$name</td>";
 		}
+		$typeDisplay = ($type == 'embeddedVideo') ? "Embedded Video" : ucfirst($type);
+		$typeDisplay = ($type == 'singleImage') ? "Single Image" : $typeDisplay;
+		$rowClass = "contentListRow $type";
+		if($type == "page") $rowClass .= ' visible';
+		$parentLink = "<a href='".URL.$path."'>$name</a>";
+
 		// Echo HTML
-		$rowHTML .= "<tr id='$contentID' class='$rowClass'>";
+		$rowHTML .= "<tr id='$contentID' class='$rowClass'>\n";
 
-		$rowHTML .= $nameTd;						
-		$rowHTML .= "<td>$type</td>";
-		$rowHTML .= "<td>$parentName</td>";
-		$rowHTML .= "<td class='hidden-xs'>$date</td>";
-		$rowHTML .= "<td class='hidden-xs'>$author</td>";
+		$rowHTML .= $nameTd."\n";						
+		$rowHTML .= "<td>$typeDisplay</td>\n";
+		$rowHTML .= "<td>$parentName</td>\n";
+		$rowHTML .= "<td class='hidden-xs'>$date</td>\n";
+		$rowHTML .= "<td class='hidden-xs'>$author</td>\n";
 
-		$rowHTML .= "<td>";
+		$rowHTML .= "<td>\n";
 		$rowHTML .= "<a href='".URL.$path."' class='btn btn-primary btn-sm'>View</a> ";
 		$rowHTML .= "<a href='".URL.$path."/edit' class='btn btn-primary btn-sm'>Edit</a> ";
-		$rowHTML .= "<a href='#' id='$contentID' class='btn btn-primary btn-sm trashContent'>Trash</a>";
-		$rowHTML .= "</td>";
+		$rowHTML .= "<a href='#' id='$contentID' class='btn btn-primary btn-sm trashContent'>Trash</a>\n";
+		$rowHTML .= "</td>\n";
 
-		$rowHTML .= "</tr>";
+		$rowHTML .= "</tr>\n";
 
 		if(isset($row['subContent'])) {
 			foreach($row['subContent'] as $row) {
@@ -217,54 +188,40 @@ class Dashboard_Model extends Model {
 					'author' => $row['author']
 				);
 				// Switch by type
-				switch($row['type'])
+				$thisType = $row['type'];
+				switch($thisType)
 				{
 					case "page" :
-						$result = $this->db->select("SELECT pageID, name FROM page WHERE contentID = '".$row['contentID']."'");
-
-						$typeArray['pageID'] = $result[0]['pageID'];
-						$typeArray['name'] = $result[0]['name'];
-						break;
-					case "video" :
-						$result = $this->db->select("SELECT videoID, name FROM video WHERE contentID = '".$row['contentID']."'");
-
-						$typeArray['videoID'] = $result[0]['videoID'];
-						$typeArray['name'] = $result[0]['name'];
-						break;
 					case "gallery" :
-						$result = $this->db->select("SELECT galleryID, name FROM gallery WHERE contentID = '".$row['contentID']."'");
-
-						$typeArray['galleryID'] = $result[0]['galleryID'];
-						$typeArray['name'] = $result[0]['name'];
-						break;
 					case "galImage" :
-						$result = $this->db->select("SELECT name FROM galImage WHERE contentID = '".$row['contentID']."'");
+					case "video" :
+					case "singleImage" :
+					case "navLink" :
+						$query = "SELECT ".$thisType."ID, name FROM ".$thisType." WHERE contentID = :contentID";
+						$result = $this->db->select($query, array(':contentID' => $row['contentID']));
+
+						$typeArray[$thisType.'ID'] = $result[0][$thisType.'ID'];
 						$typeArray['name'] = $result[0]['name'];
-						break;
+					break;
+					case "embeddedVideo" :
 					case "slideshow" :
-						$query = "SELECT g.name
-						FROM slideshow AS s
-						LEFT JOIN gallery as g ON s.galleryID = g.galleryID
-						WHERE s.contentID = '".$row['contentID']."'";
-						$result = $this->db->select($query);
+						$evQuery = "SELECT v.name
+							FROM embeddedVideo AS e
+							LEFT JOIN video AS v ON e.videoID = v.videoID
+							WHERE e.contentID = :contentID";
+						$svQuery = "SELECT g.name
+							FROM slideshow AS s
+							LEFT JOIN gallery as g ON s.galleryID = g.galleryID
+							WHERE s.contentID = :contentID";
+						$query = ($thisType == "slideshow") ? $svQuery : $evQuery;
+
+						$result = $this->db->select($query, array(':contentID' => $row['contentID']));
 						$typeArray['name'] = $result[0]['name'];
-						break;
+					break;
 					case "text" :
 						$result = $this->db->select("SELECT `textID`, `text` FROM `text` WHERE contentID = '".$row['contentID']."'");
-
-						$typeArray['text'] = $result[0]['text'];
-						break;
-					case "singleImage" :
-						$result = $this->db->select("SELECT singleImageID, name FROM singleImage WHERE contentID = '".$row['contentID']."'");
-
-						$typeArray['singleImageID'] = $result[0]['singleImageID'];
-						$typeArray['name'] = $result[0]['name'];
-						break;
-					case "navLink" :
-						$result = $this->db->select("SELECT `name` FROM `navLink` WHERE contentID = '".$row['contentID']."'");
-
-						$typeArray['name'] = $result[0]['name'];
-						break;
+						$typeArray['name'] = substr(htmlentities($result[0]['text']), 0, 25).'...';
+					break;
 				}
 
 				$returnArray[] = $typeArray;
@@ -288,65 +245,25 @@ class Dashboard_Model extends Model {
 			$parent = $row['parent'];
 			$date = date('Y/m/d', strtotime($row['dateTrashed']));
 			$author = $row['author'];
-
-			// Switch based on type
-			switch($row['type'])
-			{
-				case "page" :
-					$name = $row['name'];
-					$nameTd = "<td class='listName'>$name</td>";
-					$type = 'Page';
-					$rowClass = 'contentListRow page visible';
-				break;
-				case "video" :
-					$name = $row['name'];
-					$nameTd = "<td class='listName'>$name</td>";
-					$type = 'Video';
-					$rowClass = 'contentListRow video visible';
-				break;
-				case "gallery" :
-					$name = $row['name'];
-					$nameTd = "<td class='listName'>$name</td>";
-					$type = 'Gallery';
-					$rowClass = 'contentListRow gallery visible';
-				break;
-				case 'galImage' :
-					$nameTd = "<td>".$row['name']."</td>";
-					$type = 'Gallery Image';
-					$rowClass = 'contentListRow galImage visible';
-				break;
-				case 'slideshow' :
-					$nameTd = "<td>".$row['name']."</td>";
-					$type = 'Slideshow';
-					$rowClass = 'contentListRow slideshow visible';
-				break;
-				case "text" :
-					$trimmedText = substr(htmlentities($row['text']), 0, 25).'...';
-					$nameTd = "<td>$trimmedText</td>";
-					$type = 'Text';
-					$rowClass = 'contentListRow text visible';
-				break;
-				case "singleImage":
-					$name = $row['name'];
-					$nameTd = "<td>$name</td>";
-					$type = 'Single Image';
-					$rowClass = 'contentListRow singleImage visible';
-				break;
-				case "navLink" :
-					$name = $row['name'];
-					$nameTd = "<td>$name</td>";
-					$type = 'Nav Link';
-					$rowClass = 'contentListRow navLink visible';
-				break;
+			$type = $row['type'];
+			if($type == "page" || $type == "gallery" || $type =="video") {
+				$nameTd = "<td class='listName'>".$row['name']."</td>";
+			} else {
+				$nameTd = "<td>".$row['name']."</td>";
 			}
+			$typeDisplay = ($type == 'embeddedVideo') ? "Embedded Video" : ucfirst($type);
+			$typeDisplay = ($type == 'singleImage') ? "Single Image" : $typeDisplay;
+			$typeDisplay = ($type == 'galImage') ? "Gallery Image" : $typeDisplay;
 
-			// Echo HTML
+			$rowClass = "contentListRow $type visible";
+
+			// Return HTML
 			$trashRows .= "<tr id='$contentID' class='$rowClass'>";
 
 			$trashRows .= "<td><input type='checkbox' class='trashCheck'></td>";
 
 			$trashRows .= $nameTd;						
-			$trashRows .= "<td>$type</td>";
+			$trashRows .= "<td>$typeDisplay</td>";
 			$trashRows .= "<td>$parent</td>";
 			$trashRows .= "<td class='hidden-xs'>$date</td>";
 			$trashRows .= "<td class='hidden-xs'>$author</td>";
