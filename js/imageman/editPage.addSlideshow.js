@@ -1,7 +1,7 @@
 var $ = require('jquery');
 var Mustache = require('../libs/mustache.min.js');
 var Dropzone = require('../libs/dropzone.js');
-var _ = require('./functions.addContent.js'); // helper functions
+var _ = require('./functions.dialogError.js'); // helper functions
 
 $(function() {
 /**
@@ -20,6 +20,7 @@ $(function() {
 	$ssMsg 				= $addSSModal.find('#ssMsg'),
 	$ssProgress 		= $addSSModal.find('#ssProgress'),
 	$ssProcessing 		= $addSSModal.find('#ssLoading'),
+	$dropzone 			= $addSSModal.find('.addSSDropzone'),
 	DZtemplate 			= $('#galDZTemplate').html(),
 	ssTemplate			= $('#slideshowTemplate').html();
 
@@ -200,6 +201,7 @@ $(function() {
  		$ssSelect.removeAttr('disabled');
  		$ssNameInput.removeAttr('disabled');
  		$ssDropzone.enable();
+ 		$dropzone.removeClass('disabled');
  	}
 
  	function removedFile(file) {
@@ -234,12 +236,14 @@ $(function() {
  			// Gallery selected
  			$ssNameInput.attr('disabled', 'disabled');
  			$ssDropzone.disable();
+ 			$dropzone.addClass('disabled');
  			$submitSS.removeAttr('disabled');
  			$submitSS.attr('data-new', false);
  		} else {
  			// Enable new gal form
  			$ssNameInput.removeAttr('disabled');
  			$ssDropzone.enable();
+ 			$dropzone.removeClass('disabled');
  			$submitSS.attr('disabled', 'disabled');
  			$submitSS.attr('data-new', true);
  		}

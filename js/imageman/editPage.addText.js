@@ -1,6 +1,6 @@
 var $ = require('jquery');
 var Mustache = require('../libs/mustache.min.js');
-var _ = require('./functions.addContent.js'); // helper functions
+var _ = require('./functions.dialogError.js'); // helper functions
 
 $(function() {
 /**

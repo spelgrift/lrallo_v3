@@ -9,13 +9,7 @@ Imageman is a simple CMS to allow users to administer their website without any 
 
 ## TO DO
 
-Misc
-- Refactor JS
-- Dashboard content list: get HTML out of PHP
-- Dashboard content list: image thumbnails
-- Append date to original image filename to prevent overwrites
-- Medium images served to tablets
-- Auto logout
+*COLUMNS*
 
 Page Settings
 - Privacy
@@ -23,25 +17,20 @@ Page Settings
 View Gallery
 - Hover controls
 - Touch controls
+- Keyboard controls
 
-Page
-- Page settings
-	- Cover image
-- Add gallery
-- Shortcut
-- Slideshow
-	- Show/hide captions
-- Video
-- Text editor
+Text
+- Inline and HTML editors
 
 Single Image
 - Add click-through url
 
+Slideshow
+- Settings
+
 Edit Homepage
 
 Blog
-
-Video
 
 Activity Log
 
@@ -50,3 +39,10 @@ View tracking/IP statistics
 Security
 - Login attempts limit
 - Forgot password
+
+Misc
+- Refactor JS
+- Dashboard content list: get HTML out of PHP
+- Dashboard content list: image thumbnails
+- Append date to original image filename to prevent overwrites
+- Medium images served to tablets

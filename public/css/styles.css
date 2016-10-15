@@ -4595,6 +4595,10 @@ footer .footer-above {
 .dropzone > * {
   box-sizing: border-box;
 }
+.dropzone.disabled {
+  background-color: #eeeeee;
+  cursor: not-allowed;
+}
 .dropzone.dz-clickable {
   cursor: pointer;
 }
@@ -4804,6 +4808,7 @@ footer .footer-above {
   position: absolute;
   top: 0;
   left: 0;
+  background-color: #1a1a1a;
 }
 .slideshow .slides .slide {
   width: 100%;

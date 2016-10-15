@@ -36,7 +36,7 @@ class Val
 	public function digit($data)
 	{
 		if (!ctype_digit($data)) {
-			return "Your string must be a digit";
+			return "Your must enter a number";
 		}
 	}
 

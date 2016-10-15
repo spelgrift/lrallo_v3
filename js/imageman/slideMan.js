@@ -65,18 +65,16 @@ require('../libs/encapsulatedPlugin');
 		{
 			var _speed = $slideshow.attr(speedAttr),
 			_duration = $slideshow.attr(durationAttr);
-			if($slideshow.hasClass(autoClass)) {
-				settings.autoSlideshow = true;
-			}
-			if($slideshow.hasClass(fadeClass)) {
-				settings.animationType = 'fade';
-			}
+			settings.autoSlideshow = $slideshow.hasClass(autoClass) ? true : false;
+			settings.animationType = $slideshow.hasClass(fadeClass) ? 'fade' : 'slide';
 			if(typeof _speed !== typeof undefined && _speed !== false) {
 				settings.speed = parseInt(_speed);
 			}
 			if(typeof _duration !== typeof undefined && _duration !== false) {
 				settings.slideDuration = parseInt(_duration);
 			}
+			// Clear any timeout
+			clearTimeout(slideTimeout);
 			activate();
 		};
 		obj.updateSettings();

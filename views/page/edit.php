@@ -12,6 +12,7 @@ require 'views/inc/addContentForms/addText.php';
 require 'views/inc/addContentForms/addImage.php';
 require 'views/inc/addContentForms/addSpacer.php';
 require 'views/inc/content/shortcut/shortcutSettings.php';
+require 'views/inc/content/slideshow/slideshowSettings.php';
 ?>
 
 <div class='row tabPanel active' id='contentArea'>

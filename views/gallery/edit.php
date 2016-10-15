@@ -119,7 +119,7 @@ foreach($this->galImages as $image)
 
 		<!-- Duration -->
 		<div class='form-group'>
-			<label for='settings' class='col-sm-2 col-sm-offset-1 control-label'>Duration</label>
+			<label for='settingsDurationInput' class='col-sm-2 col-sm-offset-1 control-label'>Duration</label>
 			<div class='col-sm-6'>
 				<input id='settingsDurationInput' type='text' class='form-control' placeholder='Slide Duration (milliseconds)' value="<?php echo $this->pageAttr['slideDuration']; ?>">
 			</div>

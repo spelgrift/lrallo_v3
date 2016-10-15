@@ -332,6 +332,15 @@ class Page extends Controller
 		$this->shortcutContentModel->updateShortcutCover($contentID, $type);
 	}
 
+	public function updateSlideshow($contentID)
+	{
+		Auth::setAccess();
+		$this->_loadTypeContentModel('slideshow');
+		if($result = $this->slideshowContentModel->updateSlideshow($contentID)){
+			echo json_encode($result);
+		}
+	}
+
 /**
  *
  *	EDIT GALLERY METHODS

@@ -53,4 +53,4 @@ uploads/originals/*.jpg
 uploads/originals/*.gif
 uploads/originals/*.png
 uploads/thumbs/*.*
-uploads/covers/*.*
+uploads/covers/*.* 

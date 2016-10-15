@@ -2,13 +2,11 @@
 <?
 	switch($type) {
 		case 'page':
+		case 'video':
 			echo "<li><a class='shortcutSettings' data-id='$contentID' data-type='$type' href='#'><i class='fa fa-cog'></i></a></li>";
 			break;
 		case 'gallery':
 			echo "<li><a href='$path/edit'><i class='fa fa-cog'></i></a></li>";
-			break;
-		case 'video':
-			echo "<li><a class='shortcutSettings' data-id='$contentID' data-type='video' href='#'><i class='fa fa-cog'></i></a></li>";
 			break;
 	}
 ?>
