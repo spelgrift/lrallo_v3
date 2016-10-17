@@ -15,7 +15,9 @@ class Shortcut_Content_Model extends Content_Model {
 		}
 		// Update DB
 		$this->db->update($type, array('displayName' => $name), '`contentID` ='.$contentID);
-		echo json_encode(array('error' => false));
+		echo json_encode(array('error' => false, 'results' => array(
+			'name' => $name
+		)));
 	}
 
 	public function updateShortcutCover($contentID, $type)
@@ -27,7 +29,7 @@ class Shortcut_Content_Model extends Content_Model {
 			FROM content AS c
 			LEFT JOIN $type AS t ON c.contentID = t.contentID
 			WHERE c.contentID = :contentID";
-		if(!$result = $this->db->select($query, array(':contentID' => $contentID))) {
+		if(!$result = $this->db->select($query, array(':contentID' => $contentID))){
 			return false;
 		}
 		$oldCover = $result[0]['coverPath'];

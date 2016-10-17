@@ -3,34 +3,34 @@ var Mustache = require('../libs/mustache.min.js');
 var _ = require('./utilityFunctions.js'); // helper functions
 
 $(function() {
+	
 /**
  * 
  * CACHE DOM
  * 
  */
- 	var $contentArea 		= $('#contentArea'),
-	$addTab 					= $('a.addTab'),
-	pageURL 					= $('a#viewTab').attr('href');
-
-	var $addVideoModal 	= $('#addVideoModal'),
+ 	var $contentList 		= $('#contentList'),
+	$contentTypeFilter 	= $contentList.find('select#filterContentList'),
+	$tableBody 				= $contentList.find('tbody'),
+	$addVideoModal 		= $('#addVideoModal'),
 	$vidNameInput 			= $addVideoModal.find('input#newVideoName'),
 	$vidNameMsg 			= $addVideoModal.find('#videoNameMsg'),
 	$vidLinkInput 			= $addVideoModal.find('input#newVideoLink'),
 	$vidLinkMsg 			= $addVideoModal.find('#videoLinkMsg'),
 	$submitVid 				= $addVideoModal.find('#submitNewVideo'),
-	videoTemplate 			= $('#videoTemplate').html();
+	pageListTemplate 		= $('#pageListTemplate').text();
 
 /**
  * 
  * BIND EVENTS
  * 
  */
- 	// Submit Video
-	$submitVid.click(submitVideo);
+ 	$submitVid.click(submitVideo);
+ 	$addVideoModal.on('show.bs.modal', resetModal);
 
 /**
  * 
- * CORE FUNCTIONS
+ * MAIN FUNCTIONS
  * 
  */
  	function submitVideo(ev) {
@@ -47,16 +47,25 @@ $(function() {
 		if(data.link.length < 1) {
 			return _.error("You must enter a link!", $vidLinkMsg, $vidLinkInput);
 		}
-		var url = pageURL + '/addVideo';
+		var url = baseURL + 'dashboard/addVideo';
 		_.post(url, data, submitSuccess, submitError);
 	}
 
 	function submitSuccess(data) {
 		$addVideoModal.modal('hide');
-		$contentArea.prepend(Mustache.render(videoTemplate, data.results));
+		$contentTypeFilter.val('video');
+		events.emit('changeContentFilter', 'video');
+		$tableBody.prepend(Mustache.render(pageListTemplate, data.results));
 	}
 
 	function submitError(data) {
 		_.error(data.error_msg, $vidLinkMsg, $vidLinkInput);
+	}
+
+	function resetModal() {
+		$vidNameInput.val('');
+		$vidLinkInput.val('');
+		$vidNameMsg.html('');
+		$vidLinkMsg.html('');
 	}
 });

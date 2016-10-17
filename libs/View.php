@@ -38,6 +38,7 @@ class View {
 				$url = $contentObject['url'];
 				$path = URL.$this->pageAttr['path']."/".$url;
 				$cover = $contentObject['coverPath'];
+				$targetType = $type;
 				$type = 'shortcut';
 				break;
 			case 'slideshow':

@@ -1,6 +1,7 @@
 var $ = require('jquery');
 var Mustache = require('../libs/mustache.min.js');
 var Dropzone = require('../libs/dropzone.js');
+var _ = require('./utilityFunctions.js'); // helper functions
 $(function() {
 /*
 *
@@ -36,54 +37,44 @@ $(function() {
  		ev.preventDefault();
  		// Get user input/target contentID
  		var contentID = $(this).attr('data-id'),
- 		newName = $nameInput.val(),
  		data = {
- 			name : newName,
+ 			name : $nameInput.val(),
  			type : $(this).attr('data-type')
  		};
  		// Check if user entered name
- 		if(newName.length < 1) {
- 			$nameMsg.html('Name cannot be blank');
- 			$nameInput.focus();
- 			clearMsg($nameMsg);
- 			return false;
+ 		if(data.name.length < 1) {
+ 			return _.error('Name cannot be blank', $nameMsg, $nameInput);
  		}
  		// Check if name is same as original
- 		if(newName != origName) {
+ 		if(data.name != origName) {
  			// Update shortcut name
- 			$.ajax({
- 				type: 'POST',
- 				url: pageURL + '/updateShortcut/' + contentID,
- 				data: data,
- 				dataType: 'json',
- 				success: function(data) {
- 					if(!data.error) {
- 						// Success
- 						// If no new cover image return
- 						if($updateCoverDropzone.files.length === 0) {
- 							$thisBlock.find('a.shortcutTitleOverlay').html(newName);
- 							$shortcutSettingsModal.modal('hide');
- 							return;
- 						}
- 						// Process Dropzone queue
- 						$updateCoverDropzone.processQueue();
- 					} else {
- 						$nameMsg.html(data.error_msg); // Error
- 						$nameInput.focus();
- 						clearMsg($nameMsg);
- 						return false;
- 					}
- 				}
- 			});
+ 			var url = pageURL + '/updateShortcut/' + contentID;
+ 			_.post(url, data, saveSuccess, saveError);
  		} else {
- 			// If no new cover image return
+ 			// If no new cover image return...
  			if($updateCoverDropzone.files.length < 1) {
 				$shortcutSettingsModal.modal('hide');
 				return;
 			}
-			// Process Dropzone queue
+			// ...otherwise, process Dropzone queue
  			$updateCoverDropzone.processQueue();
  		}
+ 	}
+
+ 	function saveSuccess(data) {
+		// If no new cover image return
+		if($updateCoverDropzone.files.length === 0) {
+			console.log('success');
+			$thisBlock.find('a.shortcutTitleOverlay').html(data.results.name);
+			$shortcutSettingsModal.modal('hide');
+			return;
+		}
+		// Process Dropzone queue
+		$updateCoverDropzone.processQueue();
+ 	}
+
+ 	function saveError(data) {
+ 		_.error('Name cannot be blank', $nameMsg, $nameInput);
  	}
 
  	function dzSuccess(file, data) {

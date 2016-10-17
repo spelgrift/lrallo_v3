@@ -1,7 +1,7 @@
 var $ = require('jquery');
 var Mustache = require('../libs/mustache.min.js');
 var Dropzone = require('../libs/dropzone.js');
-var _ = require('./functions.dialogError.js'); // helper functions
+var _ = require('./utilityFunctions.js'); // helper functions
 
 $(function() {
 /**
@@ -83,54 +83,46 @@ $(function() {
  */
  	function submitExistingSS() {
  		// Get user input
- 		var galID = $ssSelect.val();
- 		// Post to server
- 		$.ajax({
- 			type: 'POST',
- 			url: pageURL + '/addSlideshow/' + galID,
- 			dataType: ['json'],
- 			success: function( data ) {
- 				if(!data.error) { // Success
-					$addSSModal.modal('hide');
-					ssID = data.results.slideshowID;
-					contentID = data.results.contentID;
-					renderSlideshow(data.results);
-				} else { // Error!
-					_.error(data.error_msg, $ssMsg, $ssSelect);
-				}
- 			}
- 		});
+ 		var galID = $ssSelect.val(),
+ 		url = pageURL + '/addSlideshow/' + galID;
+ 		_.post(url, {}, submitExistingSuccess, submitError);
+ 	}
+
+ 	function submitExistingSuccess(data) {
+ 		$addSSModal.modal('hide');
+		ssID = data.results.slideshowID;
+		contentID = data.results.contentID;
+		renderSlideshow(data.results);
  	}
 
  	function submitNewSS() {
  		// Get user input
-		var ssName = $ssNameInput.val();
+		var data = {
+			'name' : $ssNameInput.val()
+		};
 		// Validate
-		if(ssName.length < 1) {
+		if(data.name.length < 1) {
 			return _.error("You must enter a name!", $ssMsg, $ssNameInput);
 		}
 		// Post to server
-		$.ajax({
-			type: 'POST',
-			url: pageURL + '/addSSgallery',
-			data: { name : ssName },
-			dataType: 'json',
-			success: function( data ) {
-				if(!data.error) { // Success
-					ssID = data.results.ssID;
-					contentID = data.results.contentID;
-					$ssDropzone.options.params = {
-						galID : data.results.galID,
-						galURL : data.results.galURL
-					};
-					$ssProgress.show();
-					$submitSS.attr('disabled', 'disabled');
-					$ssDropzone.processQueue();
-				} else { // Error
-					_.error(data.error_msg, $ssMsg, $ssNameInput);
-				}
-			}
-		});
+		var url = pageURL + '/addSSgallery' ;
+		_.post(url, data, submitNewSuccess, submitError);
+	}
+
+	function submitNewSuccess(data) {
+		ssID = data.results.ssID;
+		contentID = data.results.contentID;
+		$ssDropzone.options.params = {
+			galID : data.results.galID,
+			galURL : data.results.galURL
+		};
+		$ssProgress.show();
+		$submitSS.attr('disabled', 'disabled');
+		$ssDropzone.processQueue();
+	}
+
+	function submitError(data) {
+ 		_.error(data.error_msg, $ssMsg, $ssSelect);
  	}
 
  	function ssDZsuccess(files, data) {
@@ -163,6 +155,11 @@ $(function() {
 		}
  	}
 
+/**
+ * 
+ * HELPER FUNCTIONS
+ * 
+ */
  	function renderSlideshow(data) {
  		// Render template
 		var newSSobject = {
@@ -248,6 +245,4 @@ $(function() {
  			$submitSS.attr('data-new', true);
  		}
  	}
-
-
 });

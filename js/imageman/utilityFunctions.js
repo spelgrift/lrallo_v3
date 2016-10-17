@@ -1,5 +1,5 @@
 var $ = require('jquery');
-var dialogError = (function() {
+var utilityFunctions = (function() {
 
 	var error = function(message, $msg, $input) {
 		$msg.html(message);
@@ -45,4 +45,4 @@ var dialogError = (function() {
 
 })();
 
-module.exports = dialogError;
+module.exports = utilityFunctions;

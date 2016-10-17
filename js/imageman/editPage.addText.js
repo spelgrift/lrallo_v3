@@ -1,6 +1,6 @@
 var $ = require('jquery');
 var Mustache = require('../libs/mustache.min.js');
-var _ = require('./functions.dialogError.js'); // helper functions
+var _ = require('./utilityFunctions.js'); // helper functions
 
 $(function() {
 /**
@@ -23,7 +23,6 @@ $(function() {
  * BIND EVENTS
  * 
  */
- 	// Submit 
 	$submitText.click(submitText);
 
 /**
@@ -34,31 +33,28 @@ $(function() {
  	function submitText(ev) {
 		ev.preventDefault();
 		// Get user input
-		var newText = $addTextArea.val();
+		var data = { text : $addTextArea.val() };
 		// Validate
-		if(newText.length < 1) {
+		if(data.text.length < 1) {
 			return _.error('Please enter some text', $textMsg, $addTextArea);
 		}
 		// Post to server
-		$.ajax({
-			type: 'POST',
-			url: pageURL + '/addText',
-			data: { text : newText },
-			dataType: 'json',
-			success: function( data ) {
-				if(!data.error) { // Success
-					$addTextArea.val('');
-					$addTextModal.modal('hide');
-					var newTextObject = {
-						contentID : data.results.contentID,
-						textID : data.results.textID,
-						text : newText
-					};
-					$contentArea.prepend(Mustache.render(textTemplate, newTextObject));
-				} else { // Error
-					_.error(data.error_msg, $textMsg, $addTextArea);
-				}
-			}
-		});
+		var url = pageURL + '/addText';
+		_.post(url, data, submitSuccess, submitError);
+	}
+
+	function submitSuccess(data) {
+		$addTextArea.val('');
+		$addTextModal.modal('hide');
+		var newTextObject = {
+			contentID : data.results.contentID,
+			textID : data.results.textID,
+			text : newText
+		};
+		$contentArea.prepend(Mustache.render(textTemplate, newTextObject));
+	}
+
+	function submitError(data) {
+		_.error(data.error_msg, $textMsg, $addTextArea);
 	}
 });

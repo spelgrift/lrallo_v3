@@ -1,5 +1,5 @@
 var $ = require('jquery');
-var _ = require('./functions.dialogError.js'); // helper functions
+var _ = require('./utilityFunctions.js'); // helper functions
 require('./slideMan.js'); // Image slider
 
 // Define DOM attribute names to update settings
@@ -55,8 +55,7 @@ $(function() {
  		// 	return false;
  		// }
  		if(data.slideDuration.length < 1) {
- 			_.error('Cannot be blank', $ssDurationMsg, $ssDurationInput);
- 			return false;
+ 			return _.error('Cannot be blank', $ssDurationMsg, $ssDurationInput);
  		}
  		var url = pageURL + '/updateSlideshow/' + contentID;
  		_.post(url, data, saveSuccess, saveError);

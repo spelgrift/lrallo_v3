@@ -26,9 +26,12 @@ Single Image
 - Add click-through url
 
 Slideshow
-- Settings
+- Caption
 
 Edit Homepage
+
+Video
+- Settings
 
 Blog
 

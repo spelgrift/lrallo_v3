@@ -1,7 +1,7 @@
 var $ = require('jquery');
 var Mustache = require('../libs/mustache.min.js');
 var Dropzone = require('../libs/dropzone.js');
-var _ = require('./functions.dialogError.js'); // helper functions
+var _ = require('./utilityFunctions.js'); // helper functions
 
 $(function() {
 /**
@@ -13,7 +13,7 @@ $(function() {
 	$addTab 				= $('a.addTab'),
 	pageURL 				= $('a#viewTab').attr('href');
 
-	var $addGalModal 	= $('#addGalModal'),
+	var $addGalModal 	= $('#addGalleryModal'),
 	$galNameInput 		= $addGalModal.find('input#newGalName'),
 	galDZtemplate 		= $('#galDZTemplate').html(),
 	$submitGal 			= $addGalModal.find('button#submitNewGal'),
@@ -71,6 +71,11 @@ $(function() {
 		$galleryDropzone.removeAllFiles();
 	});
 
+	// Reset modal when modal shown
+	$addGalModal.on('show.bs.modal', function () {
+		$galProcessing.hide();
+	});
+
 	// Update total progress bar (Gallery)
 	$galleryDropzone.on('totaluploadprogress', galleryDZprogress);
 	
@@ -82,31 +87,29 @@ $(function() {
  	function submitGal(ev) {
 		ev.preventDefault();
 		// Get user input
-		var galName = $galNameInput.val();
+		var data = {
+			'name' : $galNameInput.val()
+		};
 		// Validate
-		if(galName.length < 1) {
+		if(data.name.length < 1) {
 			return _.error("You must enter a name!", $galMsg, $galNameInput);
 		}
-		// Post to server
-		$.ajax({
-			type: 'POST',
-			url: pageURL + '/addGallery',
-			data: { name : galName },
-			dataType: 'json',
-			success: function( data ) {
-				if(!data.error) { // Success
-					$galleryDropzone.options.params = {
-						galID : data.results.galID,
-						galURL : data.results.galURL
-					};
-					$galProgress.show();
-					$submitGal.attr('disabled', 'disabled');
-					$galleryDropzone.processQueue();
-				} else { // Error
-					_.error(data.error_msg, $galMsg, $galNameInput);
-				}
-			}
-		});
+		var url = pageURL + '/addGallery';
+		_.post(url, data, submitSuccess, submitError);
+	}
+
+	function submitSuccess(data) {
+		$galleryDropzone.options.params = {
+			'galID' : data.results.galID,
+			'galURL' : data.results.galURL
+		};
+		$galProgress.show();
+		$submitGal.attr('disabled', 'disabled');
+		$galleryDropzone.processQueue();
+	}
+
+	function submitError(data) {
+		_.error(data.error_msg, $galMsg, $galNameInput);
 	}
 
 	function galleryDZprogress(progress) {

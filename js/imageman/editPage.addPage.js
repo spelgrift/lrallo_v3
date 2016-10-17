@@ -1,6 +1,6 @@
 var $ = require('jquery');
 var Mustache = require('../libs/mustache.min.js');
-var _ = require('./functions.dialogError.js'); // helper functions
+var _ = require('./utilityFunctions.js'); // helper functions
 
 $(function() {
 /**
@@ -27,32 +27,32 @@ $(function() {
  	// Submit Page
 	$submitPage.click(submitPage);
 
+/**
+ * 
+ * CORE FUNCTIONS
+ * 
+ */
 	function submitPage(ev) {
 		ev.preventDefault();
 		// Get user input
-		var pageName = $pageNameInput.val();
+		var data = {
+			'name' : $pageNameInput.val()
+		};
 		// Validate
-		if(pageName.length < 1) {
+		if(data.name.length < 1) {
 			return _.error('You must enter a name', $pageMsg, $pageNameInput);
 		}
-		// Check if taken here?
+		var url = pageURL + '/addPage';
+		_.post(url, data, submitSuccess, submitError);
+	}
 
-		// Post to server
-		$.ajax({
-			type: 'POST',
-			url: pageURL + '/addPage',
-			data: { name : pageName },
-			dataType: 'json',
-			success: function( data ) {
-				if(!data.error) { // Success
-					$pageNameInput.val("");
-					$addPageModal.modal('hide');
-					$contentArea.prepend(Mustache.render(pageTemplate, data.results));
-				} else { // Error
-					_.error(data.error_msg, $pageMsg, $pageNameInput);
-				}
-			}
-		});
+	function submitSuccess(data) {
+		$pageNameInput.val("");
+		$addPageModal.modal('hide');
+		$contentArea.prepend(Mustache.render(pageTemplate, data.results));
+	}
+
+	function submitError(data) {
+		_.error(data.error_msg, $pageMsg, $pageNameInput);
 	}
 });
-

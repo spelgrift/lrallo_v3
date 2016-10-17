@@ -1,6 +1,6 @@
 var $ = require('jquery');
 var Mustache = require('../libs/mustache.min.js');
-var _ = require('./functions.dialogError.js'); // helper functions
+var _ = require('./utilityFunctions.js'); // helper functions
 
 $(function() {
 /**
@@ -68,39 +68,23 @@ $(function() {
 			return _.error("You must enter a link!", $evLinkMsg, $evLinkInput);
 		}
 		// POST
-		$.ajax({
-			type: 'POST',
-			url: pageURL + '/addEmbedVideo',
-			data: data,
-			dataType: 'json',
-			success: function(data) {
-				if(!data.error) { // Success
-					// Hide modal
-					$addEVModal.modal('hide');
-					renderEV(data.results);
-				} else {
-					_.error(data.error_msg, $evLinkMsg, $evLinkInput);
-				}
-			}
-		});
+		var url = pageURL + '/addEmbedVideo';
+		_.post(url, data, submitSuccess, submitError);
+ 	}
+
+ 	function submitSuccess(data) {
+		$addEVModal.modal('hide');
+		renderEV(data.results);
+ 	}
+
+ 	function submitError(data) {
+ 		_.error(data.error_msg, $evLinkMsg, $evLinkInput);
  	}
 
  	function submitExistingEV() {
- 		var videoID = $evSelect.val();
- 		$.ajax({
- 			type: 'POST',
- 			url: pageURL + '/addEmbedVideo/' + videoID,
- 			dataType: 'json',
- 			success: function(data) {
- 				if(!data.error) { // Success
-					// Hide modal
-					$addEVModal.modal('hide');
-					renderEV(data.results);
-				} else {
-					_.error(data.error_msg, $evLinkMsg, $evLinkInput);
-				}
- 			}
- 		});
+ 		var videoID = $evSelect.val(),
+ 		url = pageURL + '/addEmbedVideo/' + videoID;
+ 		_.post(url, {}, submitSuccess, submitError);
  	}
 
  	function renderEV(data) {
