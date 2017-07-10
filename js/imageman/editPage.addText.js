@@ -49,7 +49,7 @@ $(function() {
 		var newTextObject = {
 			contentID : data.results.contentID,
 			textID : data.results.textID,
-			text : newText
+			text : data.results.text
 		};
 		$contentArea.prepend(Mustache.render(textTemplate, newTextObject));
 	}

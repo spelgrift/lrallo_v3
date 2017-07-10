@@ -9,15 +9,11 @@ Imageman is a simple CMS to allow users to administer their website without any 
 
 ## TO DO
 
-*COLUMNS*
-
 Page Settings
 - Privacy
 
 View Gallery
 - Hover controls
-- Touch controls
-- Keyboard controls
 
 Text
 - Inline and HTML editors
@@ -30,8 +26,7 @@ Slideshow
 
 Edit Homepage
 
-Video
-- Settings
+Add shortcut
 
 Blog
 

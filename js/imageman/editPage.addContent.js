@@ -12,7 +12,7 @@ $(function() {
 	pageURL 				= $('a#viewTab').attr('href');
 
 	var $addPageModal = $('#addPageModal'),
-	$addGalModal 		= $('#addGalModal'),
+	$addGalModal 		= $('#addGalleryModal'),
 	$addSSModal 		= $('#addSSModal'),
 	$addVideoModal 	= $('#addVideoModal'),
 	$addEVModal 		= $('#addEmbedVideoModal'),

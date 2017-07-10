@@ -38,7 +38,8 @@ class Text_Content_Model extends Content_Model {
 			'error' => false,
 			'results' => array(
 				'contentID' => $contentID,
-				'textID' => $textID
+				'textID' => $textID,
+				'text' => $text
 			)
 		);
 		echo json_encode($results);

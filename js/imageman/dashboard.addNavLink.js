@@ -41,10 +41,10 @@ $(function() {
 		};
 		// Validate
 		if(data.name.length < 1) {
-			return error('You must enter a name', $navLinkMsg, $navLinkNameInput);
+			return _.error('You must enter a name', $navLinkMsg, $navLinkNameInput);
 		}
 		if(data.url.length < 1) {
-			return error('You must enter a url', $navLinkMsg, $navLinkUrlInput);
+			return _.error('You must enter a url', $navLinkMsg, $navLinkUrlInput);
 		}
 		var url = baseURL + 'dashboard/addNavLink';
 		_.post(url, data, submitSuccess, submitError);
