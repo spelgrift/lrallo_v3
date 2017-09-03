@@ -5,22 +5,31 @@ class Gallery_Content_Model extends Content_Model {
 	function __construct(){parent::__construct();}
 
 	// Add Gallery
-	public function addGallery($parentPageID = "0", $slideshow = false)
+	public function addGallery($parentPageID, $dashboard = false , $slideshow = false)
 	{
 		if(!$nameArray = $this->_processName($_POST['name'], 'gallery')) {
 			return false;
 		}
 		$url = $nameArray['url'];
 		$name = $nameArray['name'];
+
+		$home = ($parentPageID === 0 && !$dashboard) ? 1 : 0;
+		// Advance positions of existing content
+		if(!$dashboard) {
+			$this->_advanceContentPositions($parentPageID, $home);
+		}
+
 		if($slideshow) {
 			$ssParent = $parentPageID;
-			$parentPageID = "0";
+			$parentPageID = 0;
+			$home = 0;
 		}
 		// Content DB entry
 		$this->db->insert('content', array(
 			'type' => 'gallery',
 			'url' => $url,
 			'parentPageID' => $parentPageID,
+			'frontpage' => $home,
 			'author' => $_SESSION['login'],
 			'bootstrap' => BS_PAGE
 		));
@@ -63,10 +72,12 @@ class Gallery_Content_Model extends Content_Model {
 			$this->_returnError("Gallery doesn't exist");
 			return false;
 		}
+		$home = $parentPageID === 0 ? 1 : 0;
 		// Content DB entry
 		$this->db->insert('content', array(
 			'type' => 'slideshow',
 			'parentPageID' => $parentPageID,
+			'frontpage' => $home,
 			'author' => $_SESSION['login'],
 			'bootstrap' => BS_SLIDESHOW
 		));

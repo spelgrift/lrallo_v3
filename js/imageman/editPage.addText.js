@@ -10,7 +10,7 @@ $(function() {
  */
  	var $contentArea 	= $('#contentArea'),
 	$addTab 				= $('a.addTab'),
-	pageURL 				= $('a#viewTab').attr('href');
+	pageURL 				= _.getURL();
 
 	var $addTextModal = $('#addTextModal'),
 	$addTextArea 		= $addTextModal.find('#newTextArea'),

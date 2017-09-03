@@ -18,7 +18,7 @@ $(function() {
 	coverTemplate = $('#galleryTemplate').find('a.coverLink').prop('outerHTML'),
 	origName,
 	$thisBlock,
-	pageURL = $('a#viewTab').attr('href');
+	pageURL = _.getURL();
 
 /*
 *

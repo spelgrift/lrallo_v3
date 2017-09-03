@@ -1,8 +1,9 @@
 var $ = require('jquery');
+var _ = require('./utilityFunctions.js'); // helper functions
 
 $(function() {
 	var $contentArea = $('#contentArea');
-	var pageURL = $('a#viewTab').attr('href');
+	var pageURL = _.getURL();
 	var currentScreen;
 
 	// Config

@@ -28,19 +28,19 @@ class Dashboard extends Controller {
 	public function addPage()
 	{
 		$this->_loadTypeContentModel('page');
-		$this->pageContentModel->addPage();
+		$this->pageContentModel->addPage(0, true); // args: parentPageID, dashboard request
 	}
 
 	public function addVideo()
 	{
 		$this->_loadTypeContentModel('video');
-		$this->videoContentModel->addVideo();
+		$this->videoContentModel->addVideo(0, true);
 	}
 
 	public function addGallery()
 	{
 		$this->_loadTypeContentModel('gallery');
-		$this->galleryContentModel->addGallery();
+		$this->galleryContentModel->addGallery(0, true);
 	}
 
 	public function uploadGalImages()

@@ -5,11 +5,15 @@ class Image_Content_Model extends Content_Model {
 	function __construct(){parent::__construct();}
 
 	// Add Single Image
-	public function addSingleImage($parentPageID, $parentUrl = 'frontpage')
+	public function addSingleImage($parentPageID, $parentUrl)
 	{
 		if(!$image = $this->_saveOriginalImage($_FILES)) {
 			return false;
 		}
+
+		$home = $parentPageID === 0 ? 1 : 0;
+		// Advance positions of existing content
+		$this->_advanceContentPositions($parentPageID, $home);
 
 		$original = $image['original'];
 		$fileName = $image['fileName'];
@@ -34,6 +38,7 @@ class Image_Content_Model extends Content_Model {
 		$this->db->insert('content', array(
 			'type' => 'singleImage',
 			'parentPageID' => $parentPageID,
+			'frontpage' => $home,
 			'author' => $_SESSION['login'],
 			'bootstrap' => $bootstrap
 		));

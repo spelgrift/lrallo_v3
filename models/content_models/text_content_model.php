@@ -15,13 +15,15 @@ class Text_Content_Model extends Content_Model {
 			return false;
 		}
 
+		$home = $parentPageID === 0 ? 1 : 0;
 		// Advance positions of existing content
-		$this->_advanceContentPositions($parentPageID);
+		$this->_advanceContentPositions($parentPageID, $home);
 
 		// Content DB entry
 		$this->db->insert('content', array(
 			'type' => 'text',
 			'parentPageID' => $parentPageID,
+			'frontpage' => $home,
 			'author' => $_SESSION['login'],
 			'bootstrap' => BS_TEXT
 		));

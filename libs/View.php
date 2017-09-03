@@ -36,7 +36,8 @@ class View {
 			case 'video':
 				$name = ($type == 'gallery') ? $contentObject['name'] : $contentObject['displayName'];
 				$url = $contentObject['url'];
-				$path = URL.$this->pageAttr['path']."/".$url;
+				$slash = (strlen($this->pageAttr['path']) > 0) ? "/" : "";
+				$path = URL.$this->pageAttr['path'].$slash.$url;
 				$cover = $contentObject['coverPath'];
 				$targetType = $type;
 				$type = 'shortcut';

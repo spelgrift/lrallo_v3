@@ -5,20 +5,27 @@ class Video_Content_Model extends Content_Model {
 	function __construct(){parent::__construct();}
 
 	// Add Video
-	public function addVideo($parentPageID = "0", $embed = false)
+	public function addVideo($parentPageID, $dashboard = false , $embed = false)
 	{
 		if(!$nameArray = $this->_processName($_POST['name'], 'page')) {
 			return false;
 		}
 		$url = $nameArray['url'];
 		$name = $nameArray['name'];
-		if($embed) {
-			$evParent = $parentPageID;
-			$parentPageID = "0";
-		}
 
 		if(!$vidArray = $this->_processVideoLink($_POST['link'])) {
 			return false;
+		}
+
+		$home = ($parentPageID === 0 && !$dashboard) ? 1 : 0;
+		// Advance positions of existing content
+		if(!$dashboard) {
+			$this->_advanceContentPositions($parentPageID, $home);
+		}
+		if($embed) {
+			$evParent = $parentPageID;
+			$parentPageID = 0;
+			$home = 0;
 		}
 
 		// Content DB entry
@@ -26,6 +33,7 @@ class Video_Content_Model extends Content_Model {
 			'type' => 'video',
 			'url' => $url,
 			'parentPageID' => $parentPageID,
+			'frontpage' => $home,
 			'author' => $_SESSION['login'],
 			'bootstrap' => BS_PAGE
 		));
@@ -89,10 +97,12 @@ class Video_Content_Model extends Content_Model {
 		$source = $result[0]['source'];
 		$link = $result[0]['link'];
 		$path = $this->_buildPath($result[0]['url'], $result[0]['parentPageID']);
+		$home = $parentPageID === 0 ? 1 : 0;
 		// Content DB entry
 		$this->db->insert('content', array(
 			'type' => 'embeddedVideo',
 			'parentPageID' => $parentPageID,
+			'frontpage' => $home,
 			'author' => $_SESSION['login'],
 			'bootstrap' => BS_VIDEO
 		));

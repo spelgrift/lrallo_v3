@@ -66,7 +66,7 @@ class Global_Model extends Model {
 			case 'home' :
 				$adminNav = array(
 					array(
-						'url' => URL . "dashboard/edithome", 
+						'url' => URL . "page/edithome", 
 						'name' => "<i class='fa fa-fw fa-sliders'></i>Edit Homepage",
 					)
 				);
@@ -282,7 +282,7 @@ class Global_Model extends Model {
 						'data-tab' => 'trash'
 					),
 					array(
-						'url' => URL . 'dashboard/edithome/',
+						'url' => URL . 'page/edithome/',
 						'name' => "<i class='fa fa-fw fa-home'></i> Edit Homepage"
 					)
 				);

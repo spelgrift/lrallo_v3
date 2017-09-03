@@ -3,7 +3,7 @@
 <div class='row'>
 <?php
 // echo "<pre>";
-// print_r($this->pageContent);
+// print_r($this->pageAttr);
 // echo "</pre>";
 foreach($this->pageContent as $item)
 {

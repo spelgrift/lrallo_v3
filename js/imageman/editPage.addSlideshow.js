@@ -11,7 +11,7 @@ $(function() {
  */
  	var $contentArea 	= $('#contentArea'),
 	$addTab 				= $('a.addTab'),
-	pageURL 				= $('a#viewTab').attr('href');
+	pageURL 				= _.getURL();
 
 	var $addSSModal 	= $('#addSSModal'),
 	$ssSelect 			= $addSSModal.find('#ssSelect'),

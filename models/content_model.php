@@ -23,39 +23,42 @@ class Content_Model extends Model {
 		if($pageid) // PageID passed, get content for that page
 		{
 			$query = "SELECT contentID, url, type, position, bootstrap FROM content WHERE parentPageID = :parentPageID AND trashed = 0 AND orphaned = 0 ORDER BY position ASC";
-			if($result = $this->db->select($query, array(':parentPageID' => $pageid)))
-			{
-				foreach($result as $key => $row)
-				{
-					if($a = $this->db->select("SELECT * FROM ".$row['type']." WHERE contentID = ".$row['contentID']))
-					{
-						foreach($a[0] as $typeKey => $value)
-						{
-							$result[$key][$typeKey] = $value;
-						}
-					}
-
-					if($row['type'] == 'slideshow') {
-						$result[$key]['images'] = $this->getGalImages($result[$key]['galleryID']);
-					}
-					if($row['type'] == 'embeddedVideo') {
-						$query = "SELECT source, link FROM video WHERE videoID = :videoID";
-						$vidArray = $this->db->select($query, array(':videoID' => $result[$key]['videoID']));
-						$result[$key]['source'] = $vidArray[0]['source'];
-						$result[$key]['link'] = $vidArray[0]['link'];
-					}
-				}
-				return $result;
-			}
-			else // No rows
-			{
-				return array();
-			}
-		} 
+			$dbArray = array(':parentPageID' => $pageid);
+		}
 		else // No PageID, get content for homepage
 		{
+			$query = "SELECT contentID, url, type, position, bootstrap FROM content WHERE frontpage = 1 AND trashed = 0 AND orphaned = 0 ORDER BY position ASC";
+			$dbArray = array();
+		}
+		// Run query
+		if($result = $this->db->select($query, $dbArray))
+		{
+			foreach($result as $key => $row)
+			{
+				if($a = $this->db->select("SELECT * FROM ".$row['type']." WHERE contentID = ".$row['contentID']))
+				{
+					foreach($a[0] as $typeKey => $value)
+					{
+						$result[$key][$typeKey] = $value;
+					}
+				}
+
+				if($row['type'] == 'slideshow') {
+					$result[$key]['images'] = $this->getGalImages($result[$key]['galleryID']);
+				}
+				if($row['type'] == 'embeddedVideo') {
+					$query = "SELECT source, link FROM video WHERE videoID = :videoID";
+					$vidArray = $this->db->select($query, array(':videoID' => $result[$key]['videoID']));
+					$result[$key]['source'] = $vidArray[0]['source'];
+					$result[$key]['link'] = $vidArray[0]['link'];
+				}
+			}
+			return $result;
+		}
+		else // No rows
+		{
 			return array();
-		}		
+		}
 	}
 
 	/**
@@ -796,9 +799,14 @@ class Content_Model extends Model {
 		return true;
 	}
 
-	protected function _advanceContentPositions($parentPageID = 0)
+	protected function _advanceContentPositions($parentPageID = 0, $home = 0)
 	{
-		if ($result = $this->db->select("SELECT position, contentID FROM content WHERE parentPageID = '".$parentPageID."'"))
+		if($home === 0) {
+			$query = "SELECT position, contentID FROM content WHERE parentPageID = '".$parentPageID."'";
+		} else {
+			$query = "SELECT position, contentID FROM content WHERE frontpage = 1";
+		}
+		if ($result = $this->db->select($query))
 		{
 			foreach($result as $row)
 			{

@@ -15,7 +15,7 @@ class Page extends Controller
 	// If a method is called, this is the index for the method in the URL Array
 	private $_urlKey = null;
 	// Page Attributes
-	private $_pageAttrArray = array('pageID' => 0);
+	private $_pageAttrArray = array('pageID' => 0, 'path' => '');
 	private $_pageURL = null; // For building subpage path
 
 	private $_device = null;
@@ -193,6 +193,35 @@ class Page extends Controller
 				break;
 		}
 	}
+/**
+ *
+ *	edithome - 	Edits the homepage
+ *
+ */
+	public function edithome(){
+		Auth::setAccess();
+		if($this->_pageAttrArray['pageID'] != 0) {
+			$this->error();
+			return false;
+		}
+		// Pass page attributes to view
+		$this->view->pageAttr = $this->_pageAttrArray;
+		// Title
+		$this->view->pageTitle = "Edit Homepage";
+		// Admin Nav
+		$this->view->adminNav = $this->globalModel->adminNavArray('editPage', "", "Edit Homepage");
+		// Content
+		$this->view->pageContent = $this->contentModel->getPageContent();
+		// Templates
+		$this->view->templates = $this->contentModel->buildTemplates();
+		// Gallery and Video list for embedding
+		$this->view->galleryArray = $this->contentModel->listContent('gallery');
+		$this->view->videoArray = $this->contentModel->listContent('video');
+		// Javascript
+		$this->view->js = array('editPage.min.js');
+		// Render view
+		$this->view->render('page/edit');
+	}
 
 /**
  *
@@ -269,7 +298,7 @@ class Page extends Controller
 	{
 		Auth::setAccess();
 		$this->_loadTypeContentModel('gallery');
-		$this->galleryContentModel->addGallery($this->_pageAttrArray['pageID'], true);
+		$this->galleryContentModel->addGallery($this->_pageAttrArray['pageID'], false, true);
 	}
 
 	public function uploadGalImages()
@@ -299,7 +328,8 @@ class Page extends Controller
 	{
 		Auth::setAccess();
 		$this->_loadTypeContentModel('image');
-		$this->imageContentModel->addSingleImage($this->_pageAttrArray['pageID'], $this->_pageAttrArray['url']);
+		$filename = isset($this->_pageAttrArray['url']) ? $this->_pageAttrArray['url'] : 'home';
+		$this->imageContentModel->addSingleImage($this->_pageAttrArray['pageID'], $filename);
 	}
 
 	public function addSpacer()
@@ -431,6 +461,7 @@ class Page extends Controller
 		$this->_pageAttrArray = array(
 			'type' => 'page',
 			'name' => 'Imageman',
+			'path' => '',
 			'home' => true
 		);
 	}

@@ -1,5 +1,6 @@
 var $ = require('jquery');
 var Mustache = require('../libs/mustache.min.js');
+var _ = require('./utilityFunctions.js'); // helper functions
 var Dropzone = require('../libs/dropzone.js');
 
 $(function() {
@@ -10,7 +11,7 @@ $(function() {
  */
  	var $contentArea 		= $('#contentArea'),
 	$addTab 					= $('a.addTab'),
-	pageURL 					= $('a#viewTab').attr('href');
+	pageURL 					= _.getURL();
 
 	var $addImageModal 	= $('#addImageModal'),
 	$submitImage 			= $addImageModal.find('button#submitNewImage'),

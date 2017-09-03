@@ -24,7 +24,7 @@ Single Image
 Slideshow
 - Caption
 
-Edit Homepage
+Homepage settings
 
 Add shortcut
 

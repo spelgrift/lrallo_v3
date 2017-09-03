@@ -18,7 +18,7 @@ $(function() {
  */
  	var $contentArea 	= $('#contentArea'),
 	$addTab 				= $('a.addTab'),
-	pageURL 				= $('a#viewTab').attr('href');
+	pageURL 				= _.getURL();
 
 	var $addEVModal 	= $('#addEmbedVideoModal'),
 	$evSelect 			= $addEVModal.find('#evSelect'),

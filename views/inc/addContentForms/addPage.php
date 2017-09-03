@@ -17,7 +17,7 @@
 			</div>
 
 			<div class="modal-footer">
-				<div id='contactMsg' class='pull-left'><p class='text-danger'>Does this work</p></div>
+				<div id='contactMsg' class='pull-left'><p class='text-danger'></p></div>
 				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 				<button type="button" id='submitNewPage' class="btn btn-primary">Add Page</button>
 			</div>

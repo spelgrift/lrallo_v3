@@ -37,10 +37,19 @@ var utilityFunctions = (function() {
 		});
 	};
 
+	var getURL = function(){
+		if(window.baseURL === $('a#viewTab').attr('href')){
+			return window.baseURL + 'page';
+		} else {
+			return $('a#viewTab').attr('href');
+		}
+	};
+
 	return {
 		error : error,
 		clearMsg : clearMsg,
-		post : post
+		post : post,
+		getURL : getURL
 	};
 
 })();

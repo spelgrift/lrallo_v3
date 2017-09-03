@@ -1,5 +1,6 @@
 var $ = require('jquery');
 var Mustache = require('../libs/mustache.min.js');
+var _ = require('./utilityFunctions.js'); // helper functions
 
 $(function() {
 /**
@@ -9,7 +10,7 @@ $(function() {
  */
 	var $contentArea 	= $('#contentArea'),
 	$addTab 				= $('a.addTab'),
-	pageURL 				= $('a#viewTab').attr('href');
+	pageURL 				= _.getURL();
 
 	var $addPageModal = $('#addPageModal'),
 	$addGalModal 		= $('#addGalleryModal'),

@@ -1,9 +1,10 @@
 var $ = require('jquery');
+var _ = require('./utilityFunctions.js'); // helper functions
 require('../libs/jquery-ui.sortable');
 
 $(function() {
-	var $contentArea = $('#contentArea');
-	var pageURL = $('a#viewTab').attr('href');
+	var $contentArea 	= $('#contentArea');
+	var pageURL 		= _.getURL();
 
 /*
  *

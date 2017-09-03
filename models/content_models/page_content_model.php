@@ -5,18 +5,25 @@ class Page_Content_Model extends Content_Model {
 	function __construct(){parent::__construct();}
 
 	// Add Page
-	public function addPage($parentPageID = "0")
+	public function addPage($parentPageID, $dashboard = false)
 	{
 		if(!$nameArray = $this->_processName($_POST['name'], 'page')) {
 			return false;
 		}
 		$url = $nameArray['url'];
 		$name = $nameArray['name'];
+
+		$home = ($parentPageID === 0 && !$dashboard) ? 1 : 0;
+		// Advance positions of existing content
+		if(!$dashboard) {
+			$this->_advanceContentPositions($parentPageID, $home);
+		}
 		// Content DB entry
 		$this->db->insert('content', array(
 			'type' => 'page',
 			'url' => $url,
 			'parentPageID' => $parentPageID,
+			'frontpage' => $home,
 			'author' => $_SESSION['login'],
 			'bootstrap' => BS_PAGE
 		));
