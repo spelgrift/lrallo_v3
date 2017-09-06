@@ -12,7 +12,7 @@ class Page_Model extends Model {
  */
 	public function getPageInfo($url)
 	{
-		$query = "SELECT contentID, url, type, parentPageID, nav, hidden FROM content WHERE url = :url AND trashed = 0 AND (type = 'page' OR type = 'gallery' OR type = 'video')";
+		$query = "SELECT contentID, url, type, parentPageID, frontpage, nav, hidden FROM content WHERE url = :url AND trashed = 0 AND (type = 'page' OR type = 'gallery' OR type = 'video')";
 		if($a = $this->db->select($query, array(':url' => $url)))
 		{
 			$contentAttr = $a[0];

@@ -1,7 +1,7 @@
 <?php
 // Paths (leave on trailing /)
 define('URL', 'http://kate.sampelgrift.com/ts/imageman/');
-define('DEVPATH', '/ts/imageman/'); // Remove for production!
+define('DEVPATH', '/ts/imageman/'); // Set to empty string for production
 
 define('LIBS', 'libs/');
 define('UPLOADS', 'uploads/');

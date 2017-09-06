@@ -156,6 +156,7 @@ class Page extends Controller
 		switch($this->_pageAttrArray['type'])
 		{
 			case 'page' :
+				$this->view->pageAttr['home'] = false;
 				$this->view->pageTitle = "Edit Page | ".$this->_pageAttrArray['name'];
 				// Admin Nav
 				$this->view->adminNav = $this->globalModel->adminNavArray('editPage', $this->_pageAttrArray['path'], "Edit: " . $this->_pageAttrArray['name']);
@@ -168,6 +169,8 @@ class Page extends Controller
 				$this->view->videoArray = $this->contentModel->listContent('video');
 				// Javascript
 				$this->view->js = array('editPage.min.js');
+				// Additional CSS (TinyMCE)
+				$this->view->css = array('skin.min.css');
 				// Render view
 				$this->view->render('page/edit');
 				break;
@@ -206,10 +209,14 @@ class Page extends Controller
 		}
 		// Pass page attributes to view
 		$this->view->pageAttr = $this->_pageAttrArray;
+		$this->view->pageAttr['home'] = true;
 		// Title
 		$this->view->pageTitle = "Edit Homepage";
-		// Admin Nav
+		// Admin Nav (splice out 'Settings', 'Edit Layout', change view label to 'Edit Homepage')
 		$this->view->adminNav = $this->globalModel->adminNavArray('editPage', "", "Edit Homepage");
+		array_splice($this->view->adminNav, 1, 1);
+		array_splice($this->view->adminNav, 2, 1);
+		$this->view->adminNav[2]['name'] = "<i class='fa fa-fw fa-desktop'></i> View Homepage";
 		// Content
 		$this->view->pageContent = $this->contentModel->getPageContent();
 		// Templates
@@ -369,6 +376,13 @@ class Page extends Controller
 		if($result = $this->slideshowContentModel->updateSlideshow($contentID)){
 			echo json_encode($result);
 		}
+	}
+
+	public function updateText($contentID)
+	{
+		Auth::setAccess();
+		$this->_loadTypeContentModel('text');
+		$this->textContentModel->updateText($contentID);
 	}
 
 /**

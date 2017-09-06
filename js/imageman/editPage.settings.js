@@ -12,6 +12,7 @@ $(function() {
 	$urlInput 			= $settings.find('#settingsUrlInput'),
 	$parentSelect 		= $settings.find('#settingsParentInput'),
 	$navCheck 			= $settings.find('#settingsNavCheck'),
+	$hiddenCheck 		= $settings.find('#settingsHiddenCheck'),
 	$settingsSubmit 	= $settings.find('#settingsSubmit'),
 	$trashPage 			= $settings.find('#settingsTrashPage'),
 	$settingsMsg 		= $settings.find('#settingsMsg'),
@@ -67,6 +68,11 @@ $(function() {
 			data.nav = "1";
 		} else {
 			data.nav = "0";
+		}
+		if($hiddenCheck.prop('checked')) {
+			data.hidden = "1";
+		} else {
+			data.hidden = "0";
 		}
 		// Add type specific input
 		switch(type) {

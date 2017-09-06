@@ -13,7 +13,7 @@ if($adminControls) {
 }
 ?>
 	
-<div class='content'>
+<div class='content text-edit'>
 <?php echo $text; ?>
 	
 </div>

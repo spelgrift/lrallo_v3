@@ -5,25 +5,26 @@ var _ = require('./utilityFunctions.js'); // helper functions
 $(function() {
 /**
  * 
+ * CONFIG
+ * 
+ */
+ 	var defaultText = "<p>New text. Click to edit.</p>";
+/**
+ * 
  * CACHE DOM
  * 
  */
  	var $contentArea 	= $('#contentArea'),
 	$addTab 				= $('a.addTab'),
-	pageURL 				= _.getURL();
-
-	var $addTextModal = $('#addTextModal'),
-	$addTextArea 		= $addTextModal.find('#newTextArea'),
-	$submitText 		= $addTextModal.find('button#submitNewText'),
-	$textMsg 			= $addTextModal.find('#textMsg'),
 	textTemplate 		= $('#textTemplate').html().replace('amp;', '');
+	pageURL 				= _.getURL();
 
 /**
  * 
  * BIND EVENTS
  * 
  */
-	$submitText.click(submitText);
+	$addTab.click(submitText);
 
 /**
  * 
@@ -32,29 +33,23 @@ $(function() {
  */
  	function submitText(ev) {
 		ev.preventDefault();
-		// Get user input
-		var data = { text : $addTextArea.val() };
-		// Validate
-		if(data.text.length < 1) {
-			return _.error('Please enter some text', $textMsg, $addTextArea);
-		}
-		// Post to server
-		var url = pageURL + '/addText';
+		if($(this).attr('data-id') !== 'text'){ return false;	}
+		var data = { text : defaultText },
+		url = pageURL + '/addText';
 		_.post(url, data, submitSuccess, submitError);
 	}
 
 	function submitSuccess(data) {
-		$addTextArea.val('');
-		$addTextModal.modal('hide');
 		var newTextObject = {
 			contentID : data.results.contentID,
 			textID : data.results.textID,
 			text : data.results.text
 		};
 		$contentArea.prepend(Mustache.render(textTemplate, newTextObject));
+		events.emit('newText');
 	}
 
 	function submitError(data) {
-		_.error(data.error_msg, $textMsg, $addTextArea);
+		console.log('Error: '+data.error_msg);
 	}
 });

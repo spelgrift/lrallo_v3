@@ -22,12 +22,12 @@ class Content_Model extends Model {
 	{
 		if($pageid) // PageID passed, get content for that page
 		{
-			$query = "SELECT contentID, url, type, position, bootstrap FROM content WHERE parentPageID = :parentPageID AND trashed = 0 AND orphaned = 0 ORDER BY position ASC";
+			$query = "SELECT contentID, url, type, position, bootstrap FROM content WHERE parentPageID = :parentPageID AND hidden = 0 AND trashed = 0 AND orphaned = 0 ORDER BY position ASC";
 			$dbArray = array(':parentPageID' => $pageid);
 		}
 		else // No PageID, get content for homepage
 		{
-			$query = "SELECT contentID, url, type, position, bootstrap FROM content WHERE frontpage = 1 AND trashed = 0 AND orphaned = 0 ORDER BY position ASC";
+			$query = "SELECT contentID, url, type, position, bootstrap FROM content WHERE frontpage = 1 AND hidden = 0 AND trashed = 0 AND orphaned = 0 ORDER BY position ASC";
 			$dbArray = array();
 		}
 		// Run query
@@ -311,6 +311,7 @@ class Content_Model extends Model {
 		$url = $_POST['url'];
 		$parent = $_POST['parent'];
 		$nav = $_POST['nav'];
+		$hidden = $_POST['hidden'];
 		$origName = $_POST['origName'];
 		$origURL = $_POST['origURL'];
 		// Type specific attributes
@@ -340,11 +341,20 @@ class Content_Model extends Model {
 		if(!$url = $this->_processNameUrl($type, $name, $url, $origName, $origURL)) {
 			return false;
 		}
+		// Handle homepage logic
+		if($parent === 'home'){
+			$parent = 0;
+			$home = 1;
+		} else {
+			$home = 0;
+		}
 		// Content DB Update
 		$this->db->update('content', array(
 			'url' => $url,
 			'parentPageID' => $parent,
-			'nav' => $nav
+			'frontpage' => $home,
+			'nav' => $nav,
+			'hidden' => $hidden
 		), "`contentID` = ".$contentID);
 		// Type DB Update
 		switch($type)

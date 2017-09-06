@@ -23,3 +23,6 @@ require('./imageman/editPage.contentControls.js');
 require('./imageman/editPage.contentResize.js');
 require('./imageman/editPage.shortcutSettings.js');
 require('./imageman/editPage.slideshowSettings.js');
+
+require('./imageman/editPage.editText.js');
+

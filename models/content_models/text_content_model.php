@@ -46,4 +46,15 @@ class Text_Content_Model extends Content_Model {
 		);
 		echo json_encode($results);
 	}
+
+	// Update Text
+	public function updateText($contentID)
+	{
+		$text = $_POST['text'];
+		if($this->db->update('text', array('text' => $text), '`contentID` ='.$contentID)){
+			echo json_encode(array('error' => false));
+		} else {
+			echo json_encode(array('error' => true));
+		}
+	}
 }

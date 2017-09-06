@@ -17,7 +17,6 @@ $(function() {
 	$addSSModal 		= $('#addSSModal'),
 	$addVideoModal 	= $('#addVideoModal'),
 	$addEVModal 		= $('#addEmbedVideoModal'),
-	$addTextModal 		= $('#addTextModal'),
 	$addImageModal 	= $('#addImageModal'),
 	$addSpacerModal 	= $('#addSpacerModal'),
 	$submitSpacer 		= $addSpacerModal.find('button#submitNewSpacer'),
@@ -43,9 +42,6 @@ $(function() {
 		ev.preventDefault();
 		var type = $(this).attr('data-id');
 		switch(type) {
-			case 'text' :
-				$addTextModal.modal('show');
-			break;
 			case 'page' :
 				$addPageModal.modal('show');
 			break;
