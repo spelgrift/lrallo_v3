@@ -24,8 +24,12 @@ $(function() {
  * CACHE DOM
  * 
  */
- 	var $contentArea = $('#contentArea'),
-	pageURL = _.getURL();
+ 	var $contentArea 	= $('#contentArea'),
+ 	$editHTMLmodal 	= $('#editHTMLmodal'),
+ 	$editHTMLarea 		= $editHTMLmodal.find('#editHTMLarea'),
+ 	$submitHTML 		= $editHTMLmodal.find('#submitHTML'),
+ 	$textMsg 			= $editHTMLmodal.find('#textMsg'),
+	pageURL 				= _.getURL();
 
 /**
  * 
@@ -39,25 +43,56 @@ $(function() {
  * BIND EVENTS
  * 
  */
- 	// Create new editor when new text element added
  	events.on('newText', newEditor);
+ 	$contentArea.on('click', '.editHTML', editHTML);
+ 	$submitHTML.click(saveHTML);
+
 /**
  * 
  * CORE FUNCTIONS
  * 
  */
-	function saveText(e) {
+ 	function editHTML(ev) {
+ 		ev.preventDefault();
+ 		var contentID 	= $(this).closest('.contentControlMenu').attr('id'),
+ 		editorID 		= $(this).closest('.contentControlMenu').siblings('.text-edit').attr('id'),
+ 		content 			= tinymce.get(editorID).getContent();
+
+ 		$editHTMLarea.val(content);
+ 		$submitHTML.attr('data-id', contentID);
+ 		$editHTMLmodal.modal('show');
+ 	}
+
+ 	function saveHTML(ev) {
+ 		ev.preventDefault();
+ 		var contentID = $(this).attr('data-id'),
+ 		data = {	text : $editHTMLarea.val() };
+ 		url = pageURL + '/updateText/'+contentID;
+		_.post(url, data, submitHTMLsuccess, submitHTMLerror);
+ 	}
+
+ 	function submitHTMLsuccess(data) {
+ 		$contentArea.find('#'+data.results.contentID).siblings('.text-edit').html(data.results.text);
+ 		$editHTMLarea.val('');
+ 		$editHTMLmodal.modal('hide');
+ 	}
+
+ 	function submitHTMLerror(data) {
+ 		_.error('Error saving content', $textMsg, $editHTMLarea);
+ 	}
+
+	function saveText() {
 		var data = { text : tinymce.activeEditor.getContent() },
 		contentID = $(tinymce.activeEditor.getElement()).siblings('.contentControlMenu').attr('id'),
 		url = pageURL + '/updateText/'+contentID;
-		_.post(url, data, submitSuccess, submitError);
+		_.post(url, data, submitTextSuccess, submitTextError);
 	}
 
-	function submitSuccess(data) {
+	function submitTextSuccess(data) {
 		console.log('Changes saved!');
 	}
 
-	function submitError(data) {
+	function submitTextError(data) {
 		console.log('Error');
 	}
 

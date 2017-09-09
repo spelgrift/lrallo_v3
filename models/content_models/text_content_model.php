@@ -52,9 +52,16 @@ class Text_Content_Model extends Content_Model {
 	{
 		$text = $_POST['text'];
 		if($this->db->update('text', array('text' => $text), '`contentID` ='.$contentID)){
-			echo json_encode(array('error' => false));
+			$results = array(
+				'error' => false,
+				'results' => array(
+					'contentID' => $contentID,
+					'text' => $text
+				)
+			);
 		} else {
-			echo json_encode(array('error' => true));
+			$results = array('error' => true);
 		}
+		echo json_encode($results);
 	}
 }

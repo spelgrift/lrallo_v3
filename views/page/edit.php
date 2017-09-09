@@ -5,11 +5,11 @@ require 'views/inc/addContentForms/addGallery.php';
 require 'views/inc/addContentForms/addSlideshow.php';
 require 'views/inc/addContentForms/addVideo.php';
 require 'views/inc/addContentForms/addEmbedVideo.php';
-require 'views/inc/addContentForms/addText.php';
 require 'views/inc/addContentForms/addImage.php';
 require 'views/inc/addContentForms/addSpacer.php';
 require 'views/inc/content/shortcut/shortcutSettings.php';
 require 'views/inc/content/slideshow/slideshowSettings.php';
+require 'views/inc/content/text/editHTML.php';
 
 // If homepage, render custom html ('views/custom/home.php') before normal content (if it exists)
 if($this->pageAttr['home']){
