@@ -29,6 +29,5 @@
 	</select>
 	<p>Current screen size: <span class='screenSize'></span></p>
 	<button type="button" class="btn btn-sm btn-primary saveResize">Save</button>
-	<button type="button" class="btn btn-sm btn-default cancelResize">Cancel</button>	
-
+	<button type="button" class="btn btn-sm btn-default cancelResize">Cancel</button>
 </div>

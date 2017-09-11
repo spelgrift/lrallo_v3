@@ -1,4 +1,4 @@
-<nav id="adminNav" class="navbar navbar-inverse">
+<nav id="adminNav" class="navbar navbar-inverse" data-id="<? echo $this->pageAttr['pageID']; ?>">
 	<div class="container-fluid">
 
 		<ul class="nav navbar-nav navbar-right">

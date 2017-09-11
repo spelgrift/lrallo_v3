@@ -7,6 +7,7 @@ require 'views/inc/addContentForms/addVideo.php';
 require 'views/inc/addContentForms/addEmbedVideo.php';
 require 'views/inc/addContentForms/addImage.php';
 require 'views/inc/addContentForms/addSpacer.php';
+require 'views/inc/content/adminControls/contentControls.php';
 require 'views/inc/content/shortcut/shortcutSettings.php';
 require 'views/inc/content/slideshow/slideshowSettings.php';
 require 'views/inc/content/text/editHTML.php';
@@ -18,6 +19,10 @@ if($this->pageAttr['home']){
 		require $customFile;
 	}
 }
+
+// echo "<pre>";
+// print_r($this->pageAttr);
+// echo "</pre>";
 ?>
 
 <div class='row tabPanel active' id='contentArea'>

@@ -3,14 +3,27 @@ var _ = require('./utilityFunctions.js'); // helper functions
 require('../libs/jquery-ui.sortable');
 
 $(function() {
-	var $contentArea 	= $('#contentArea');
-	var pageURL 		= _.getURL();
+/*
+ *
+ * CACHE DOM
+ *
+ */
+	var $contentArea 			= $('#contentArea'),
+	$contentSettingsModal 	= $('#contentSettingsModal'),
+	$parentSelect				= $contentSettingsModal.find('#contentParentSelect'),
+	$settingsSave				= $contentSettingsModal.find('#saveContentSettings'),
+	$contentParentMsg			= $contentSettingsModal.find('#contentParentMsg'),
+	pageID						= $('#adminNav').attr('data-id'),
+	pageURL 						= _.getURL();
 
 /*
  *
  * BIND EVENTS
  *
  */
+ 	// Content Settings
+ 	$contentArea.on('click', 'a.editContentSettings', loadSettingsModal);
+ 	$settingsSave.click(submitSettings);
 
 	// Trash Content
 	$contentArea.on('click', 'a.trashContent', trashContent);
@@ -29,7 +42,36 @@ $(function() {
  * CORE FUNCTIONS
  *
  */
+ 	function submitSettings(ev) {
+ 		ev.preventDefault();
+ 		var data = { parent : $parentSelect.val() },
+ 		contentID = $(this).attr('data-id');
+ 		if(data.parent == pageID) {
+ 			$contentSettingsModal.modal('hide');
+ 			return;
+ 		}
+ 		var url = pageURL + '/updateContentSettings/' + contentID;
+ 		_.post(url, data, saveSuccess, saveError);
+ 	}
 
+ 	function saveSuccess(data) {
+ 		var $thisBlock = $contentArea.find('#'+data.contentID).closest('.contentItem');
+ 		if(data.newParent != pageID) {
+ 			$thisBlock.remove();
+ 		}
+ 		$contentSettingsModal.modal('hide');
+ 	}
+
+ 	function saveError(data) {
+ 		_.error(data.error_msg, $contentParentMsg);
+ 	}
+
+ 	function loadSettingsModal(ev) {
+ 		ev.preventDefault();
+ 		var contentID	 	= $(this).closest('.contentControlMenu').attr('id');
+ 		$settingsSave.attr('data-id', contentID);
+ 		$contentSettingsModal.modal('show');
+ 	}
  	function updateSortable() {
  		var order = $(this).sortable('serialize');
  		$.ajax({

@@ -11,7 +11,6 @@ Imageman is a simple CMS to allow users to administer their website without any 
 Add content keyboard shortcuts (enter/escape)
 
 Content settings
-- Parent
 - Mobile only
 - Tablet/desktop only
 

@@ -396,6 +396,37 @@ class Content_Model extends Model {
 			'viewPath' => $viewPath
 		));
 	}
+
+	/**
+	 *	updateContentSettings - Sets new parent, saves mobile/desktop visibility
+	 *
+	 */
+	public function updateContentSettings($contentID)
+	{
+		$parent = $_POST['parent'];
+		// Handle homepage logic
+		if($parent === 'home'){
+			$parent = 0;
+			$home = 1;
+		} else {
+			$home = 0;
+		}
+		// Content DB Update
+		if($this->db->update('content', array(
+			'parentPageID' => $parent,
+			'frontpage' => $home,
+		), "`contentID` = ".$contentID)) {
+			$results = array(
+				'error' => false,
+				'contentID' => $contentID,
+				'newParent' => $parent
+			);
+		} else {
+			$this->_returnError('Unknown error');
+			return false;
+		}
+		echo json_encode($results);
+	}
 	/**
 	 *	trashContent - Marks content item with the 'trashed' flag
 	 *

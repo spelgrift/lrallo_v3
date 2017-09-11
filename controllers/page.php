@@ -221,6 +221,8 @@ class Page extends Controller
 		$this->view->pageContent = $this->contentModel->getPageContent();
 		// Templates
 		$this->view->templates = $this->contentModel->buildTemplates();
+		// Build page list for parent select
+		$this->view->pageList = $this->model->listPages();
 		// Gallery and Video list for embedding
 		$this->view->galleryArray = $this->contentModel->listContent('gallery');
 		$this->view->videoArray = $this->contentModel->listContent('video');
@@ -243,6 +245,12 @@ class Page extends Controller
 			$displayName = $this->_pageAttrArray['displayName'];
 		}
 		$this->contentModel->updateSettings($this->_pageAttrArray['type'], $this->_pageAttrArray['contentID'], $displayName);
+	}
+
+	public function updateContentSettings($contentID)
+	{
+		Auth::setAccess();
+		$this->contentModel->updateContentSettings($contentID);
 	}
 
 	public function sortContent()
