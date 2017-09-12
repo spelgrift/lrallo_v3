@@ -1,8 +1,33 @@
 .slideshow {
 	width: 100%;
 	position: relative;
-	padding-top: @shortcutAspect;
+	// padding-top: @shortcutAspect;
 	overflow: hidden;
+
+	&.sm-aspect-3x2 {
+		padding-top: calc(100% * 2 / 3);
+	}
+
+	&.sm-aspect-16x9 {
+		padding-top: calc(100% * 9 / 16);
+	}
+
+	&.sm-aspect-3x1 {
+		padding-top: calc(100% * 1 / 3);
+	}
+
+	&.sm-aspect-2x1 {
+		padding-top: 50%;
+	}
+
+	&.sm-aspect-1x1 {
+		padding-top: 100%;
+	}
+
+	&.sm-hide-controls .arrow {
+		display:none;
+	}
+
 
 	.slides {
 		width:100%;
@@ -103,12 +128,12 @@
 
 		&.arrow-left {
 			left:30px;
-			transform:rotate(225deg);
+			transform: translateY(-50%) rotate(225deg);
 		}
 
 		&.arrow-right {
 			right:30px;
-			transform:rotate(45deg);
+			transform: translateY(-50%) rotate(45deg);
 		}
 	}
 

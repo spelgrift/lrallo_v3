@@ -3,10 +3,12 @@ var _ = require('./utilityFunctions.js'); // helper functions
 require('./slideMan.js'); // Image slider
 
 // Define DOM attribute names to update settings
-var autoClass 	= 'sm-auto',
-fadeClass 		= 'sm-fade',
-speedAttr 		= 'data-sm-speed',
-durationAttr 	= 'data-sm-duration';
+var autoClass 		= 'sm-auto',
+controlsClass		= 'sm-hide-controls',
+fadeClass 			= 'sm-fade',
+speedAttr 			= 'data-sm-speed',
+durationAttr 		= 'data-sm-duration',
+aspectClassPrefix	= 'sm-aspect-';
 
 $(function() {
 /*
@@ -16,15 +18,18 @@ $(function() {
 */
 	var $contentArea 			= $('#contentArea'),
 	$shortcutSettingsModal 	= $('#slideshowSettingsModal'),
+	$ssControlsCheck 			= $shortcutSettingsModal.find('#ssControlsCheck'),
 	$ssAutoPlayCheck 			= $shortcutSettingsModal.find('#ssAutoPlayCheck'),
 	$ssDurationInput			= $shortcutSettingsModal.find('#ssDurationInput'),
 	$ssAnimationSelect		= $shortcutSettingsModal.find('#ssAnimationSelect'),
 	$ssSpeedInput				= $shortcutSettingsModal.find('#ssSpeedInput'),
+	$ssAspectSelect			= $shortcutSettingsModal.find('#ssAspectSelect'),
 	$saveButton					= $shortcutSettingsModal.find('#saveSSSettings'),
 	$ssDurationMsg				= $shortcutSettingsModal.find('#ssDurationMsg'),
 	$ssSpeedMsg					= $shortcutSettingsModal.find('#ssSpeedMsg'),
 	pageURL 						= $('a#viewTab').attr('href'),
-	$thisSS;
+	$thisSS,
+	oldAspectClass;
 
 /*
 *
@@ -32,8 +37,12 @@ $(function() {
 *
 */
 	$contentArea.on('click', '.slideshowSettings', loadSettingsModal);
+	// Validate
 	$ssDurationInput.keyup(validateDigit);
 	$ssSpeedInput.keyup(validateDigit);
+	// Checkbox behavior
+	$ssControlsCheck.on('change', handleCheck);
+	$ssAutoPlayCheck.on('change', handleCheck);
 	$saveButton.click(saveSettings);
 
 /*
@@ -48,7 +57,9 @@ $(function() {
  			'animationSpeed' 	: $ssSpeedInput.val(),
  			'slideDuration' 	: $ssDurationInput.val(),
  			'animationType' 	: $ssAnimationSelect.val(),
- 			'autoplay' 			: $ssAutoPlayCheck.prop('checked') ? '1' : '0'
+ 			'autoplay' 			: $ssAutoPlayCheck.prop('checked') ? '1' : '0',
+ 			'hideControls'		: $ssControlsCheck.prop('checked') ? '1' : '0',
+ 			'aspectRatio'		: $ssAspectSelect.val()
  		};
  		// if(data.animationSpeed.length < 1) {
  		// 	_.error('Cannot be blank', $ssSpeedMsg, $ssSpeedInput);
@@ -83,7 +94,69 @@ $(function() {
  		} else {
  			$thisSS.removeClass(autoClass);
  		}
+ 		if(settings.hideControls === '1') {
+ 			$thisSS.removeClass(controlsClass).addClass(controlsClass);
+ 		} else {
+ 			$thisSS.removeClass(controlsClass);
+ 		}
+ 		$thisSS.removeClass(oldAspectClass).addClass(aspectClassPrefix+settings.aspectRatio);
  		$thisSS.slideMan().updateSettings();
+ 	}
+
+ 	function loadSettingsModal(ev) {
+ 		ev.preventDefault();
+ 		var contentID	 	= $(this).closest('.contentControlMenu').attr('id'),
+ 		$thisSlideshow 	= $(this).closest('.contentItem').find('.slideshow'),
+ 		origSettings		= {
+ 			'hideControls'		: $thisSlideshow.hasClass(controlsClass) ? true : false,
+ 			'animationSpeed'	: $thisSlideshow.attr(speedAttr),
+ 			'slideDuration'	: $thisSlideshow.attr(durationAttr),
+ 			'animationType'	: $thisSlideshow.hasClass(fadeClass) ? 'fade' : 'slide',
+ 			'autoplay'			: $thisSlideshow.hasClass(autoClass) ? true : false,
+ 			'aspect'				: getAspectRatio($thisSlideshow)
+ 		};
+ 		$thisSS = $thisSlideshow;
+ 		oldAspectClass = aspectClassPrefix+origSettings.aspect;
+ 		$ssControlsCheck.prop('checked', origSettings.hideControls);
+ 		$ssAutoPlayCheck.prop('checked', origSettings.autoplay);
+ 		$ssDurationInput.val(origSettings.slideDuration);
+ 		$ssAnimationSelect.val(origSettings.animationType);
+ 		$ssSpeedInput.val(origSettings.animationSpeed);
+ 		$ssAspectSelect.val(origSettings.aspect);
+
+ 		$saveButton.attr('data-id', contentID);
+
+ 		$shortcutSettingsModal.modal('show');
+ 	}
+
+ 	function handleCheck() {
+ 		// If hide controls is changed to true and autoplay is false, check autoplay
+ 		if($(this).attr('id') == 'ssControlsCheck'){
+ 			if($(this).prop('checked') && !$ssAutoPlayCheck.prop('checked')) {
+ 				$ssAutoPlayCheck.prop('checked', true);
+ 			}
+ 		} else {	// If autoplay is changed to false and hide controls is set to true, uncheck controls
+ 			if(!$(this).prop('checked') && $ssControlsCheck.prop('checked')) {
+ 				$ssControlsCheck.prop('checked', false);
+ 			}
+ 		}
+ 	}
+
+ 	
+/*
+ *
+ * HELPER FUNCTIONS
+ *
+ */
+ 	function getAspectRatio($slideshow) {
+ 		var classList = $slideshow.attr('class').split(/\s+/),
+ 		aspect;
+ 		$.each(classList, function(index, item) {
+ 			if(item.includes(aspectClassPrefix)) {
+ 				aspect = item.replace(aspectClassPrefix, '');
+ 			}
+ 		});
+ 		return aspect;
  	}
 
  	function validateDigit(ev) {
@@ -97,27 +170,4 @@ $(function() {
  			$thisInput.val('');
  		}
  	}
-
- 	function loadSettingsModal(ev) {
- 		ev.preventDefault();
- 		var contentID	 	= $(this).closest('.contentControlMenu').attr('id'),
- 		$thisSlideshow 	= $(this).closest('.contentItem').find('.slideshow'),
- 		origSettings		= {
- 			'animationSpeed'	: $thisSlideshow.attr(speedAttr),
- 			'slideDuration'	: $thisSlideshow.attr(durationAttr),
- 			'animationType'	: $thisSlideshow.hasClass(fadeClass) ? 'fade' : 'slide',
- 			'autoplay'			: $thisSlideshow.hasClass(autoClass) ? true : false
- 		};
- 		$thisSS = $thisSlideshow;
- 		$ssAutoPlayCheck.prop('checked', origSettings.autoplay);
- 		$ssDurationInput.val(origSettings.slideDuration);
- 		$ssAnimationSelect.val(origSettings.animationType);
- 		$ssSpeedInput.val(origSettings.animationSpeed);
-
- 		$saveButton.attr('data-id', contentID);
-
- 		$shortcutSettingsModal.modal('show');
- 	}
-
-
 });

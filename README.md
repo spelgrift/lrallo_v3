@@ -28,8 +28,6 @@ Single Image
 
 Slideshow
 - Caption
-- Show/hide controls
-- Aspect ratio
 
 Shortcut content type
 

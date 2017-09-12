@@ -7,6 +7,14 @@
 			</div>
 			<div class="modal-body">
 				<form>
+				<div class='form-group'>
+						<label for="ssControlsCheck">Hide Controls</label>
+						<div class="checkbox">
+							<label>
+								<input id='ssControlsCheck' type="checkbox"> Hide the next/previous buttons. <em>Requires Auto-Play</em>
+							</label>
+						</div>
+					</div>
 					<div class='form-group'>
 						<label for="ssAutoPlayCheck">Auto-Play</label>
 						<div class="checkbox">
@@ -14,10 +22,9 @@
 								<input id='ssAutoPlayCheck' type="checkbox"> Advance to the next slide after given <strong>duration</strong> in milliseconds
 							</label>
 						</div>
-
 					</div>
 					<div class='form-group'>
-						<label for='ssDurationInput'>Duration</label>
+						<label for='ssDurationInput'>Duration (milliseconds)</label>
 						<input id='ssDurationInput' type='text' class='form-control' placeholder='Slide Duration (milliseconds)'>
 						<p class='error-block' id='ssDurationMsg'></p>
 					</div>
@@ -33,9 +40,16 @@
 						<input id='ssSpeedInput' type='text' class='form-control' placeholder='Animation Speed (milliseconds)'>
 						<p class='error-block' id='ssSpeedMsg'></p>
 					</div>
-
-
-
+					<div class='form-group'>
+						<label for='ssAspectSelect'>Aspect Ratio</label>
+						<select id='ssAspectSelect' class='form-control'>
+							<option value='3x2'>3:2</option>
+							<option value='16x9'>16:9</option>
+							<option value='3x1'>3:1</option>
+							<option value='2x1'>2:1</option>
+							<option value='1x1'>1:1</option>
+						</select>
+					</div>
 				</form>
 			</div>
 			<div class="modal-footer">

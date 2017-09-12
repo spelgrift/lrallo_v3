@@ -14,7 +14,9 @@ class Slideshow_Content_Model extends Content_Model {
 				->val('blank')
 				->val('digit')
 				->post('autoplay')
-				->post('animationType');
+				->post('animationType')
+				->post('hideControls')
+				->post('aspectRatio');
 		if(!$form->submit()) {
 			$error = $form->fetchError();
 			$this->_returnError(reset($error), key($error));

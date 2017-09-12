@@ -4799,8 +4799,25 @@ footer .footer-above {
 .slideshow {
   width: 100%;
   position: relative;
-  padding-top: calc(66.66666667%);
   overflow: hidden;
+}
+.slideshow.sm-aspect-3x2 {
+  padding-top: calc(66.66666667%);
+}
+.slideshow.sm-aspect-16x9 {
+  padding-top: calc(56.25%);
+}
+.slideshow.sm-aspect-3x1 {
+  padding-top: calc(33.33333333%);
+}
+.slideshow.sm-aspect-2x1 {
+  padding-top: 50%;
+}
+.slideshow.sm-aspect-1x1 {
+  padding-top: 100%;
+}
+.slideshow.sm-hide-controls .arrow {
+  display: none;
 }
 .slideshow .slides {
   width: 100%;
@@ -4897,13 +4914,13 @@ footer .footer-above {
 }
 .slideshow .arrow.arrow-left {
   left: 30px;
-  -webkit-transform: rotate(225deg);
-          transform: rotate(225deg);
+  -webkit-transform: translateY(-50%) rotate(225deg);
+          transform: translateY(-50%) rotate(225deg);
 }
 .slideshow .arrow.arrow-right {
   right: 30px;
-  -webkit-transform: rotate(45deg);
-          transform: rotate(45deg);
+  -webkit-transform: translateY(-50%) rotate(45deg);
+          transform: translateY(-50%) rotate(45deg);
 }
 .slideshow .slideControlBar {
   position: absolute;

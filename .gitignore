@@ -52,5 +52,5 @@ uploads/*.png
 uploads/originals/*.jpg
 uploads/originals/*.gif
 uploads/originals/*.png
-uploads/thumbs/*.*
-uploads/covers/*.* 
+uploads/thumbs/*.jpg
+uploads/covers/*.jpg

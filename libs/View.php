@@ -47,6 +47,8 @@ class View {
 				$animationType = $contentObject['animationType'];
 				$animationSpeed = $contentObject['animationSpeed'];
 				$slideDuration = $contentObject['slideDuration'];
+				$hideControls = $contentObject['hideControls'];
+				$aspectRatio = $contentObject['aspectRatio'];
 				$galleryID = $contentObject['galleryID'];
 				break;
 			case 'embeddedVideo' :

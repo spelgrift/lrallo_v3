@@ -29,6 +29,12 @@ if($animationType == 'slide') {
 } else if($animationType == 'fade') {
 	$class .= ' sm-fade';
 }
+if($hideControls == 1) {
+	$class .= ' sm-hide-controls';
+} else {
+	$class .= '';
+}
+$class .= " sm-aspect-$aspectRatio";
 $class .= "'";
 $slideshowAttr = $class . " data-sm-speed='$animationSpeed' data-sm-duration='$slideDuration' data-gal-id='$galleryID'";
 ?>
