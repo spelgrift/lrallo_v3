@@ -33,7 +33,11 @@ class Page extends Controller
 		// If URL is empty, load home page
 		if (empty($url[0])) 
 		{
-			$this->_loadHome();
+			if(!$this->_loadHome())
+			{
+				$this->error();
+				return false;
+			}
 		}
 		// Method or subpage(s) passed in URL, loop over url array, loading each page or calling method
 		else if(count($url) > 1) 
@@ -79,46 +83,6 @@ class Page extends Controller
 
 /**
  *
- *	Build Index Views (public page, gallery, video)
- *
- */
-	private function _buildIndexView()
-	{
-		// JS (public)
-		$this->view->js = array('public.min.js');
-		// Add view vars based on type
-		$this->view->pageAttr = $this->_pageAttrArray;
-		$this->view->pageTitle = $this->_pageAttrArray['name'];
-		switch($this->_pageAttrArray['type'])
-		{
-			case 'page' :
-				// Switch if homepage
-				if(!$this->_pageAttrArray['home']) {
-					// Admin Nav
-					$this->view->adminNav = $this->globalModel->adminNavArray('pageIndex', $this->_pageAttrArray['path']);				
-					// Load content
-					$this->view->pageContent = $this->contentModel->getPageContent($this->_pageAttrArray['pageID']);
-				} else {
-					// Home Admin Nav
-					$this->view->adminNav = $this->globalModel->adminNavArray('home');
-					// Home content
-					$this->view->pageContent = $this->contentModel->getPageContent();
-				}
-				break;
-			case 'gallery' :
-				// Admin nav
-				$this->view->adminNav = $this->globalModel->adminNavArray('galIndex', $this->_pageAttrArray['path']);
-				// Gal Images
-				$this->view->galImages = $this->contentModel->getGalImages($this->_pageAttrArray['galleryID']);
-				break;
-			case 'video' :
-				// Admin nav
-				$this->view->adminNav = $this->globalModel->adminNavArray('vidIndex', $this->_pageAttrArray['path']);
-		}		
-	}
-
-/**
- *
  *	INDEX METHODS
  *
  */
@@ -159,7 +123,7 @@ class Page extends Controller
 				$this->view->pageAttr['home'] = false;
 				$this->view->pageTitle = "Edit Page | ".$this->_pageAttrArray['name'];
 				// Admin Nav
-				$this->view->adminNav = $this->globalModel->adminNavArray('editPage', $this->_pageAttrArray['path'], "Edit: " . $this->_pageAttrArray['name']);
+				$this->view->adminNav = 'editpage';
 				// Content
 				$this->view->pageContent = $this->contentModel->getPageContent($this->_pageAttrArray['pageID']);
 				// Templates
@@ -177,7 +141,7 @@ class Page extends Controller
 			case 'gallery' :
 				$this->view->pageTitle = "Edit Gallery | ".$this->_pageAttrArray['name'];
 				// Admin Nav
-				$this->view->adminNav = $this->globalModel->adminNavArray('editGallery', $this->_pageAttrArray['path'], "Edit: " . $this->_pageAttrArray['name']);
+				$this->view->adminNav = 'editgallery';
 				// Gal Images
 				$this->view->galImages = $this->contentModel->getGalImages($this->_pageAttrArray['galleryID']);
 				// Javascript
@@ -188,7 +152,7 @@ class Page extends Controller
 			case 'video' :
 				$this->view->pageTitle = "Edit Video | ".$this->_pageAttrArray['name'];
 				// Admin Nav
-				$this->view->adminNav = $this->globalModel->adminNavArray('editVideo', $this->_pageAttrArray['path'], "Edit: " . $this->_pageAttrArray['name']);
+				$this->view->adminNav = 'editvideo';
 				// Javascript
 				$this->view->js = array('editVid.min.js');
 				// Render view
@@ -207,16 +171,19 @@ class Page extends Controller
 			$this->error();
 			return false;
 		}
+		// Get homepage settings
+		$this->_pageAttrArray['homeSettings'] = $this->model->getHomeSettings();
+
+		// Get homeTarget list
+		$this->view->homeTargetList = $this->model->listHomeTargets();
+
 		// Pass page attributes to view
 		$this->view->pageAttr = $this->_pageAttrArray;
 		$this->view->pageAttr['home'] = true;
 		// Title
 		$this->view->pageTitle = "Edit Homepage";
-		// Admin Nav (splice out 'Settings', 'Edit Layout', change view label to 'Edit Homepage')
-		$this->view->adminNav = $this->globalModel->adminNavArray('editPage', "", "Edit Homepage");
-		array_splice($this->view->adminNav, 1, 1);
-		array_splice($this->view->adminNav, 2, 1);
-		$this->view->adminNav[2]['name'] = "<i class='fa fa-fw fa-desktop'></i> View Homepage";
+		// Admin Nav
+		$this->view->adminNav = 'edithome';
 		// Content
 		$this->view->pageContent = $this->contentModel->getPageContent();
 		// Templates
@@ -245,6 +212,12 @@ class Page extends Controller
 			$displayName = $this->_pageAttrArray['displayName'];
 		}
 		$this->contentModel->updateSettings($this->_pageAttrArray['type'], $this->_pageAttrArray['contentID'], $displayName);
+	}
+
+	public function updateHomeSettings()
+	{
+		Auth::setAccess();
+		$this->model->updateHomeSettings();
 	}
 
 	public function updateContentSettings($contentID)
@@ -479,13 +452,31 @@ class Page extends Controller
  */
 	private function _loadHome()
 	{
-		// Set homepage attributes
-		$this->_pageAttrArray = array(
-			'type' => 'page',
-			'name' => 'Imageman',
-			'path' => '',
-			'home' => true
-		);
+		// Hit DB for homepage type
+		$homeSettings = $this->model->getHomeSettings();
+		if($homeSettings['homeType'] == 'normal') {
+			// Set homepage attributes
+			$this->_pageAttrArray = array(
+				'type' => 'page',
+				'name' => 'Imageman',
+				'path' => '',
+				'home' => true
+			);
+			$this->_pageAttrArray['homeSettings'] = $homeSettings;
+		} else {
+			if(!$result = $this->model->loadPage('contentID', $homeSettings['homeTarget'])) {
+				return false;
+			}
+			// Save full result array to class
+			$this->_pageAttrArray = $result;
+			$this->_pageAttrArray['path'] = '';
+			// Set flag that this IS the homepage
+			$this->_pageAttrArray['home'] = true;
+			$this->_pageAttrArray['homeSettings'] = $homeSettings;
+		}
+		// Set name to BRAND
+		$this->_pageAttrArray['name'] = BRAND;
+		return true;
 	}
 
 /**
@@ -496,7 +487,7 @@ class Page extends Controller
 	private function _loadPage($url)
 	{
 		// Make sure page exists
-		if(!$result = $this->model->getPageInfo($url))
+		if(!$result = $this->model->loadPage('url', $url))
 		{
 			return false;
 		}
@@ -518,5 +509,39 @@ class Page extends Controller
 		// Set flag that this is NOT the homepage
 		$this->_pageAttrArray['home'] = false;
 		return true;
+	}
+
+/**
+ *
+ *	Build Index Views (public page, gallery, video)
+ *
+ */
+	private function _buildIndexView()
+	{
+		// JS (public)
+		$this->view->js = array('public.min.js');
+
+		// Add view vars based on type
+		$this->view->pageAttr = $this->_pageAttrArray;
+		$this->view->pageTitle = $this->_pageAttrArray['name'];
+		$this->view->adminNav = 'page';
+
+		// If this is the homepage and it is set to normal, load homepage content.
+		if($this->_pageAttrArray['home'] && $this->_pageAttrArray['homeSettings']['homeType'] == 'normal') {
+			// Home content
+			$this->view->pageContent = $this->contentModel->getPageContent();
+		} else {
+			switch($this->_pageAttrArray['type'])
+			{
+				case 'page' :			
+					// Load content
+					$this->view->pageContent = $this->contentModel->getPageContent($this->_pageAttrArray['pageID']);
+				break;
+				case 'gallery' :
+					// Gal Images
+					$this->view->galImages = $this->contentModel->getGalImages($this->_pageAttrArray['galleryID']);
+				break;
+			}	
+		}	
 	}
 }

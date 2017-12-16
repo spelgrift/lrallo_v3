@@ -8,7 +8,6 @@ class View {
 		$this->_device = $this->detectDevice();
 	}
 
-	public $adminNav = array();
 	protected $_device = null;
 
 	public function render($name, $headers = true){

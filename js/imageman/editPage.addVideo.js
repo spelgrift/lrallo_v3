@@ -54,6 +54,7 @@ $(function() {
 	function submitSuccess(data) {
 		$addVideoModal.modal('hide');
 		$contentArea.prepend(Mustache.render(videoTemplate, data.results));
+		events.emit('contentAdded');
 	}
 
 	function submitError(data) {

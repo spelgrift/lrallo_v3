@@ -1,4 +1,7 @@
 <?php
+// Brand (appears in page titles and in the navbar [by default])
+define('BRAND', 'Imageman');
+
 // Paths (leave on trailing /)
 define('URL', 'http://kate.sampelgrift.com/ts/imageman/');
 define('DEVPATH', '/ts/imageman/'); // Set to empty string for production

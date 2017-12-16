@@ -14,6 +14,7 @@ class User extends Controller {
 	public function index()
 	{
 		$this->view->userList = $this->model->userList();
+		$this->view->adminNav = 'users';
 		$this->view->render('user/index');
 	}
 

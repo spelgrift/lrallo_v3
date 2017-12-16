@@ -47,6 +47,7 @@ $(function() {
 		};
 		$contentArea.prepend(Mustache.render(textTemplate, newTextObject));
 		events.emit('newText');
+		events.emit('contentAdded');
 	}
 
 	function submitError(data) {

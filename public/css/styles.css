@@ -4353,6 +4353,9 @@ button.close {
     display: none !important;
   }
 }
+#adminNav {
+  z-index: 1001;
+}
 #adminNav i.fa {
   padding-right: 5px;
 }
@@ -4363,6 +4366,9 @@ button.close {
 #adminNav p.navbar-text {
   margin-left: 15px;
   font-weight: bold;
+}
+#adminNav.navbar {
+  margin-bottom: 0px;
 }
 .inverse-dropdown {
   background-color: #222;
@@ -4486,16 +4492,20 @@ footer .footer-above {
 #mainNav a.navLinkControl:hover {
   color: #555;
 }
+#contentArea .contentPlaceholder {
+  padding: 50px;
+  text-align: center;
+  color: #aaa;
+  font-size: .9em;
+}
 .contentItem {
   background-color: white;
   margin-bottom: 10px;
   position: relative;
 }
-.contentItem .content {
-  min-height: 50px;
-}
 .contentItem.editContent .content {
   border: 1px dashed #333;
+  min-height: 32px;
 }
 .contentItem.spacer {
   min-height: 0;

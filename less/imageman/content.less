@@ -1,5 +1,14 @@
 // CONTENT
 
+#contentArea {
+  .contentPlaceholder {
+    padding: 50px;
+    text-align: center;
+    color: #aaa;
+    font-size: .9em;
+  }
+}
+
 .contentItem {
   background-color: white;
   // min-height: 100px;
@@ -7,12 +16,13 @@
   position:relative;
 
   .content {
-    min-height: 50px;
+    // min-height: 50px;
   }
 
   &.editContent {
     .content {
       border: 1px dashed #333;
+      min-height: 32px; // to allow content controls to fit
     }
     
   }

@@ -75,6 +75,7 @@ $(function() {
  	function submitSuccess(data) {
 		$addEVModal.modal('hide');
 		renderEV(data.results);
+		events.emit('contentAdded');
  	}
 
  	function submitError(data) {

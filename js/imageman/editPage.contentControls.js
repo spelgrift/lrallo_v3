@@ -99,7 +99,9 @@ $(function() {
 				if(!data.error) {
 					$thisItem.fadeOut(300, function() {
 						$(this).remove();
+						events.emit('contentRemoved');
 					});
+					
 				}
 			}
 		});
@@ -120,7 +122,9 @@ $(function() {
 			success: function() {
 				$thisItem.fadeOut(300, function() {
 					$(this).remove();
+					events.emit('contentRemoved');
 				});
+				
 			}
 		});
 	}

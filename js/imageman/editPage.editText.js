@@ -89,7 +89,7 @@ $(function() {
 	}
 
 	function submitTextSuccess(data) {
-		console.log('Changes saved!');
+		// console.log('Changes saved!');
 	}
 
 	function submitTextError(data) {

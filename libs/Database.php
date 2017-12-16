@@ -82,7 +82,7 @@ class Database extends PDO {
 	 * @param array $data An Associative array
 	 * @param string $where The WHERE query bit
 	 */
-	public function update($table, $data, $where)
+	public function update($table, $data, $where = false)
 	{
 		ksort($data);
 		$fieldDetails = NULL;
@@ -92,7 +92,12 @@ class Database extends PDO {
 
 		$fieldDetails = rtrim($fieldDetails, ',');
 
-		$query = "UPDATE $table SET $fieldDetails WHERE $where";
+		if(!$where) {
+			$query = "UPDATE $table SET $fieldDetails";
+		} else {
+			$query = "UPDATE $table SET $fieldDetails WHERE $where";
+		}
+
 		$sth = $this->prepare($query);
 
 		foreach($data as $key => $value){

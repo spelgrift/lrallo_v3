@@ -9,6 +9,7 @@ $(function() {
  * 
  */
 	var $contentArea 	= $('#contentArea'),
+	$placeholder 		= $contentArea.find('.contentPlaceholder'),
 	$addTab 				= $('a.addTab'),
 	pageURL 				= _.getURL();
 
@@ -31,7 +32,13 @@ $(function() {
 	$addTab.click(selectModal);
 
 	// Submit Spacer
-	$submitSpacer.click(submitSpacer);	
+	$submitSpacer.click(submitSpacer);
+
+	// Hide placeholder on content Added
+	events.on('contentAdded', hidePlaceholder);
+
+	// Show placeholder if all content removed
+	events.on('contentRemoved', showPlaceholder);
 
 /**
  * 
@@ -79,9 +86,21 @@ $(function() {
 					$addSpacerModal.modal('hide');
 					var newSpacerObj = {	contentID : data.results.contentID };
 					$contentArea.prepend(Mustache.render(spacerTemplate, newSpacerObj));
+					events.emit('contentAdded');
 				}
 			}
 
 		});
-	}	
+	}
+
+	function hidePlaceholder() {
+		$placeholder.hide();
+	}
+
+	function showPlaceholder() {
+		var count = $contentArea.children().length;
+		if(count === 1) {
+			$placeholder.show();
+		}
+	}
 });

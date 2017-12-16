@@ -11,7 +11,8 @@ module.exports = {
     'dashboard': ["./js/dashboard.js"],
     'editPage': ["./js/editPage.js"],
     'editGal': ["./js/editGal.js"],
-    'editVid': ["./js/editVid.js"]
+    'editVid': ["./js/editVid.js"],
+    'blogAdmin': ["./js/blogAdmin.js"]
   },
   output: {
     path: __dirname + "/public/",

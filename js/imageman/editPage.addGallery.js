@@ -106,6 +106,7 @@ $(function() {
 		$galProgress.show();
 		$submitGal.attr('disabled', 'disabled');
 		$galleryDropzone.processQueue();
+		events.emit('contentAdded');
 	}
 
 	function submitError(data) {

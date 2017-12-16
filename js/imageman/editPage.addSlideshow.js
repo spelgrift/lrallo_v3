@@ -93,6 +93,7 @@ $(function() {
 		ssID = data.results.slideshowID;
 		contentID = data.results.contentID;
 		renderSlideshow(data.results);
+		events.emit('contentAdded');
  	}
 
  	function submitNewSS() {
@@ -119,6 +120,7 @@ $(function() {
 		$ssProgress.show();
 		$submitSS.attr('disabled', 'disabled');
 		$ssDropzone.processQueue();
+		events.emit('contentAdded');
 	}
 
 	function submitError(data) {

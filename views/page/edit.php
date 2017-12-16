@@ -20,23 +20,39 @@ if($this->pageAttr['home']){
 	}
 }
 
+// If Home-type is set to 'normal', show content area like normal. Otherwise hide it and show settings only.
+$contentAreaClass = 'active';
+$homeSettingsClass = '';
+if($this->pageAttr['home'] && $this->pageAttr['homeSettings']['homeType'] == 'link') {
+	$contentAreaClass = '';
+	$homeSettingsClass = 'active';
+}
+
 // echo "<pre>";
 // print_r($this->pageAttr);
 // echo "</pre>";
 ?>
 
-<div class='row tabPanel active' id='contentArea'>
+<div class='row tabPanel <? echo $contentAreaClass; ?>' id='contentArea'>
 <?php
 foreach($this->pageContent as $item)
 {
 	$this->renderContent($item, true);
 }
+if(count($this->pageContent) == 0) {
+	$class = 'contentPlaceholder';
+} else {
+	$class = 'contentPlaceholder hidden';
+}
+echo "<div class='$class'>Nothing here yet. Click \"Add Content\" to do just that.</div>";
 ?>
 </div>
 
 <?php
 if(!$this->pageAttr['home']) {
 	require 'views/inc/pageSettings/pageSettings.php';
+} else {
+	require 'views/inc/pageSettings/homeSettings.php';
 }
 
 require 'views/inc/footer.php';

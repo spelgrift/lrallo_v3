@@ -16,7 +16,7 @@ class Dashboard extends Controller {
 	{
 		// Add View Vars
 		$this->view->pageTitle = 'DASHBOARD';
-		$this->view->adminNav = $this->globalModel->adminNavArray('dashboard');
+		$this->view->adminNav = 'dashboard';
 		$this->view->contentRows = $this->model->renderContentRows($this->contentModel->listContent());
 		$this->view->trashRows = $this->model->renderTrashRows($this->model->listTrash());
 		// JS (admin)
@@ -133,7 +133,8 @@ class Dashboard extends Controller {
 
 	public function reloadNav()
 	{
-		echo $this->globalModel->loadNav();
+		$this->view->nav = $this->globalModel->loadNav();
+		$this->view->render('inc/nav', false);
 	}
 
 	public function reloadTrash()

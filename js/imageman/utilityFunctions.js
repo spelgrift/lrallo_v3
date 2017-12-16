@@ -2,8 +2,10 @@ var $ = require('jquery');
 var utilityFunctions = (function() {
 
 	var error = function(message, $msg, $input) {
+		if($input !== undefined) {
+			$input.focus();
+		}
 		$msg.html(message);
-		$input.focus();
 		clearMsg($msg);
 		return false;
 	};

@@ -8,6 +8,9 @@ if($this->pageAttr['home']){
 		require $customFile;
 	}
 }
+// echo "<pre>";
+// print_r($this->pageAttr);
+// echo "</pre>";
 ?>
 
 <div class='row'>

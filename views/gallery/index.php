@@ -8,7 +8,7 @@
 require 'views/inc/header.php'; 
 
 // Slideshow display settings
-$class = "class='slideshow";
+$class = "class='slideshow sm-aspect-3x2";
 if($this->pageAttr['autoplay'] == 1) {
 	$class .= ' sm-auto';
 } else {

@@ -6,14 +6,17 @@ class Page_Model extends Model {
 
 /**
  *	getPageInfo - Gets page info from DB, page can be any type (normal page, gallery, video)
- *	@param string $url The page url
+ *	@param string $inputType 	'contentID' or 'url'
+ *	@param string $input 		The actual value
  *	@return mixed, array of page attributes, false on no rows
  *
  */
-	public function getPageInfo($url)
+	public function loadPage($inputType, $input)
 	{
-		$query = "SELECT contentID, url, type, parentPageID, frontpage, nav, hidden FROM content WHERE url = :url AND trashed = 0 AND (type = 'page' OR type = 'gallery' OR type = 'video')";
-		if($a = $this->db->select($query, array(':url' => $url)))
+		$query = "SELECT contentID, url, type, parentPageID, frontpage, nav, hidden FROM content WHERE $inputType = :$inputType AND trashed = 0 AND (type = 'page' OR type = 'gallery' OR type = 'video')";
+		$array = array(":$inputType" => $input);
+		
+		if($a = $this->db->select($query, $array))
 		{
 			$contentAttr = $a[0];
 			// Get page info from appropriate table
@@ -29,6 +32,66 @@ class Page_Model extends Model {
 			}
 		}
 		return false;
+	}
+
+/**
+ *	getHomeSettings - 
+ *	@return array of settings
+ *
+ */
+	public function getHomeSettings()
+	{
+		$a = $this->db->select("SELECT homeType, homeTarget FROM settings");
+		return $a[0];
+	}
+
+	public function updateHomeSettings()
+	{
+		$a = array(
+			'homeType' => $_POST['type'],
+			'homeTarget' => $_POST['target']
+		);
+		if($this->db->update('settings', $a)){
+			echo json_encode(array(
+				'error' => false,
+				'type' => $_POST['type'],
+				'target' => $_POST['target']
+			));
+		} else {
+			$this->_returnError('Unknown Error');
+		}
+		
+	}
+
+/**
+ *	listHomeTargets - 
+ *	@return array of all pages, gallerys, videos
+ *
+ */
+	public function listHomeTargets()
+	{
+		// Pages
+		$query = "SELECT c.contentID, p.name
+			FROM content AS c
+			LEFT JOIN page as p on c.contentID = p.contentID
+			WHERE c.type = 'page' AND c.trashed = 0";
+		if(!$pages = $this->db->select($query)){ $pages = array(); }
+
+		// Galleries
+		$query = "SELECT c.contentID, g.name
+			FROM content AS c
+			LEFT JOIN gallery as g on c.contentID = g.contentID
+			WHERE c.type = 'gallery' AND c.trashed = 0";
+		if(!$galleries = $this->db->select($query)) { $galleries = array(); }
+		// Videos
+		$query = "SELECT c.contentID, v.name
+			FROM content AS c
+			LEFT JOIN video as v on c.contentID = v.contentID
+			WHERE c.type = 'video' AND c.trashed = 0";
+		if(!$videos = $this->db->select($query)) { $videos = array(); }
+
+		return array_merge($pages, $galleries, $videos);
+
 	}
 
 /**

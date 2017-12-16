@@ -1,3 +1,11 @@
+<?php
+if(Session::get('loggedIn') == true)
+{
+	require 'views/inc/adminNav.php';
+} else {
+	require 'views/inc/loginForm.php';
+}
+?>
 <nav class="navbar navbar-default navbar-static-top">
 	<div class="container">
 		<div class="navbar-header">
@@ -7,11 +15,11 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand" href="<?php echo URL; ?>">Imageman</a>
+			<a class="navbar-brand" href="<?php echo URL; ?>"><?php echo BRAND; ?></a>
 		</div>
 		<div class="collapse navbar-collapse" id="mainNav">
 			<ul class="nav navbar-nav navbar-right">
-				<?php	echo $this->nav;?>
+				<? require('views/inc/nav.php'); ?>
 			</ul>
 		</div>
 	</div>
@@ -20,12 +28,12 @@
 <div class="container">
 
 <?php 
-	if(Session::get('loggedIn') == true)
-	{
-		require 'views/inc/adminNav.php';
-	} else {
-		require 'views/inc/loginForm.php';
-	}
+	// if(Session::get('loggedIn') == true)
+	// {
+	// 	require 'views/inc/adminNav.php';
+	// } else {
+	// 	require 'views/inc/loginForm.php';
+	// }
 
 
 	if(isset($this->templates)){
@@ -39,8 +47,3 @@
 	}
 
 ?>
-
-
-
-
-

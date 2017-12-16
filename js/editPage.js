@@ -11,6 +11,7 @@ require('./imageman/slideshows.js');
 
 // Edit page scripts
 require('./imageman/editPage.settings.js');
+require('./imageman/editPage.homeSettings.js');
 require('./imageman/editPage.addContent.js');
 require('./imageman/editPage.addPage.js');
 require('./imageman/editPage.addVideo.js');

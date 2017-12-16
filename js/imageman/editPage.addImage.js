@@ -84,6 +84,7 @@ $(function() {
 			$addImageModal.modal('hide');
 			// Render template
 			$(Mustache.render(singleImgTemplate, data.results)).hide().prependTo($contentArea).fadeIn('slow');
+			events.emit('contentAdded');
 		} else { // Error!		
 			$singleImgDropzone.emit("error", file, data.error_msg);
 		}

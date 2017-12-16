@@ -265,7 +265,9 @@ class Content_Model extends Model {
 				'autoplay' => "0",
 				'animationType' => "slide",
 				'animationSpeed' => "500",
-				'slideDuration' => "3000"
+				'slideDuration' => "3000",
+				'hideControls' => '0',
+				'aspectRatio' => '3x2'
 			),
 			array(
 				'templateID' => 'textTemplate',

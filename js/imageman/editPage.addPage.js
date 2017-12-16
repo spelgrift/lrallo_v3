@@ -50,6 +50,7 @@ $(function() {
 		$pageNameInput.val("");
 		$addPageModal.modal('hide');
 		$contentArea.prepend(Mustache.render(pageTemplate, data.results));
+		events.emit('contentAdded');
 	}
 
 	function submitError(data) {
