@@ -1,17 +1,18 @@
 <?php 
 require 'views/inc/header.php';
 
-// If homepage, render custom html ('views/custom/home.php') before normal content (if it exists)
+// Render custom html ('views/custom/[pageURL].php') before normal content (if it exists)
 if($this->pageAttr['home']){
 	$customFile = 'views/custom/home.php';
-	if(file_exists($customFile)){
-		require $customFile;
-	}
+} else {
+	$customFile = 'views/custom/'.$this->pageAttr['url'].'.php';
 }
-// echo "<pre>";
-// print_r($this->pageAttr);
-// echo "</pre>";
+if(file_exists($customFile)){
+	require $customFile;
+}
 ?>
+
+
 
 <div class='row'>
 <?php

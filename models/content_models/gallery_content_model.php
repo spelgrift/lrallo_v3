@@ -5,7 +5,7 @@ class Gallery_Content_Model extends Content_Model {
 	function __construct(){parent::__construct();}
 
 	// Add Gallery
-	public function addGallery($parentPageID, $dashboard = false , $slideshow = false)
+	public function addGallery($parentPageID, $dashboard = false , $slideshow = false, $type = 'page')
 	{
 		if(!$nameArray = $this->_processName($_POST['name'], 'gallery')) {
 			return false;
@@ -16,19 +16,22 @@ class Gallery_Content_Model extends Content_Model {
 		$home = ($parentPageID === 0 && !$dashboard) ? 1 : 0;
 		// Advance positions of existing content
 		if(!$dashboard) {
-			$this->_advanceContentPositions($parentPageID, $home);
+			$this->_advanceContentPositions($parentPageID, $home, $type);
 		}
 
+		$typeID = "parent".ucfirst($type)."ID";
 		if($slideshow) {
 			$ssParent = $parentPageID;
 			$parentPageID = 0;
 			$home = 0;
+			$typeID = 'parentPageID';
 		}
 		// Content DB entry
+		
 		$this->db->insert('content', array(
 			'type' => 'gallery',
 			'url' => $url,
-			'parentPageID' => $parentPageID,
+			$typeID => $parentPageID,
 			'frontpage' => $home,
 			'author' => $_SESSION['login'],
 			'bootstrap' => BS_PAGE
@@ -42,7 +45,7 @@ class Gallery_Content_Model extends Content_Model {
 		$galID = $this->db->lastInsertId();
 		// If this is a slideshow, make the slideshow!
 		if($slideshow) {
-			$ss = $this->addSlideshow($ssParent, $galID);
+			$ss = $this->addSlideshow($ssParent, $galID, $type);
 			$results = array(
 				'error' => false,
 				'results' => array(
@@ -65,7 +68,7 @@ class Gallery_Content_Model extends Content_Model {
 	}
 
 	// Add Slideshow
-	public function addSlideshow($parentPageID, $galID)
+	public function addSlideshow($parentPageID, $galID, $type = 'page')
 	{
 		// Make sure gal exists
 		if(!$this->db->select("SELECT name FROM gallery WHERE galleryID = :galID", array(':galID' => $galID))) {
@@ -73,10 +76,13 @@ class Gallery_Content_Model extends Content_Model {
 			return false;
 		}
 		$home = $parentPageID === 0 ? 1 : 0;
+		$this->_advanceContentPositions($parentPageID, $home, $type);
+		
 		// Content DB entry
+		$typeID = "parent".ucfirst($type)."ID";
 		$this->db->insert('content', array(
 			'type' => 'slideshow',
-			'parentPageID' => $parentPageID,
+			$typeID => $parentPageID,
 			'frontpage' => $home,
 			'author' => $_SESSION['login'],
 			'bootstrap' => BS_SLIDESHOW
@@ -214,10 +220,11 @@ class Gallery_Content_Model extends Content_Model {
 			$baseName++;
 			$position++;
 		}
-		// Get Gallery name and contentID
-		$galInfo = $this->db->select("SELECT name, contentID FROM gallery WHERE galleryID = :galleryID", array(':galleryID' => $galID));
+		// Get Gallery name, contentID, and coverPath
+		$galInfo = $this->db->select("SELECT name, contentID, coverPath FROM gallery WHERE galleryID = :galleryID", array(':galleryID' => $galID));
 		$galName = $galInfo[0]['name'];
 		$galContentID = $galInfo[0]['contentID'];
+		$coverPath = $galInfo[0]['coverPath'];
 
 		// If request came from dashboard, return data for content list
 		if($dashboard)	{

@@ -1,0 +1,28 @@
+.modal-content {
+	border-radius: 8px;
+}
+
+.modal-header {
+	background-color: #222;
+	color: #9d9d9d;
+	border-bottom: 4px solid @imagemanBrand;
+	border-radius: 3px 3px 0 0;
+
+	.close {
+		margin-top: -4px;
+		font-size: 30px;
+		font-weight: normal;
+		color: white;
+		text-shadow: none;
+		&:hover {
+			color: white;
+		}
+	}
+}
+
+@media (min-width: @screen-sm-min) {
+  // Automatically set modal's width for larger viewports
+  .modal-dialog {
+    margin: 80px auto;
+  }
+}

@@ -1,0 +1,16 @@
+<svg id="photostream" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20.17 20.33">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+        stroke-miterlimit: 10;
+        stroke-width: 1.5px;
+      }
+    </style>
+  </defs>
+  <title>icon_collage</title>
+  <rect class="cls-1" x="1" y="1" width="9.92" height="7.66"/>
+  <rect class="cls-1" x="14.2" y="1" width="4.92" height="7.66"/>
+  <rect class="cls-1" x="6" y="16.76" width="4.92" height="7.66" transform="translate(11.92 36.09) rotate(180)"/>
+  <rect class="cls-1" x="9.24" y="11.67" width="9.92" height="7.66"/>
+</svg>

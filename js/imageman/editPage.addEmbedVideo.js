@@ -11,6 +11,14 @@ $(function() {
  	var vimeoSrc = "https://player.vimeo.com/video/",
  	youtubeSrc 		= "https://www.youtube.com/embed/";
 
+ 	// Page or Post?
+	var isPost = false,
+	postID = "";
+	if((window.location.href).includes(baseURL+blogURL+"/")) {
+		isPost = true;
+		postID = $('#adminNav').attr('data-id');
+	}
+
 /**
  * 
  * CACHE DOM
@@ -18,7 +26,7 @@ $(function() {
  */
  	var $contentArea 	= $('#contentArea'),
 	$addTab 				= $('a.addTab'),
-	pageURL 				= _.getURL();
+	pageURL 				= _.getURL(isPost);
 
 	var $addEVModal 	= $('#addEmbedVideoModal'),
 	$evSelect 			= $addEVModal.find('#evSelect'),
@@ -68,7 +76,8 @@ $(function() {
 			return _.error("You must enter a link!", $evLinkMsg, $evLinkInput);
 		}
 		// POST
-		var url = pageURL + '/addEmbedVideo';
+		var url = pageURL + '/addEmbedVideo/';
+		if(isPost) { url = pageURL+/addNewEV/+postID; }
 		_.post(url, data, submitSuccess, submitError);
  	}
 
@@ -84,7 +93,7 @@ $(function() {
 
  	function submitExistingEV() {
  		var videoID = $evSelect.val(),
- 		url = pageURL + '/addEmbedVideo/' + videoID;
+ 		url = pageURL + '/addEmbedVideo/' + videoID + "/" + postID;
  		_.post(url, {}, submitSuccess, submitError);
  	}
 

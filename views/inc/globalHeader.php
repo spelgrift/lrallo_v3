@@ -4,7 +4,11 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script type='text/javascript'>window.baseURL = <?php echo json_encode(URL); ?>;</script>
+<script type='text/javascript'>
+	window.baseURL = <?php echo json_encode(URL); ?>;
+	window.blogURL = '<?php echo BLOGURL; ?>';
+</script>
+<link href="https://fonts.googleapis.com/css?family=Josefin+Sans|News+Cycle:400,700" rel="stylesheet">
 <link href="<?php echo URL; ?>public/css/styles.css" rel="stylesheet">
 <?php
 	// Load additional css files if needed

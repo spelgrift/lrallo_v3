@@ -1,5 +1,5 @@
 <?php
-	$url = URL.'blog/manage';
+	$url = URL.BLOGURL.'/manage';
 ?>
 <ul class="nav navbar-nav">
 	<li>

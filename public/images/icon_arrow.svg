@@ -1,0 +1,13 @@
+<svg id="Layer_3" data-name="Layer 3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45.01 40.15">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+        stroke-miterlimit: 10;
+        stroke-width: 3px;
+      }
+    </style>
+  </defs>
+  <title>icon_arrow</title>
+  <path class="cls-1" d="M20.42,6.4C21.79,4,24,4,25.42,6.4l6.46,11.19,5,8.66,6.46,11.19c1.38,2.38.25,4.33-2.5,4.33H5c-2.75,0-3.87-1.95-2.5-4.33L9,26.25l5-8.66Z" transform="translate(-0.41 -3.11)"/>
+</svg>

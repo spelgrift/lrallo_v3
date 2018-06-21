@@ -1,0 +1,16 @@
+<svg id="thumbs" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.91 20.33">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+        stroke-miterlimit: 10;
+        stroke-width: 1.5px;
+      }
+    </style>
+  </defs>
+  <title>icon_thumbs</title>
+  <rect class="cls-1" x="1" y="1" width="7.47" height="7.66"/>
+  <rect class="cls-1" x="11.4" y="1" width="7.47" height="7.66"/>
+  <rect class="cls-1" x="6.11" y="16.76" width="7.47" height="7.66" transform="translate(14.57 36.09) rotate(180)"/>
+  <rect class="cls-1" x="11.45" y="11.67" width="7.47" height="7.66"/>
+</svg>

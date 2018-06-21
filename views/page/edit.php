@@ -15,9 +15,11 @@ require 'views/inc/content/text/editHTML.php';
 // If homepage, render custom html ('views/custom/home.php') before normal content (if it exists)
 if($this->pageAttr['home']){
 	$customFile = 'views/custom/home.php';
-	if(file_exists($customFile)){
-		require $customFile;
-	}
+} else {
+	$customFile = 'views/custom/'.$this->pageAttr['url'].'.php';
+}
+if(file_exists($customFile)){
+	require $customFile;
 }
 
 // If Home-type is set to 'normal', show content area like normal. Otherwise hide it and show settings only.

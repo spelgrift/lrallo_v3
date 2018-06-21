@@ -5,7 +5,7 @@ class Text_Content_Model extends Content_Model {
 	function __construct(){parent::__construct();}
 
 	// Add Text
-	public function addText($parentPageID)
+	public function addText($parentPageID, $type = 'page')
 	{
 		$text = $_POST['text'];
 
@@ -17,12 +17,13 @@ class Text_Content_Model extends Content_Model {
 
 		$home = $parentPageID === 0 ? 1 : 0;
 		// Advance positions of existing content
-		$this->_advanceContentPositions($parentPageID, $home);
+		$this->_advanceContentPositions($parentPageID, $home, $type);
 
 		// Content DB entry
+		$typeID = "parent".ucfirst($type)."ID";
 		$this->db->insert('content', array(
 			'type' => 'text',
-			'parentPageID' => $parentPageID,
+			$typeID => $parentPageID,
 			'frontpage' => $home,
 			'author' => $_SESSION['login'],
 			'bootstrap' => BS_TEXT

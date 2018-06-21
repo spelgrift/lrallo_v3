@@ -27,7 +27,7 @@ $(function() {
 	$saveButton					= $shortcutSettingsModal.find('#saveSSSettings'),
 	$ssDurationMsg				= $shortcutSettingsModal.find('#ssDurationMsg'),
 	$ssSpeedMsg					= $shortcutSettingsModal.find('#ssSpeedMsg'),
-	pageURL 						= $('a#viewTab').attr('href'),
+	pageURL 						= baseURL + 'page',
 	$thisSS,
 	oldAspectClass;
 

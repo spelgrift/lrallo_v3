@@ -6,19 +6,14 @@ if(Session::get('loggedIn') == true)
 	require 'views/inc/loginForm.php';
 }
 ?>
-<nav class="navbar navbar-default navbar-static-top">
+<nav id="mainNavBar" class="navbar navbar-default navbar-static-top">
 	<div class="container">
 		<div class="navbar-header">
-			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#mainNav">
-					<span class="sr-only">Toggle navigation</span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-			</button>
+			<a href='#' class="navbar-toggle" data-toggle="collapse" data-target="#mainNav"><i class="fa fa-bars fa-lg"></i></a>
 			<a class="navbar-brand" href="<?php echo URL; ?>"><?php echo BRAND; ?></a>
 		</div>
-		<div class="collapse navbar-collapse" id="mainNav">
-			<ul class="nav navbar-nav navbar-right">
+		<div class="collapse navbar-collapse navbar-left" id="mainNav">
+			<ul class="nav navbar-nav">
 				<? require('views/inc/nav.php'); ?>
 			</ul>
 		</div>

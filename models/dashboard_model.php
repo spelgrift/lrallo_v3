@@ -113,17 +113,24 @@ class Dashboard_Model extends Model {
 		$date = date('Y/m/d', strtotime($row['date']));
 		$author = $row['author'];
 		$type = $row['type'];
+		$parentType = $row['parentType'];
 
 		// Set name if there is one, if not (text), use the first few characters
 		$name = (isset($row['name'])) ? $row['name'] : substr(htmlentities($row['text']), 0, 25).'...';
-		// If it is a page/gal/video, make the name a link
-		if($type == 'page' || $type == 'gallery' || $type == 'video') {
+		// If it is a page/gal/video/post, make the name a link
+		if($type == 'page' || $type == 'gallery' || $type == 'video' || $type == 'post') {
 			$nameTd = "<td class='listName'><span class='listPad'>$pad</span><a href='".URL.$path."'>$name</a></td>";
 		} else {
 			$nameTd = "<td><span class='listPad'>$pad</span>$name</td>";
 		}
 		$typeDisplay = ($type == 'embeddedVideo') ? "Embedded Video" : ucfirst($type);
 		$typeDisplay = ($type == 'singleImage') ? "Single Image" : $typeDisplay;
+		// Adjust edit link if type is post or parent is a post
+		$editLink = URL.$path."/edit";
+		if($type == 'post' || $parentType == 'post'){
+			$editLink = URL.BLOGURL.'/editpost/'.substr($path, 10);
+		}
+		// Set class
 		$rowClass = "contentListRow $type";
 		if($type == "page") $rowClass .= ' visible';
 		$parentLink = "<a href='".URL.$path."'>$name</a>";
@@ -139,8 +146,8 @@ class Dashboard_Model extends Model {
 
 		$rowHTML .= "<td>\n";
 		$rowHTML .= "<a href='".URL.$path."' class='btn btn-primary btn-sm'>View</a> ";
-		$rowHTML .= "<a href='".URL.$path."/edit' class='btn btn-primary btn-sm'>Edit</a> ";
-		$rowHTML .= "<a href='#' id='$contentID' class='btn btn-primary btn-sm trashContent'>Trash</a>\n";
+		$rowHTML .= "<a href='$editLink' class='btn btn-primary btn-sm'>Edit</a> ";
+		$rowHTML .= "<a href='#' id='$contentID' class='btn btn-danger btn-sm trashContent'>Trash</a>\n";
 		$rowHTML .= "</td>\n";
 
 		$rowHTML .= "</tr>\n";
@@ -164,17 +171,17 @@ class Dashboard_Model extends Model {
 		// Create empty array
 		$returnArray = array();
 		// Get content results from DB
-		if($result = $this->db->select("SELECT contentID, type, parentPageID, parentGalID, author, dateTrashed FROM content WHERE trashed = '1' ORDER BY dateTrashed DESC"))
+		if($result = $this->db->select("SELECT contentID, type, parentPageID, parentGalID, parentPostID, author, dateTrashed FROM content WHERE trashed = '1' ORDER BY dateTrashed DESC"))
 		{
 			foreach($result as $row)
 			{
 				// Get parent name
 				if($row['parentPageID'] > 0) {
-					$result = $this->db->select("SELECT name FROM page WHERE pageID = ".$row['parentPageID']);
-					$parent = $result[0]['name'];
+					$parent = $this->db->selectSingle('page', 'name', "pageID = '".$row['parentPageID']."'");
 				} else if($row['type'] == 'galImage') {
-					$result = $this->db->select("SELECT name FROM gallery WHERE galleryID = ".$row['parentGalID']);
-					$parent = $result[0]['name'];
+					$parent = $this->db->selectSingle('gallery', 'name', "galleryID = '".$row['parentGalID']."'");
+				} else if($row['parentPostID'] > 0){
+					$parent = $this->db->selectSingle('post', 'title', "postID = '".$row['parentPostID']."'");
 				} else {
 					$parent = '-';
 				}
@@ -222,6 +229,9 @@ class Dashboard_Model extends Model {
 						$result = $this->db->select("SELECT `textID`, `text` FROM `text` WHERE contentID = '".$row['contentID']."'");
 						$typeArray['name'] = substr(htmlentities($result[0]['text']), 0, 25).'...';
 					break;
+					case "post" :
+						$result = $this->db->select("SELECT postID, title FROM post WHERE contentID = '".$row['contentID']."'");
+						$typeArray['name'] = $result[0]['title'];
 				}
 
 				$returnArray[] = $typeArray;

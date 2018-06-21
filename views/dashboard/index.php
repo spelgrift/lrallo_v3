@@ -73,6 +73,7 @@ require 'views/inc/addContentForms/addNavLink.php';
 				<option value='embeddedVideo'>Embedded Videos</option>
 				<option value='text'>Text</option>
 				<option value='singleImage'>Images</option>
+				<option value='post'>Blog Posts</option>
 			</select>
 		</div>
 	</form>

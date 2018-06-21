@@ -1,8 +1,18 @@
 var $ = require('jquery');
 var _ = require('./utilityFunctions.js'); // helper functions
 require('../libs/jquery-ui.sortable');
+require('../libs/jquery.ui.touch-punch.min.js');
 
 $(function() {
+
+// Page or Post?
+var isPost = false,
+postID = "";
+if((window.location.href).includes(baseURL+blogURL+"/")) {
+	isPost = true;
+	postID = $('#adminNav').attr('data-id');
+}
+
 /*
  *
  * CACHE DOM
@@ -14,7 +24,7 @@ $(function() {
 	$settingsSave				= $contentSettingsModal.find('#saveContentSettings'),
 	$contentParentMsg			= $contentSettingsModal.find('#contentParentMsg'),
 	pageID						= $('#adminNav').attr('data-id'),
-	pageURL 						= _.getURL();
+	pageURL 						= _.getURL(isPost);
 
 /*
  *
@@ -75,7 +85,7 @@ $(function() {
  	function updateSortable() {
  		var order = $(this).sortable('serialize');
  		$.ajax({
- 			url: pageURL + '/sortContent/',
+ 			url: baseURL + 'page/sortContent/',
  			type: 'POST',
  			data: order,
  			success: function(){}
@@ -93,7 +103,7 @@ $(function() {
 
 		$.ajax({
 			type: 'DELETE',
-			url: pageURL + '/trashContent/' + contentID,
+			url: baseURL+'page/trashContent/' + contentID,
 			dataType: 'json',
 			success: function(data) {
 				if(!data.error) {
@@ -101,7 +111,6 @@ $(function() {
 						$(this).remove();
 						events.emit('contentRemoved');
 					});
-					
 				}
 			}
 		});
@@ -118,7 +127,7 @@ $(function() {
 
 		$.ajax({
 			type: 'DELETE',
-			url: pageURL + '/deleteSpacer/' + contentID,
+			url: baseURL + 'page/deleteSpacer/' + contentID,
 			success: function() {
 				$thisItem.fadeOut(300, function() {
 					$(this).remove();

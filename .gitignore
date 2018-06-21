@@ -6,7 +6,6 @@
 *.exe
 *.o
 *.so
-public/
 
 # Packages #
 ############
@@ -45,7 +44,8 @@ Thumbs.db
 
 # User Uploaded Images #
 ########################
-test/*.*
+test/
+test/images/
 uploads/*.jpg
 uploads/*.gif
 uploads/*.png

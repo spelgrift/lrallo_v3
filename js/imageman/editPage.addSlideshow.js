@@ -4,6 +4,15 @@ var Dropzone = require('../libs/dropzone.js');
 var _ = require('./utilityFunctions.js'); // helper functions
 
 $(function() {
+
+	// Page or Post?
+	var isPost = false,
+	postID = "";
+	if((window.location.href).includes(baseURL+blogURL+"/")) {
+		isPost = true;
+		postID = $('#adminNav').attr('data-id');
+	}
+
 /**
  * 
  * CACHE DOM
@@ -11,7 +20,7 @@ $(function() {
  */
  	var $contentArea 	= $('#contentArea'),
 	$addTab 				= $('a.addTab'),
-	pageURL 				= _.getURL();
+	pageURL 				= _.getURL(isPost);
 
 	var $addSSModal 	= $('#addSSModal'),
 	$ssSelect 			= $addSSModal.find('#ssSelect'),
@@ -35,7 +44,7 @@ $(function() {
 	Dropzone.autoDiscover = false;
 
 	var $ssDropzone = new Dropzone('div.addSSDropzone', {
-		url : pageURL + '/uploadGalImages/',
+		url : baseURL + 'page/uploadGalImages/',
 		autoProcessQueue : false,
 		uploadMultiple : true,
 		parallelUploads: 50,
@@ -84,7 +93,7 @@ $(function() {
  	function submitExistingSS() {
  		// Get user input
  		var galID = $ssSelect.val(),
- 		url = pageURL + '/addSlideshow/' + galID;
+ 		url = pageURL + '/addSlideshow/' + galID + "/" + postID;
  		_.post(url, {}, submitExistingSuccess, submitError);
  	}
 
@@ -106,7 +115,7 @@ $(function() {
 			return _.error("You must enter a name!", $ssMsg, $ssNameInput);
 		}
 		// Post to server
-		var url = pageURL + '/addSSgallery' ;
+		var url = pageURL + '/addSSgallery/' + postID;
 		_.post(url, data, submitNewSuccess, submitError);
 	}
 

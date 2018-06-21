@@ -4369,6 +4369,7 @@ button.close {
 }
 #adminNav.navbar {
   margin-bottom: 0px;
+  border-bottom: 4px solid #d47b2f;
 }
 .inverse-dropdown {
   background-color: #222;
@@ -4492,6 +4493,9 @@ footer .footer-above {
 #mainNav a.navLinkControl:hover {
   color: #555;
 }
+#contentArea {
+  border: 1px dashed #7d7d7d;
+}
 #contentArea .contentPlaceholder {
   padding: 50px;
   text-align: center;
@@ -4500,11 +4504,12 @@ footer .footer-above {
 }
 .contentItem {
   background-color: white;
-  margin-bottom: 10px;
+  margin-top: 5px;
+  margin-bottom: 5px;
   position: relative;
 }
 .contentItem.editContent .content {
-  border: 1px dashed #333;
+  border: 1px dotted #c3c3c3;
   min-height: 32px;
 }
 .contentItem.spacer {
@@ -4963,9 +4968,74 @@ footer .footer-above {
 .slideshow:hover .slideControlBar {
   opacity: 1;
 }
+.blog-input {
+  border: 1px dashed #7d7d7d;
+  padding: 5px;
+}
+#blogBodyInput {
+  min-height: 300px;
+}
+.blogDate {
+  color: #adadad;
+}
+.blogPost {
+  margin-bottom: 30px;
+}
+.blogPost h2 {
+  margin-top: 10px;
+}
+.blogPost h2 a {
+  text-transform: uppercase;
+  color: #333;
+}
+.blogPost h2 a:hover {
+  text-decoration: none;
+  color: #666;
+}
+.blogPost:after {
+  content: '';
+  display: block;
+  width: 40%;
+  height: 20px;
+  border-bottom: 1px solid #eee;
+  margin: 0 auto;
+}
+#postList td {
+  text-align: center;
+}
+#postList td.listName {
+  font-weight: bold;
+}
+.postContent {
+  margin-top: 10px;
+}
+.modal-content {
+  border-radius: 8px;
+}
+.modal-header {
+  background-color: #222;
+  color: #9d9d9d;
+  border-bottom: 4px solid #d47b2f;
+  border-radius: 3px 3px 0 0;
+}
+.modal-header .close {
+  margin-top: -4px;
+  font-size: 30px;
+  font-weight: normal;
+  color: white;
+  text-shadow: none;
+}
+.modal-header .close:hover {
+  color: white;
+}
+@media (min-width: 768px) {
+  .modal-dialog {
+    margin: 80px auto;
+  }
+}
 .shortcut {
   width: 100%;
-  padding-top: calc(66.66666667%);
+  padding-top: calc(56.25%);
   background-color: #f5f5f5;
   border-radius: 5px;
   overflow: hidden;
@@ -4994,4 +5064,148 @@ footer .footer-above {
 .shortcut:hover .shortcutTitleOverlay {
   color: white;
   background-color: rgba(0, 0, 0, 0.4);
+}
+#mainNavBar.navbar-default.navbar {
+  background-color: white;
+  border: none;
+  margin-bottom: 15px;
+  margin-top: 35px;
+}
+#mainNavBar.navbar-default.navbar a.navbar-brand {
+  color: black;
+  font-family: 'News Cycle', sans-serif;
+  font-size: 24pt;
+  margin-right: 15px;
+}
+#mainNavBar.navbar-default.navbar .nav.navbar-nav > li > a {
+  font-family: 'Josefin Sans', sans-serif;
+  color: #a7a7a7;
+  font-size: 9pt;
+  padding-top: 20px;
+  letter-spacing: 1px;
+  -webkit-transition: color 0.2s ease-out;
+  transition: color 0.2s ease-out;
+}
+#mainNavBar.navbar-default.navbar .nav.navbar-nav > li > a:hover {
+  -webkit-transition: color 0.2s ease-out;
+  transition: color 0.2s ease-out;
+  color: black;
+}
+#mainNavBar.navbar-default.navbar .nav.navbar-nav > li > a.navLinkControl {
+  color: black;
+  font-size: 14px;
+  top: -2px;
+}
+#mainNavBar.navbar-default.navbar .navbar-toggle {
+  border: none;
+  margin: 0 0;
+  padding: 15px 15px 7px;
+  background-color: transparent;
+  color: black;
+  -webkit-transition: color 0.2s ease-out;
+  transition: color 0.2s ease-out;
+}
+#mainNavBar.navbar-default.navbar .navbar-toggle:hover,
+#mainNavBar.navbar-default.navbar .navbar-toggle.active,
+#mainNavBar.navbar-default.navbar .navbar-toggle:focus {
+  background-color: transparent;
+}
+#mainNavBar.navbar-default.navbar .navbar-toggle:hover {
+  -webkit-transition: color 0.2s ease-out;
+  transition: color 0.2s ease-out;
+  color: #a7a7a7;
+}
+.contentItem p {
+  font-family: 'News Cycle', sans-serif;
+  color: #333333;
+}
+.contentItem p > a {
+  color: black;
+  -webkit-transition: color 0.2s ease-out;
+  transition: color 0.2s ease-out;
+}
+.contentItem p > a:hover {
+  color: #a7a7a7;
+  -webkit-transition: color 0.2s ease-out;
+  transition: color 0.2s ease-out;
+}
+.slideshow > .slides {
+  background-color: white;
+}
+#contact {
+  position: relative;
+}
+#contact ul#icons {
+  position: absolute;
+  top: 10px;
+  left: -30px;
+}
+#contact ul#icons li {
+  display: inline-block;
+  padding: 2px 5px;
+}
+#contact ul#icons li a {
+  color: white;
+  font-size: 1.7em;
+  -webkit-transition: color 0.2s ease-out;
+  transition: color 0.2s ease-out;
+}
+#contact ul#icons li a:hover {
+  color: #a7a7a7;
+  -webkit-transition: color 0.2s ease-out;
+  transition: color 0.2s ease-out;
+}
+.shortcut .shortcutTitleOverlay {
+  font-family: 'News Cycle', sans-serif;
+  text-transform: uppercase;
+  font-size: 16pt;
+  height: 100%;
+  opacity: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  -webkit-transition: opacity 0.3s ease-out;
+  transition: opacity 0.3s ease-out;
+}
+.shortcut .shortcutTitleOverlay:hover {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.shortcut .shortcutTitleOverlay .blockName {
+  position: absolute;
+  display: block;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+}
+h2.blog-input,
+.blogPost h2 {
+  font-family: 'News Cycle', sans-serif;
+  text-transform: uppercase;
+}
+#blogBodyInput,
+.blogPost p {
+  font-family: 'News Cycle', sans-serif;
+  font-size: 16px;
+}
+.blogDate {
+  font-family: 'Josefin Sans', sans-serif;
+  text-transform: uppercase;
+}
+.blogPost h2 {
+  margin-bottom: 10px;
+}
+#blogIntro {
+  background-color: #e6e6e6;
+  padding: 12px;
+  font-size: 16px;
+  font-family: 'News Cycle', sans-serif;
+  border-radius: 5px;
+  margin-bottom: 30px;
+}
+#blogIntro h3 {
+  margin-top: 0px;
+  font-weight: bold;
+}
+footer {
+  display: none;
 }

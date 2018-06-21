@@ -1,10 +1,11 @@
 <?php
 // Brand (appears in page titles and in the navbar [by default])
-define('BRAND', 'Imageman');
+define('BRAND', 'LINDSEY RALLO');
 
 // Paths (leave on trailing /)
-define('URL', 'http://kate.sampelgrift.com/ts/imageman/');
-define('DEVPATH', '/ts/imageman/'); // Set to empty string for production
+define('URL', 'http://kate.sampelgrift.com/ts/lrallo_v3/');
+define('DEVPATH', '/ts/lrallo_v3/'); // Set to empty string for production
+define('BLOGURL', 'rallo_in_paris'); // Rename blog controller and blog model to match this!!
 
 define('LIBS', 'libs/');
 define('UPLOADS', 'uploads/');
@@ -16,7 +17,7 @@ define('DELETED', ORIGINALS.'deleted/');
 // Database Login
 define('dbTYPE', 'mysql');
 define('dbHOST', 'localhost');
-define('dbDATABASE', 'mvc');
+define('dbDATABASE', 'lrallo_v3');
 define('dbUSER', 'imageman');
 define('dbPASS', 'imageman');
 
@@ -30,7 +31,7 @@ define('GENERAL_HASH_KEY', 'WonderfulWonderful');
 define('SmIMAGE', 1200);
 define('LgIMAGE', 1755);
 define('THUMBSIZE', 300);
-define('COVERASPECT', (2 / 3)); // corresponds to less var
+define('COVERASPECT', (9 / 16)); // corresponds to less var
 
 // Save original images on delete (moves them to deleted dir)
 define('SAVE_ORIGINALS', false);

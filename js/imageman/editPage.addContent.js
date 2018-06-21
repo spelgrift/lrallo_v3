@@ -3,6 +3,15 @@ var Mustache = require('../libs/mustache.min.js');
 var _ = require('./utilityFunctions.js'); // helper functions
 
 $(function() {
+
+	// Page or Post?
+	var isPost = false,
+	postID = "";
+	if((window.location.href).includes(baseURL+blogURL+"/")) {
+		isPost = true;
+		postID = $('#adminNav').attr('data-id');
+	}
+
 /**
  * 
  * CACHE DOM
@@ -11,7 +20,7 @@ $(function() {
 	var $contentArea 	= $('#contentArea'),
 	$placeholder 		= $contentArea.find('.contentPlaceholder'),
 	$addTab 				= $('a.addTab'),
-	pageURL 				= _.getURL();
+	pageURL 				= _.getURL(isPost);
 
 	var $addPageModal = $('#addPageModal'),
 	$addGalModal 		= $('#addGalleryModal'),
@@ -78,7 +87,7 @@ $(function() {
 		// Post to server
 		$.ajax({
 			type: 'POST',
-			url: pageURL + '/addSpacer',
+			url: pageURL + '/addSpacer/' + postID,
 			dataType: 'json',
 			success: function( data ) {
 				if(!data.error) {
@@ -100,7 +109,7 @@ $(function() {
 	function showPlaceholder() {
 		var count = $contentArea.children().length;
 		if(count === 1) {
-			$placeholder.show();
+			$placeholder.removeClass('hidden').show();
 		}
 	}
 });

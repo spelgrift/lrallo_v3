@@ -6,6 +6,6 @@ require('./libs/bs.modal.js'); // Bootstrap modals
 
 require('./imageman/tabs.js');
 require('./libs/events.js'); 
+require('./imageman/timeout.js');
 
-require('./imageman/login.js'); // Handle login
-require('./imageman/slideshows.js'); // Slideshows
+require('./imageman/blog.manage.js'); // Manage blog

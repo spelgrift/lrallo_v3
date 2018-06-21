@@ -1,6 +1,6 @@
 <?
 if($source == 'vimeo') {
-	$embedSrc = "https://player.vimeo.com/video/".$link;
+	$embedSrc = "https://player.vimeo.com/video/".$link."?byline=0&amp;title=0&amp;portrait=0&amp;color=91250f";
 } else if($source == 'youtube') {
 	$embedSrc = "https://www.youtube.com/embed/".$link;
 }

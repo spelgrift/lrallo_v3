@@ -4,6 +4,15 @@ var _ = require('./utilityFunctions.js'); // helper functions
 var Dropzone = require('../libs/dropzone.js');
 
 $(function() {
+
+	// Page or Post?
+	var isPost = false,
+	postID = "";
+	if((window.location.href).includes(baseURL+blogURL+"/")) {
+		isPost = true;
+		postID = $('#adminNav').attr('data-id');
+	}
+
 /**
  * 
  * CACHE DOM
@@ -11,7 +20,7 @@ $(function() {
  */
  	var $contentArea 		= $('#contentArea'),
 	$addTab 					= $('a.addTab'),
-	pageURL 					= _.getURL();
+	pageURL 					= _.getURL(isPost);
 
 	var $addImageModal 	= $('#addImageModal'),
 	$submitImage 			= $addImageModal.find('button#submitNewImage'),
@@ -27,7 +36,7 @@ $(function() {
 	Dropzone.autoDiscover = false;
 
 	var $singleImgDropzone = new Dropzone('div.singleImageDropzone', {
-		url : pageURL + '/addSingleImage',
+		url : pageURL + '/addSingleImage/'+postID,
 		autoProcessQueue : false,
 		maxFiles : 1,
 		maxFilesize : 3,

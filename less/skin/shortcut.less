@@ -1,0 +1,25 @@
+.shortcut {
+	.shortcutTitleOverlay {
+		font-family: @brandFont;
+		text-transform: uppercase;
+		font-size: 16pt;
+
+		height: 100%;
+		opacity: 0;
+		background-color: rgba(0,0,0,0.4);
+		transition: opacity 0.3s ease-out;
+
+		&:hover{
+			opacity:1;
+			background-color: rgba(0,0,0,0.4);
+		}
+
+		.blockName {
+			position: absolute;
+			display: block;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+		}
+	}
+}

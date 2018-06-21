@@ -29,7 +29,7 @@ $(function() {
  	$editHTMLarea 		= $editHTMLmodal.find('#editHTMLarea'),
  	$submitHTML 		= $editHTMLmodal.find('#submitHTML'),
  	$textMsg 			= $editHTMLmodal.find('#textMsg'),
-	pageURL 				= _.getURL();
+	pageURL 				= baseURL+"page";
 
 /**
  * 

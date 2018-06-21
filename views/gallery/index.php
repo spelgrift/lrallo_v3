@@ -75,9 +75,9 @@ if(isset($this->slide) && $this->slide < count($this->galImages)) {
 			<div class='arrow arrow-right'></div>
 			<div class='arrow arrow-left'></div>
 			<div class='slideControlBar'>
-				<a href='#' class='sm-button' id='showThumbs'>
-					<? echo file_get_contents("public/images/icon_thumbs.svg"); ?>		
-				</a>
+				<!-- <a href='#' class='sm-button' id='showThumbs'>
+					<? //echo file_get_contents("public/images/icon_thumbs.svg"); ?>		
+				</a> -->
 				<a href='#' class='sm-button' id='showCollage'>
 					<? echo file_get_contents("public/images/icon_collage.svg"); ?>
 				</a>

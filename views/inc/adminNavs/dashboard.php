@@ -26,7 +26,7 @@
 	</a>
 </li>
 <li>
-	<a href='<?php echo URL; ?>blog/manage/'>
+	<a href='<?php echo URL.BLOGURL; ?>/manage/'>
 		<i class='fa fa-pencil-square-o'></i> Manage Blog
 	</a>
 </li>

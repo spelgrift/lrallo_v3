@@ -5,7 +5,7 @@ class Video_Content_Model extends Content_Model {
 	function __construct(){parent::__construct();}
 
 	// Add Video
-	public function addVideo($parentPageID, $dashboard = false , $embed = false)
+	public function addVideo($parentPageID, $dashboard = false , $embed = false, $type = "page")
 	{
 		if(!$nameArray = $this->_processName($_POST['name'], 'page')) {
 			return false;
@@ -20,7 +20,7 @@ class Video_Content_Model extends Content_Model {
 		$home = ($parentPageID === 0 && !$dashboard) ? 1 : 0;
 		// Advance positions of existing content
 		if(!$dashboard) {
-			$this->_advanceContentPositions($parentPageID, $home);
+			$this->_advanceContentPositions($parentPageID, $home, $type);
 		}
 		if($embed) {
 			$evParent = $parentPageID;
@@ -38,7 +38,7 @@ class Video_Content_Model extends Content_Model {
 			'bootstrap' => BS_PAGE
 		));
 		$contentID = $this->db->lastInsertId();
-		// Page DB entry
+		// Video DB entry
 		$this->db->insert('video', array(
 			'name' => $name,
 			'displayName' => $name,
@@ -50,7 +50,7 @@ class Video_Content_Model extends Content_Model {
 		$videoID = $this->db->lastInsertId();
 		// If embeded, make the embedded video!
 		if($embed) {
-			$ev = $this->addEmbedVideo($evParent, $videoID);
+			$ev = $this->addEmbedVideo($evParent, $videoID, $type);
 			$results = array(
 				'error' => false,
 				'results' => array(
@@ -83,7 +83,7 @@ class Video_Content_Model extends Content_Model {
 	}
 
 	// Add Embedded Video
-	public function addEmbedVideo($parentPageID, $videoID)
+	public function addEmbedVideo($parentPageID, $videoID, $type = 'page')
 	{
 		// Make sure video exists and get source/link to return
 		$query = "SELECT c.url, c.parentPageID, v.source, v.link
@@ -96,18 +96,23 @@ class Video_Content_Model extends Content_Model {
 		}
 		$source = $result[0]['source'];
 		$link = $result[0]['link'];
-		$path = $this->_buildPath($result[0]['url'], $result[0]['parentPageID']);
+		$path = $result[0]['url'];
+		if($type === 'page') {
+			$path = $this->_buildPath($result[0]['url'], $result[0]['parentPageID']);
+		}
 		$home = $parentPageID === 0 ? 1 : 0;
+		$this->_advanceContentPositions($parentPageID, $home, $type);
 		// Content DB entry
+		$typeID = "parent".ucfirst($type)."ID";
 		$this->db->insert('content', array(
 			'type' => 'embeddedVideo',
-			'parentPageID' => $parentPageID,
+			$typeID => $parentPageID,
 			'frontpage' => $home,
 			'author' => $_SESSION['login'],
 			'bootstrap' => BS_VIDEO
 		));
 		$contentID = $this->db->lastInsertId();
-		// SS DB entry
+		// EV DB entry
 		$this->db->insert('embeddedVideo', array(
 			'contentID' => $contentID,
 			'videoID' => $videoID

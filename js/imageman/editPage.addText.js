@@ -3,6 +3,15 @@ var Mustache = require('../libs/mustache.min.js');
 var _ = require('./utilityFunctions.js'); // helper functions
 
 $(function() {
+	
+	// Page or Post?
+	var isPost = false,
+	postID = "";
+	if((window.location.href).includes(baseURL+blogURL+"/")) {
+		isPost = true;
+		postID = $('#adminNav').attr('data-id');
+	}
+
 /**
  * 
  * CONFIG
@@ -17,7 +26,7 @@ $(function() {
  	var $contentArea 	= $('#contentArea'),
 	$addTab 				= $('a.addTab'),
 	textTemplate 		= $('#textTemplate').html().replace('amp;', '');
-	pageURL 				= _.getURL();
+	pageURL 				= _.getURL(postID);
 
 /**
  * 
@@ -35,7 +44,7 @@ $(function() {
 		ev.preventDefault();
 		if($(this).attr('data-id') !== 'text'){ return false;	}
 		var data = { text : defaultText },
-		url = pageURL + '/addText';
+		url = pageURL + '/addText/'+postID;
 		_.post(url, data, submitSuccess, submitError);
 	}
 

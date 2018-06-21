@@ -53,15 +53,17 @@ class Page_Content_Model extends Content_Model {
 	}
 
 	// Add Spacer
-	public function addSpacer($parentPageID)
+	public function addSpacer($parentPageID, $type = 'page')
 	{
 		// Advance positions of existing content
-		$this->_advanceContentPositions($parentPageID);
+		$home = $parentPageID === 0 ? 1 : 0;
+		$this->_advanceContentPositions($parentPageID, $home, $type);
 
 		// Content DB entry
+		$typeID = "parent".ucfirst($type)."ID";
 		$this->db->insert('content', array(
 			'type' => 'spacer',
-			'parentPageID' => $parentPageID,
+			$typeID => $parentPageID,
 			'bootstrap' => 'col-xs-12'
 		));
 		$contentID = $this->db->lastInsertId();

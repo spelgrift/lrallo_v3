@@ -225,7 +225,7 @@ $(function() {
 	}
 
 	function makeURL(str) {
-		var url = str.replace(/[^a-z.0-9_]+/ig, "_");
+		var url = str.replace(/[^a-z.0-9_]+/ig, "-");
 		url = url.toLowerCase();
 		return url;
 	}

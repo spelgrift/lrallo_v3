@@ -271,7 +271,7 @@ class Page extends Controller
 				echo json_encode($result);
 			}
 		} else {
-			$this->videoContentModel->addVideo($this->_pageAttrArray['pageID'], true);
+			$this->videoContentModel->addVideo($this->_pageAttrArray['pageID'], false, true);
 		}
 	}
 

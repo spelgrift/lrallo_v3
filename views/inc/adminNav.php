@@ -1,6 +1,8 @@
 <?php
 if(isset($this->pageAttr['pageID'])) {
 	$dataID = "data-id='".$this->pageAttr['pageID']."'";
+} else if(isset($this->postAttr['postID'])) {
+	$dataID = "data-id='".$this->postAttr['postID']."'";
 } else {
 	$dataID = '';
 }
@@ -17,11 +19,18 @@ if(isset($this->pageAttr['pageID'])) {
 			?>
 		</ul>
 		<ul class="nav navbar-nav navbar-right">
-		<? if(!isset($this->adminNav) || $this->adminNav != 'dashboard'): ?>
-		
-			<li><a href='<?php echo URL; ?>dashboard/'><i class="fa fa-sitemap"></i> Dashboard</a></li>
+		<? if(isset($this->adminNav) && strpos($this->adminNav, 'post') !== false): ?>
+			<li>
+				<a href='<?php echo URL.BLOGURL; ?>/manage/'><i class="fa fa-list"></i> Manage Blog</a>
+			</li>
+		<? elseif(!isset($this->adminNav) || $this->adminNav != 'dashboard'): ?>
+			<li>
+				<a href='<?php echo URL; ?>dashboard/'><i class="fa fa-sitemap"></i> Dashboard</a>
+			</li>
 		<? endif; ?>
-			<li><a href='<?php echo URL; ?>login/logout/'><i class="fa fa-sign-out"></i> Logout</a></li>
+			<li>
+				<a href='<?php echo URL; ?>login/logout/'><i class="fa fa-sign-out"></i> Logout</a>
+			</li>
 		</ul>
 	</div>
 </nav>

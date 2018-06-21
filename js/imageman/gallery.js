@@ -6,6 +6,7 @@ $(function() {
 	// Config
 	var animateCollage = false;
 	var rowHeight = 450;
+	var fadeInOutTime = 200;
 
 	// Cache DOM
 	var $viewer= $('#viewer'),
@@ -60,29 +61,39 @@ $(function() {
 
 	function showThumbs(ev) {
 		ev.preventDefault();
-		$viewer.removeClass('active');
-		$thumbnails.addClass('active');
+		fadeToPanel($viewer, $thumbnails, function(){});
 	}
 
 	function showCollage(ev) {
 		ev.preventDefault();
-		$viewer.removeClass('active');
-		$collage.addClass('active');
-		initFlex();
-		if(animateCollage) {
-			$collageImages.hide();
-			$collageImages.each(function(i) {
-				$(this).delay(i * 100).fadeIn(500);
-			});
-		}
+		fadeToPanel($viewer, $collage, function(){
+			initFlex();
+			if(animateCollage) {
+				$collageImages.hide();
+				$collageImages.each(function(i) {
+					$(this).delay(i * 100).fadeIn(500);
+				});
+			}
+		});
 	}
 
 	function goToSlide(ev) {
 		ev.preventDefault();
-		var slide = $(ev.target).closest('.thumb').attr('data-slide');
+		var slide = $(ev.target).closest('.thumb').attr('data-slide'),
+		$activePanel = $('.tabPanel.active');
 		$slideshow.slideMan().changeSlide(slide, false);
-		$('.tabPanel.active').removeClass('active');
-		$viewer.addClass('active');
+
+		fadeToPanel($activePanel, $viewer, function(){});
+	}
+
+	function fadeToPanel($current, $new, callback) {
+		$current.fadeOut(fadeInOutTime, function(){
+			$current.removeClass('active').removeAttr('style');
+			$new.fadeIn(fadeInOutTime, function(){
+				$new.addClass('active').removeAttr('style');
+				callback();
+			});
+		});
 	}
 
 	function initFlex() {

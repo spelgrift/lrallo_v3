@@ -65,7 +65,7 @@ $(function() {
 		// If no new cover image return
 		if($updateCoverDropzone.files.length === 0) {
 			console.log('success');
-			$thisBlock.find('a.shortcutTitleOverlay').html(data.results.name);
+			$thisBlock.find('.blockName').html(data.results.name);
 			$shortcutSettingsModal.modal('hide');
 			return;
 		}
@@ -104,7 +104,7 @@ $(function() {
  		var type = $(this).attr('data-type'),
  		contentID = $(this).attr('data-id');
  		$thisBlock = $(this).closest('.contentItem');
- 		var name = $thisBlock.find('a.shortcutTitleOverlay').html();
+ 		var name = $thisBlock.find('.blockName').html();
  		origName = name;
  		$updateCoverDropzone.options.url = pageURL + '/updateShortcutCover/' + contentID + '/' + type;
 

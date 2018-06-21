@@ -1,5 +1,5 @@
 {
-  "name": "imageman",
+  "name": "lrallo_v3",
   "version": "0.1.0",
   "description": "",
   "scripts": {
@@ -26,6 +26,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/spelgrift/imageman" 
+    "url": "https://github.com/spelgrift/lrallo_v3" 
   }
 }

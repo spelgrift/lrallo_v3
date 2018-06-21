@@ -2,9 +2,10 @@ var $ = require('jquery');
 var _ = require('./utilityFunctions.js'); // helper functions
 
 $(function() {
-	var $contentArea = $('#contentArea');
-	var pageURL = _.getURL();
-	var currentScreen;
+
+	var $contentArea = $('#contentArea'),
+	pageURL = baseURL+"page",
+	currentScreen;
 
 	// Config
 	var minColWidth = 3,

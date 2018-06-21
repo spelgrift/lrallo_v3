@@ -1,0 +1,50 @@
+#mainNavBar.navbar-default.navbar {
+	background-color: white;
+	border: none;
+	margin-bottom: 15px;
+	margin-top:35px;
+
+	a.navbar-brand {
+		color:black;
+		font-family: @brandFont;
+		font-size: 24pt;
+		margin-right:15px;
+	}
+
+	.nav.navbar-nav>li>a{
+		font-family: @navFont;
+		color:@navFontColor;
+		font-size: 9pt;
+		padding-top: 20px;
+		letter-spacing: 1px;
+		transition: color 0.2s ease-out;
+
+		&:hover {
+			transition: color 0.2s ease-out;
+			color: black;
+		}
+
+		&.navLinkControl {
+			color:black;
+			font-size:14px;
+			top:-2px;
+		}
+	}
+
+	.navbar-toggle {
+		border: none;
+		margin: 0 0;
+		padding: 15px 15px 7px;
+		background-color: transparent;
+		color: black;
+		transition: color 0.2s ease-out;
+		&:hover, &.active, &:focus {
+			background-color: transparent;
+		}
+
+		&:hover {
+			transition: color 0.2s ease-out;
+			color:@navFontColor;
+		}
+	}
+}

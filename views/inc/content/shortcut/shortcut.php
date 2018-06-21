@@ -22,7 +22,7 @@ if($adminControls) {
 		{
 			echo "<a class='coverLink' href='$path'><img src='".URL.$cover."' class='shortcutCover img-responsive'></a>";
 		}
-		echo "<a class='shortcutTitleOverlay' href='$path'>$name</a>"; 
+		echo "<a class='shortcutTitleOverlay' href='$path'><span class='blockName'>$name</span></a>"; 
 		?>
 	</div>
 	

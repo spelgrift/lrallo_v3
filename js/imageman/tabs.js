@@ -8,11 +8,7 @@ $(function() {
 
 	$('body').on('click', '.tabLink', function(ev) {
 		ev.preventDefault();
-		if($(this).hasClass('tabFade')) {
-			switchTabsFade($(this));
-		} else {
-			switchTabs($(this));
-		}
+		switchTabs($(this));
 	});
 		
 	function adminNav(ev) {
@@ -40,18 +36,5 @@ $(function() {
 		$('#'+panelToShow).show().addClass('active');
 	}
 
-	function switchTabsFade($selector) {
-		// Figure out which panel to show
-		var panelToShow = $selector.attr('data-tab');
-		// Hide current panel
-		$('.tabPanel.active').fadeOut(transitionSpeed, function() {
-			$(this).removeClass('active');
-			// Show next panel
-			$('#'+panelToShow).fadeIn(transitionSpeed, function() {
-				$(this).addClass('active');
-			});
-		});
-		
-	}
 
 });
